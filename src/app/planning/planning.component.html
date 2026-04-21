@@ -1,0 +1,118 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>📅 Planning des interventions</h1>
+      <p>{{ monthNames[currentMonth] }} {{ currentYear }}</p>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button (click)="prevMonth()"><mat-icon>chevron_left</mat-icon></button>
+      <button mat-icon-button (click)="nextMonth()"><mat-icon>chevron_right</mat-icon></button>
+    </div>
+  </div>
+
+  <div class="planning-layout">
+
+    <!-- Calendrier -->
+    <mat-card class="calendar-card">
+      <mat-card-content>
+        <div class="calendar-header">
+          <span *ngFor="let day of ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']" class="day-name">{{ day }}</span>
+        </div>
+        <div class="calendar-grid">
+          <div *ngFor="let cell of calendarDays"
+               class="calendar-cell"
+               [class.empty]="!cell.day"
+               [class.today]="cell.day && isToday(cell.day)"
+               [class.has-events]="cell.interventions?.length > 0">
+            <span class="day-number" *ngIf="cell.day">{{ cell.day }}</span>
+            <div class="events" *ngIf="cell.interventions?.length > 0">
+              <span *ngFor="let inv of cell.interventions.slice(0,2)"
+                    class="event-dot"
+                    [ngClass]="getTypeClass(inv.type)"
+                    [title]="inv.type">
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Légende -->
+        <div class="legend">
+          <span class="legend-item"><span class="dot type-correctif"></span> Correctif</span>
+          <span class="legend-item"><span class="dot type-preventif"></span> Préventif</span>
+          <span class="legend-item"><span class="dot type-maj"></span> Mise à jour</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Formulaire planification -->
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>Planifier une intervention</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+
+        <div *ngIf="successMessage" class="success-banner">
+          ✅ {{ successMessage }}
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" [(ngModel)]="form.dateIntervention">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="form.type">
+            <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Équipement</mat-label>
+          <mat-select [(ngModel)]="form.equipementId">
+            <mat-option [value]="null">— Aucun —</mat-option>
+            <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Durée (heures)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.dureeHeures">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput [(ngModel)]="form.description" rows="3"></textarea>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="planifier()" [disabled]="isSaving" class="full-width">
+          <mat-icon>add</mat-icon>
+          {{ isSaving ? 'Enregistrement...' : 'Planifier' }}
+        </button>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- Liste des interventions du mois -->
+  <mat-card class="list-card">
+    <mat-card-header>
+      <mat-card-title>Interventions de {{ monthNames[currentMonth] }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="interventions.length === 0" class="empty-state">
+        <p>Aucune intervention ce mois.</p>
+      </div>
+      <div class="intervention-list">
+        <div *ngFor="let inv of interventions" class="intervention-item">
+          <span class="inv-date">{{ inv.dateIntervention | date:'dd/MM' }}</span>
+          <span class="inv-type" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
+          <span class="inv-desc">{{ inv.descriptionPanne || '—' }}</span>
+          <span class="inv-equip">{{ inv.equipement?.nom || '—' }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+</div>

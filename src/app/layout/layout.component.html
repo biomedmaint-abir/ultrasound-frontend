@@ -1,0 +1,42 @@
+<div class="app-container" [class.sidebar-collapsed]="!sidebarOpen">
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">🏥</span>
+        <span class="logo-text">BiomédMaint</span>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        {{ sidebarOpen ? '◀' : '▶' }}
+      </button>
+    </div>
+
+    <nav class="nav-menu">
+      <a *ngFor="let item of navItems"
+         [routerLink]="item.path"
+         class="nav-item"
+         [class.active]="isActive(item.path)">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <span class="user-icon">👤</span>
+        <span class="user-email">{{ email }}</span>
+      </div>
+      <button class="logout-btn" (click)="logout()">
+        <span>🚪</span>
+        <span class="nav-label">Déconnexion</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Contenu principal -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

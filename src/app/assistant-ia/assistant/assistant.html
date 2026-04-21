@@ -1,0 +1,166 @@
+<div class="chat-container">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="header-left">
+      <div class="ai-avatar">🤖</div>
+      <div>
+        <h1>Assistant IA BiomédMaint</h1>
+        <p class="status"><span class="dot"></span> En ligne — Diagnostic Philips Échographie</p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat">
+        <span class="stat-num">{{ allCodes.length }}</span>
+        <span class="stat-label">Codes erreur</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">27</span>
+        <span class="stat-label">Équipements</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone de chat -->
+  <div class="chat-body" #chatBody>
+
+    <!-- Message de bienvenue -->
+    <div class="message bot-message">
+      <div class="avatar">🤖</div>
+      <div class="bubble">
+        <p>Bonjour ! Je suis l'assistant IA de <strong>BiomédMaint</strong>. Je peux diagnostiquer les pannes des équipements Philips.</p>
+        <p>Entrez un <strong>code erreur</strong> (ex: ERR-001) ou décrivez un <strong>symptôme</strong> en langage naturel (ex: "écran noir au démarrage").</p>
+        <div class="quick-actions">
+          <button *ngFor="let code of allCodes.slice(0,4)"
+                  (click)="searchCode = code.code; search()"
+                  class="quick-btn">
+            {{ code.code }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <ng-container *ngFor="let msg of messages">
+      <div class="message" [ngClass]="msg.type + '-message'">
+        <div class="avatar">{{ msg.type === 'bot' ? '🤖' : '👤' }}</div>
+        <div class="bubble">
+          <p [innerHTML]="msg.text"></p>
+
+          <!-- Résultat simple (par code exact) -->
+          <div *ngIf="msg.result" class="result-card">
+            <div class="confidence-bar" *ngIf="msg.confidence">
+              <span>Confiance</span>
+              <div class="bar">
+                <div class="fill" [style.width.%]="msg.confidence"></div>
+              </div>
+              <span>{{ msg.confidence }}%</span>
+            </div>
+            <div class="result-section">
+              <span class="result-label">🔴 Symptômes</span>
+              <p>{{ msg.result.symptomes }}</p>
+            </div>
+            <div class="result-section">
+              <span class="result-label">🧠 Causes racines</span>
+              <p>{{ msg.result.causesProbables }}</p>
+            </div>
+            <div class="result-section">
+              <span class="result-label">🔧 Actions correctives</span>
+              <p>{{ msg.result.actionsCorrectives }}</p>
+            </div>
+            <div class="result-footer">
+              <span>🔩 {{ msg.result.piecesConcernees || '—' }}</span>
+              <span>⏱️ {{ msg.result.tempsResolutionMoyen }}h</span>
+            </div>
+          </div>
+
+          <!-- Résultats multiples (par symptôme) -->
+          <div *ngIf="msg.results && msg.results.length > 0" class="multi-results">
+            <div *ngFor="let r of msg.results; let i = index"
+                 class="result-card"
+                 [class.best]="i === 0">
+              <div class="result-header">
+                <span class="code-tag">{{ r.code }}</span>
+                <div class="confidence-bar">
+                  <div class="bar">
+                    <div class="fill" [style.width.%]="r.confidence"></div>
+                  </div>
+                  <span>{{ r.confidence }}%</span>
+                </div>
+              </div>
+              <div class="result-section">
+                <span class="result-label">🔴 Symptômes</span>
+                <p>{{ r.symptomes }}</p>
+              </div>
+              <div class="result-section">
+                <span class="result-label">🧠 Causes racines</span>
+                <p>{{ r.causesProbables }}</p>
+              </div>
+              <div class="result-section">
+                <span class="result-label">🔧 Actions correctives</span>
+                <p>{{ r.actionsCorrectives }}</p>
+              </div>
+              <div class="result-footer">
+                <span>🔩 {{ r.piecesConcernees || '—' }}</span>
+                <span>⏱️ {{ r.tempsResolutionMoyen }}h</span>
+              </div>
+            </div>
+          </div>
+
+          <span class="timestamp">{{ msg.time }}</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Formulaire apprentissage -->
+    <div *ngIf="showLearnForm" class="message bot-message">
+      <div class="avatar">🤖</div>
+      <div class="bubble learn-bubble">
+        <p>📚 <strong>Mode apprentissage</strong> — Aidez-moi à apprendre ce nouveau cas :</p>
+        <div class="learn-form">
+          <input [(ngModel)]="learnForm.code" placeholder="Code erreur (ex: ERR-011)" class="learn-input">
+          <input [(ngModel)]="learnForm.symptomes" placeholder="Symptômes observés" class="learn-input">
+          <input [(ngModel)]="learnForm.causesProbables" placeholder="Causes probables" class="learn-input">
+          <input [(ngModel)]="learnForm.actionsCorrectives" placeholder="Actions correctives" class="learn-input">
+          <input [(ngModel)]="learnForm.piecesConcernees" placeholder="Pièces concernées" class="learn-input">
+          <input type="number" [(ngModel)]="learnForm.tempsResolutionMoyen" placeholder="Temps résolution (h)" class="learn-input">
+          <div class="learn-actions">
+            <button (click)="learn()" class="learn-btn">✅ Apprendre</button>
+            <button (click)="cancelLearn()" class="cancel-btn">❌ Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typing indicator -->
+    <div *ngIf="isLoading" class="message bot-message">
+      <div class="avatar">🤖</div>
+      <div class="bubble typing">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input">
+    <div class="input-row">
+      <input
+        [(ngModel)]="searchCode"
+        (keyup.enter)="search()"
+        placeholder="Code erreur (ERR-001) ou symptôme (écran noir)..."
+        class="message-input"
+        [disabled]="isLoading">
+      <button (click)="search()" [disabled]="isLoading" class="send-btn">➤</button>
+    </div>
+    <div class="suggestions">
+      <span>Suggestions : </span>
+      <button *ngFor="let code of allCodes.slice(0,5)"
+              (click)="searchCode = code.code; search()"
+              class="suggestion-chip">
+        {{ code.code }}
+      </button>
+    </div>
+  </div>
+
+</div>

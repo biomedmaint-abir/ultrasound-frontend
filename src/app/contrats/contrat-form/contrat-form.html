@@ -1,0 +1,48 @@
+<div class="page-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
+    <h1>{{ isEditMode ? 'Modifier le contrat' : 'Nouveau contrat' }}</h1>
+  </div>
+  <mat-card class="form-card">
+    <mat-card-content>
+      <div *ngIf="errorMessage" class="error-banner"><mat-icon>error_outline</mat-icon> {{ errorMessage }}</div>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Référence</mat-label>
+          <input matInput [(ngModel)]="form.reference" name="reference">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="form.type" name="type">
+            <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(ngModel)]="form.statut" name="statut">
+            <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Montant (DH)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.montant" name="montant">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date début</mat-label>
+          <input matInput type="date" [(ngModel)]="form.dateDebut" name="dateDebut">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date fin</mat-label>
+          <input matInput type="date" [(ngModel)]="form.dateFin" name="dateFin">
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="cancel()">Annuler</button>
+      <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaving">
+        <mat-icon *ngIf="!isSaving">save</mat-icon>
+        {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

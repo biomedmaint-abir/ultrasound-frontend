@@ -1,0 +1,73 @@
+.page-container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+.page-header {
+  margin-bottom: 24px;
+  h1 { font-size: 24px; font-weight: 700; color: #1a237e; margin: 0; }
+  p { margin: 4px 0 0; color: #666; font-size: 14px; }
+}
+
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 24px;
+}
+
+.kpi-card {
+  border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.2s;
+  &:hover { transform: translateY(-4px); }
+  .kpi-icon { font-size: 32px; }
+  .kpi-info {
+    h2 { margin: 0; font-size: 22px; font-weight: 700; }
+    p { margin: 4px 0 0; font-size: 11px; opacity: 0.8; }
+  }
+  &.blue   { background: linear-gradient(135deg, #1a237e, #1565c0); color: white; }
+  &.green  { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; }
+  &.orange { background: linear-gradient(135deg, #e65100, #f57c00); color: white; }
+  &.purple { background: linear-gradient(135deg, #4a148c, #7b1fa2); color: white; }
+  &.red    { background: linear-gradient(135deg, #b71c1c, #c62828); color: white; }
+  &.teal   { background: linear-gradient(135deg, #006064, #00838f); color: white; }
+}
+
+.charts-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;
+  .wide { grid-column: 1 / -1; }
+}
+
+.chart-card {
+  background: white; border-radius: 16px; padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  h3 { margin: 0 0 16px; font-size: 14px; font-weight: 600; color: #1a237e; }
+  canvas { max-height: 220px; }
+}
+
+.section-title {
+  font-size: 18px; font-weight: 600; color: #1a237e; margin-bottom: 16px;
+}
+
+.contrats-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+
+.contrat-card {
+  background: white; border-radius: 16px; padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+
+  .contrat-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+    .contrat-ref { font-weight: 700; color: #1a237e; font-size: 14px; }
+  }
+
+  .contrat-statut {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    &.statut-actif    { background: #e8f5e9; color: #2e7d32; }
+    &.statut-expire   { background: #f5f5f5; color: #666; }
+    &.statut-resilier { background: #ffebee; color: #c62828; }
+  }
+
+  .contrat-info { display: flex; flex-direction: column; gap: 8px; }
+
+  .info-row {
+    display: flex; justify-content: space-between; font-size: 13px;
+    span:first-child { color: #666; }
+    span:last-child { font-weight: 500; color: #333; }
+  }
+}

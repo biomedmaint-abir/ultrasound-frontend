@@ -1,0 +1,100 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <div>
+        <h1>Détail de l'intervention</h1>
+        <p *ngIf="intervention">#{{ intervention.id }} — {{ intervention.date | date:'dd/MM/yyyy' }}</p>
+      </div>
+    </div>
+    <div class="header-actions" *ngIf="intervention">
+      <button mat-stroked-button color="primary" (click)="goToEdit()">
+        <mat-icon>edit</mat-icon> Modifier
+      </button>
+      <button mat-stroked-button color="warn" (click)="delete()">
+        <mat-icon>delete</mat-icon> Supprimer
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="center-state">
+    <mat-spinner diameter="48"></mat-spinner><p>Chargement...</p>
+  </div>
+
+  <div *ngIf="hasError && !isLoading" class="center-state">
+    <mat-icon style="font-size:48px;color:#c62828">error_outline</mat-icon>
+    <p>Impossible de charger cette intervention.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">Retour</button>
+  </div>
+
+  <div *ngIf="!isLoading && !hasError && intervention" class="detail-grid">
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Informations générales</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-row">
+          <span class="label">Statut</span>
+          <span class="statut-badge" [ngClass]="getStatutClass(intervention.statut)">{{ intervention.statut }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">Type</span>
+          <span class="value">{{ intervention.type || '—' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">Date</span>
+          <span class="value">{{ intervention.date | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">Durée</span>
+          <span class="value">{{ intervention.duree ? intervention.duree + 'h' : '—' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Équipement & Technicien</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-row">
+          <span class="label">Équipement</span>
+          <span class="value">{{ intervention.equipement?.nom || '—' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">Modèle</span>
+          <span class="value">{{ intervention.equipement?.modele || '—' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">Technicien</span>
+          <span class="value">{{ intervention.technicien || '—' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card full-width">
+      <mat-card-header>
+        <mat-card-title>Description</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="text-content">{{ intervention.description || 'Aucune description.' }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card full-width" *ngIf="intervention.observations">
+      <mat-card-header>
+        <mat-card-title>Observations</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="text-content">{{ intervention.observations }}</p>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

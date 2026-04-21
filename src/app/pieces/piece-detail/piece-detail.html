@@ -1,0 +1,34 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <div>
+        <h1>Détail pièce</h1>
+        <p *ngIf="piece">#{{ piece.id }} — {{ piece.nom }}</p>
+      </div>
+    </div>
+    <div class="header-actions" *ngIf="piece">
+      <button mat-stroked-button color="primary" (click)="goToEdit()"><mat-icon>edit</mat-icon> Modifier</button>
+      <button mat-stroked-button color="warn" (click)="delete()"><mat-icon>delete</mat-icon> Supprimer</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="center-state">
+    <mat-spinner diameter="48"></mat-spinner><p>Chargement...</p>
+  </div>
+
+  <div *ngIf="!isLoading && !hasError && piece" class="detail-grid">
+    <mat-card class="detail-card">
+      <mat-card-header><mat-card-title>Informations</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="info-row"><span class="label">Nom</span><span class="value">{{ piece.nom }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Référence</span><span class="value">{{ piece.reference }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Stock</span><span class="value">{{ piece.quantiteStock }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Prix unitaire</span><span class="value">{{ piece.prixUnitaire | number:'1.2-2' }} DH</span></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

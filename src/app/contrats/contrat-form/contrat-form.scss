@@ -1,0 +1,9 @@
+.page-container { max-width: 900px; margin: 0 auto; padding: 24px; }
+.page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+  h1 { margin: 0; font-size: 24px; font-weight: 600; color: #1a237e; }
+}
+.form-card { border-radius: 16px !important;
+  mat-card-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 16px; }
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; mat-form-field { width: 100%; } }
+.error-banner { display: flex; align-items: center; gap: 8px; background: #ffebee; color: #c62828; padding: 12px; border-radius: 8px; margin-bottom: 16px; }

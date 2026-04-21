@@ -1,0 +1,75 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <div>
+        <h1>Interventions</h1>
+        <p>{{ filtered.length }} intervention(s)</p>
+      </div>
+    </div>
+    <button mat-raised-button color="primary" (click)="goToNew()">
+      <mat-icon>add</mat-icon> Nouvelle intervention
+    </button>
+  </div>
+
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Rechercher...</mat-label>
+    <input matInput [(ngModel)]="search" (input)="applyFilter()">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div *ngIf="isLoading" class="center-state">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Chargement...</p>
+  </div>
+
+  <div *ngIf="hasError && !isLoading" class="center-state">
+    <p>Erreur de chargement.</p>
+    <button mat-raised-button color="primary" (click)="load()">Réessayer</button>
+  </div>
+
+  <div *ngIf="!isLoading && !hasError">
+    <div *ngIf="filtered.length === 0" class="empty-state">
+      <p>Aucune intervention trouvée.</p>
+    </div>
+
+    <table *ngIf="filtered.length > 0" mat-table [dataSource]="filtered" class="mat-elevation-z2">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+      </ng-container>
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let row">{{ row.date | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let row">{{ row.type }}</td>
+      </ng-container>
+      <ng-container matColumnDef="equipement">
+        <th mat-header-cell *matHeaderCellDef>Équipement</th>
+        <td mat-cell *matCellDef="let row">{{ row.equipement?.nom || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="technicien">
+        <th mat-header-cell *matHeaderCellDef>Technicien</th>
+        <td mat-cell *matCellDef="let row">{{ row.technicien }}</td>
+      </ng-container>
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="statut-badge" [ngClass]="getStatutClass(row.statut)">{{ row.statut }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button (click)="goToDetail(row.id)"><mat-icon>visibility</mat-icon></button>
+          <button mat-icon-button color="primary" (click)="goToEdit(row.id, $event)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button color="warn" (click)="delete(row.id, $event)"><mat-icon>delete</mat-icon></button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="goToDetail(row.id)"></tr>
+    </table>
+  </div>
+</div>

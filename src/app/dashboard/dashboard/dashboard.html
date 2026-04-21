@@ -1,0 +1,108 @@
+<div class="dashboard-container">
+
+  <div class="dashboard-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p>Bienvenue, <strong>{{ email }}</strong> — {{ today | date:'EEEE dd MMMM yyyy' }}</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-icon">🔧</div>
+        <div class="kpi-info">
+          <h2>{{ totalInterventions }}</h2>
+          <p>Interventions</p>
+        </div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-icon">🔬</div>
+        <div class="kpi-info">
+          <h2>{{ totalEquipements }}</h2>
+          <p>Équipements</p>
+        </div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-info">
+          <h2>{{ (mttr ?? 0) | number:'1.0-1' }}h</h2>
+          <p>MTTR moyen</p>
+        </div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-icon">📄</div>
+        <div class="kpi-info">
+          <h2>{{ totalContrats }}</h2>
+          <p>Contrats actifs</p>
+        </div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-info">
+          <h2>{{ disponibilite }}%</h2>
+          <p>Disponibilité</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Répartition des interventions</h3>
+        <canvas id="typeChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Statut des équipements</h3>
+        <canvas id="equipChart"></canvas>
+      </div>
+      <div class="chart-card wide">
+        <h3>Interventions par mois</h3>
+        <canvas id="monthChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Navigation rapide -->
+    <div class="section-title">Accès rapide</div>
+    <div class="nav-grid">
+      <div class="nav-card" (click)="navigateTo('/interventions')">
+        <span class="nav-icon">🔧</span>
+        <h3>Interventions</h3>
+        <p>Gérer les interventions</p>
+      </div>
+      <div class="nav-card" (click)="navigateTo('/equipements')">
+        <span class="nav-icon">🔬</span>
+        <h3>Équipements</h3>
+        <p>Parc d'équipements</p>
+      </div>
+      <div class="nav-card" (click)="navigateTo('/pieces')">
+        <span class="nav-icon">🔩</span>
+        <h3>Pièces de rechange</h3>
+        <p>Stock et commandes</p>
+      </div>
+      <div class="nav-card" (click)="navigateTo('/contrats')">
+        <span class="nav-icon">📄</span>
+        <h3>Contrats</h3>
+        <p>Suivi des contrats</p>
+      </div>
+      <div class="nav-card" (click)="navigateTo('/planning')">
+        <span class="nav-icon">📅</span>
+        <h3>Planning</h3>
+        <p>Calendrier interventions</p>
+      </div>
+      <div class="nav-card" (click)="navigateTo('/rapports')">
+        <span class="nav-icon">📈</span>
+        <h3>Rapports</h3>
+        <p>Export et analyse</p>
+      </div>
+      <div class="nav-card highlight" (click)="navigateTo('/assistant-ia')">
+        <span class="nav-icon">🤖</span>
+        <h3>Assistant IA</h3>
+        <p>Diagnostic intelligent</p>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

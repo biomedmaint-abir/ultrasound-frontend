@@ -1,0 +1,98 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>📊 Optimisation technico-économique</h1>
+      <p>Analyse des performances et de la rentabilité du parc d'équipements</p>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-info">
+        <h2>{{ stats.coutTotal | number:'1.0-0' }} DH</h2>
+        <p>Coût total maintenance</p>
+      </div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-icon">📉</div>
+      <div class="kpi-info">
+        <h2>{{ stats.coutMoyen | number:'1.0-0' }} DH</h2>
+        <p>Coût moyen/intervention</p>
+      </div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-info">
+        <h2>{{ stats.tauxDisponibilite }}%</h2>
+        <p>Taux de disponibilité</p>
+      </div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">⏱️</div>
+      <div class="kpi-info">
+        <h2>{{ stats.mttrMoyen | number:'1.0-1' }}h</h2>
+        <p>MTTR moyen</p>
+      </div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-icon">🔴</div>
+      <div class="kpi-info">
+        <h2>{{ stats.equipementsEnPanne }}</h2>
+        <p>Équipements en panne</p>
+      </div>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-icon">🔧</div>
+      <div class="kpi-info">
+        <h2>{{ stats.interventionsTerminees }}</h2>
+        <p>Interventions terminées</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphiques -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>🔧 Pannes par type</h3>
+      <canvas id="pannesChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>📋 Statut des interventions</h3>
+      <canvas id="statutChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>📄 Statut des contrats</h3>
+      <canvas id="contratsChart"></canvas>
+    </div>
+    <div class="chart-card wide">
+      <h3>📈 Évolution du MTTR par mois</h3>
+      <canvas id="mttrChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Rentabilité des contrats -->
+  <div class="section-title">💼 Analyse des contrats</div>
+  <div class="contrats-grid">
+    <div *ngFor="let c of contrats" class="contrat-card">
+      <div class="contrat-header">
+        <span class="contrat-ref">{{ c.reference }}</span>
+        <span class="contrat-statut" [ngClass]="'statut-' + c.statut?.toLowerCase()">{{ c.statut }}</span>
+      </div>
+      <div class="contrat-info">
+        <div class="info-row">
+          <span>Type</span><span>{{ c.type }}</span>
+        </div>
+        <div class="info-row">
+          <span>Montant</span><span>{{ c.montant | number:'1.0-0' }} DH</span>
+        </div>
+        <div class="info-row">
+          <span>Période</span>
+          <span>{{ c.dateDebut | date:'MM/yyyy' }} → {{ c.dateFin | date:'MM/yyyy' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

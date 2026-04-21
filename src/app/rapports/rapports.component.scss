@@ -1,0 +1,54 @@
+.page-container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1a237e; }
+  p { margin: 4px 0 0; color: #666; font-size: 14px; }
+  .header-actions { display: flex; gap: 8px; }
+}
+
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  .stat-icon { font-size: 36px; }
+  .stat-info {
+    h2 { margin: 0; font-size: 28px; font-weight: 700; }
+    p { margin: 4px 0 0; font-size: 12px; opacity: 0.8; }
+  }
+  &.blue   { background: linear-gradient(135deg, #1a237e, #1565c0); color: white; }
+  &.green  { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; }
+  &.orange { background: linear-gradient(135deg, #e65100, #f57c00); color: white; }
+  &.purple { background: linear-gradient(135deg, #4a148c, #7b1fa2); color: white; }
+}
+
+.filter-card {
+  border-radius: 16px !important; margin-bottom: 24px;
+  .filter-row { display: flex; gap: 16px; align-items: center;
+    mat-form-field { flex: 1; }
+  }
+}
+
+.table-card { border-radius: 16px !important;
+  table { width: 100%; }
+}
+
+.badge {
+  padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  &.statut-termine   { background: #e8f5e9; color: #2e7d32; }
+  &.statut-en-cours  { background: #fff3e0; color: #e65100; }
+  &.statut-attente   { background: #e3f2fd; color: #1565c0; }
+  &.type-correctif   { background: #ffebee; color: #c62828; }
+  &.type-preventif   { background: #e8f5e9; color: #2e7d32; }
+  &.type-maj         { background: #e3f2fd; color: #1565c0; }
+}
+
+.center-state { display: flex; justify-content: center; padding: 32px; color: #666; }
+
+@media print {
+  .page-header .header-actions, .filter-card { display: none; }
+  .stat-card { break-inside: avoid; }
+}

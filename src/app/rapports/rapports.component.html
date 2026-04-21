@@ -1,0 +1,122 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>📈 Rapports d'interventions</h1>
+      <p>{{ filtered.length }} rapport(s) trouvé(s)</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="exportCSV()">
+        <mat-icon>download</mat-icon> Export CSV
+      </button>
+      <button mat-stroked-button (click)="imprimer()">
+        <mat-icon>print</mat-icon> Imprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-icon">📋</div>
+      <div class="stat-info">
+        <h2>{{ stats.total }}</h2>
+        <p>Total interventions</p>
+      </div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <h2>{{ stats.terminees }}</h2>
+        <p>Terminées</p>
+      </div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-icon">🔄</div>
+      <div class="stat-info">
+        <h2>{{ stats.enCours }}</h2>
+        <p>En cours</p>
+      </div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-info">
+        <h2>{{ stats.mttrMoyen | number:'1.0-1' }}h</h2>
+        <p>MTTR moyen</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <div class="filter-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="filterType" (ngModelChange)="applyFilter()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-stroked-button (click)="resetFilter()">
+          <mat-icon>refresh</mat-icon> Réinitialiser
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div *ngIf="isLoading" class="center-state">
+        <p>Chargement...</p>
+      </div>
+      <table *ngIf="!isLoading" mat-table [dataSource]="filtered" class="mat-elevation-z0">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let row">{{ row.dateIntervention | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [ngClass]="getTypeClass(row.type)">{{ row.type }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef>Statut</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [ngClass]="getStatutClass(row.statut)">{{ row.statut }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="equipement">
+          <th mat-header-cell *matHeaderCellDef>Équipement</th>
+          <td mat-cell *matCellDef="let row">{{ row.equipement?.nom || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="technicien">
+          <th mat-header-cell *matHeaderCellDef>Technicien</th>
+          <td mat-cell *matCellDef="let row">{{ row.technicien?.nom || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="duree">
+          <th mat-header-cell *matHeaderCellDef>Durée</th>
+          <td mat-cell *matCellDef="let row">{{ row.dureeHeures ? row.dureeHeures + 'h' : '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let row">{{ row.descriptionPanne || '—' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

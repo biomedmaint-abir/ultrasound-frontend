@@ -1,0 +1,39 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <div>
+        <h1>Détail équipement</h1>
+        <p *ngIf="equipement">#{{ equipement.id }} — {{ equipement.nom }}</p>
+      </div>
+    </div>
+    <div class="header-actions" *ngIf="equipement">
+      <button mat-stroked-button color="primary" (click)="goToEdit()"><mat-icon>edit</mat-icon> Modifier</button>
+      <button mat-stroked-button color="warn" (click)="delete()"><mat-icon>delete</mat-icon> Supprimer</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="center-state">
+    <mat-spinner diameter="48"></mat-spinner><p>Chargement...</p>
+  </div>
+
+  <div *ngIf="!isLoading && !hasError && equipement" class="detail-grid">
+    <mat-card class="detail-card">
+      <mat-card-header><mat-card-title>Informations</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="info-row"><span class="label">Nom</span><span class="value">{{ equipement.nom }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">N° Série</span><span class="value">{{ equipement.numeroSerie }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Localisation</span><span class="value">{{ equipement.localisation }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Installation</span><span class="value">{{ equipement.dateInstallation | date:'dd/MM/yyyy' }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">Statut</span>
+          <span class="statut-badge" [ngClass]="getStatutClass(equipement.statut)">{{ equipement.statut }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

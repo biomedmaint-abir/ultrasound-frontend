@@ -1,0 +1,36 @@
+<div class="page-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
+    <h1>{{ isEditMode ? 'Modifier la pièce' : 'Nouvelle pièce' }}</h1>
+  </div>
+  <mat-card class="form-card">
+    <mat-card-content>
+      <div *ngIf="errorMessage" class="error-banner"><mat-icon>error_outline</mat-icon> {{ errorMessage }}</div>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput [(ngModel)]="form.nom" name="nom">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Référence</mat-label>
+          <input matInput [(ngModel)]="form.reference" name="reference">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Quantité en stock</mat-label>
+          <input matInput type="number" [(ngModel)]="form.quantiteStock" name="quantiteStock">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prix unitaire (DH)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.prixUnitaire" name="prixUnitaire">
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="cancel()">Annuler</button>
+      <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaving">
+        <mat-icon *ngIf="!isSaving">save</mat-icon>
+        {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

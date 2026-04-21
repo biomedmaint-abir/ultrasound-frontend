@@ -1,0 +1,40 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <div>
+        <h1>Détail contrat</h1>
+        <p *ngIf="contrat">#{{ contrat.id }} — {{ contrat.reference }}</p>
+      </div>
+    </div>
+    <div class="header-actions" *ngIf="contrat">
+      <button mat-stroked-button color="primary" (click)="goToEdit()"><mat-icon>edit</mat-icon> Modifier</button>
+      <button mat-stroked-button color="warn" (click)="delete()"><mat-icon>delete</mat-icon> Supprimer</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="center-state">
+    <mat-spinner diameter="48"></mat-spinner><p>Chargement...</p>
+  </div>
+
+  <div *ngIf="!isLoading && !hasError && contrat" class="detail-grid">
+    <mat-card class="detail-card">
+      <mat-card-header><mat-card-title>Informations</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="info-row"><span class="label">Référence</span><span class="value">{{ contrat.reference }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Type</span><span class="value">{{ contrat.type }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Statut</span>
+          <span class="statut-badge" [ngClass]="getStatutClass(contrat.statut)">{{ contrat.statut }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Date début</span><span class="value">{{ contrat.dateDebut | date:'dd/MM/yyyy' }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Date fin</span><span class="value">{{ contrat.dateFin | date:'dd/MM/yyyy' }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Montant</span><span class="value">{{ contrat.montant | number:'1.2-2' }} DH</span></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

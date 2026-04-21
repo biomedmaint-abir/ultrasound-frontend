@@ -1,0 +1,41 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <span class="logo">🏥</span>
+      <h2>BiomédMaint</h2>
+      <p>Accédez à votre espace de gestion</p>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <div class="input-wrapper">
+        <span class="input-icon">📧</span>
+        <input type="email" [(ngModel)]="email" placeholder="admin@pfe.com" (keyup.enter)="login()">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <div class="input-wrapper">
+        <span class="input-icon">🔒</span>
+        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="••••••••" (keyup.enter)="login()">
+        <span class="toggle-pass" (click)="showPassword = !showPassword">
+          {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      ⚠️ {{ errorMessage }}
+    </div>
+
+    <button class="login-btn" (click)="login()" [disabled]="loading">
+      <span *ngIf="!loading">Se connecter →</span>
+      <span *ngIf="loading">Connexion en cours...</span>
+    </button>
+
+    <div class="login-footer">
+      <p>BiomédMaint v1.0 — PFE Génie Biomédical 2026</p>
+    </div>
+  </div>
+</div>
