@@ -1,0 +1,79 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>👥 Gestion des Utilisateurs</h1>
+      <p>{{ utilisateurs.length }} utilisateur(s) enregistré(s)</p>
+    </div>
+    <button class="btn-add" (click)="showForm = !showForm">
+      + Nouvel utilisateur
+    </button>
+  </div>
+
+  <div *ngIf="successMessage" class="success-banner">✅ {{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="error-banner">⚠️ {{ errorMessage }}</div>
+
+  <!-- Formulaire -->
+  <div *ngIf="showForm" class="form-card">
+    <h3>Ajouter un utilisateur</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nom *</label>
+        <input [(ngModel)]="form.nom" placeholder="Nom" class="input">
+      </div>
+      <div class="form-group">
+        <label>Prénom</label>
+        <input [(ngModel)]="form.prenom" placeholder="Prénom" class="input">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input [(ngModel)]="form.email" type="email" placeholder="Email" class="input">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe *</label>
+        <input [(ngModel)]="form.motDePasse" type="password" placeholder="Mot de passe" class="input">
+      </div>
+      <div class="form-group">
+        <label>Rôle</label>
+        <select [(ngModel)]="form.role.id" class="input">
+          <option *ngFor="let r of roles" [value]="r.id">{{ r.label }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" (click)="ajouterUtilisateur()">✅ Enregistrer</button>
+      <button class="btn-cancel" (click)="showForm = false">Annuler</button>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-card">
+    <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
+    <table *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nom complet</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of utilisateurs">
+          <td>{{ u.id }}</td>
+          <td>
+            <div class="user-info">
+              <div class="avatar">{{ u.nom?.charAt(0) }}{{ u.prenom?.charAt(0) }}</div>
+              <span>{{ u.nom }} {{ u.prenom }}</span>
+            </div>
+          </td>
+          <td>{{ u.email }}</td>
+          <td><span class="badge" [ngClass]="getRoleClass(u)">{{ getRoleLabel(u) }}</span></td>
+          <td>
+            <button class="btn-delete" (click)="supprimerUtilisateur(u.id)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

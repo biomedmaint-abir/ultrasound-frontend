@@ -1,0 +1,63 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>🕐 Historique des interventions</h1>
+      <p>Traçabilité complète — {{ filtered.length }} intervention(s)</p>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter-bar">
+    <input
+      [(ngModel)]="searchText"
+      (ngModelChange)="applyFilter()"
+      placeholder="🔍 Rechercher par description ou équipement..."
+      class="search-input">
+    <select [(ngModel)]="filterType" (ngModelChange)="applyFilter()" class="select-filter">
+      <option value="">Tous les types</option>
+      <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+    </select>
+    <select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()" class="select-filter">
+      <option value="">Tous les statuts</option>
+      <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+    </select>
+    <button class="btn-reset" (click)="reset()">↺ Réinitialiser</button>
+  </div>
+
+  <!-- Timeline -->
+  <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
+
+  <div class="timeline" *ngIf="!isLoading">
+    <div *ngIf="filtered.length === 0" class="empty-state">
+      <p>Aucune intervention trouvée.</p>
+    </div>
+
+    <div *ngFor="let inv of filtered" class="timeline-item">
+      <div class="timeline-icon" [ngClass]="getTypeClass(inv.type)">
+        {{ getTypeIcon(inv.type) }}
+      </div>
+      <div class="timeline-line"></div>
+      <div class="timeline-card">
+        <div class="card-header">
+          <div class="card-left">
+            <span class="inv-id">#{{ inv.id }}</span>
+            <span class="badge type" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
+            <span class="badge statut" [ngClass]="getStatutClass(inv.statut)">{{ inv.statut }}</span>
+          </div>
+          <div class="card-date">
+            📅 {{ inv.dateIntervention | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="description">{{ inv.descriptionPanne || '—' }}</p>
+          <div class="card-meta">
+            <span *ngIf="inv.equipement">🔬 {{ inv.equipement.nom }}</span>
+            <span *ngIf="inv.technicien">👤 {{ inv.technicien.nom }}</span>
+            <span *ngIf="inv.dureeHeures">⏱️ {{ inv.dureeHeures }}h</span>
+            <span *ngIf="inv.actionsEffectuees">🔧 {{ inv.actionsEffectuees }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

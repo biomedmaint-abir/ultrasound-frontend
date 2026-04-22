@@ -24,6 +24,8 @@ export class LayoutComponent {
     { path: '/planning', icon: '📅', label: 'Planification' },
     { path: '/rapports', icon: '📈', label: 'Rapports' },
     { path: '/optimisation', icon: '💹', label: 'Optimisation' },
+    { path: '/utilisateurs', icon: '👥', label: 'Utilisateurs' },
+    { path: '/historique', icon: '🕐', label: 'Historique' },
     { path: '/assistant-ia', icon: '🤖', label: 'Assistant IA' },
   ];
 

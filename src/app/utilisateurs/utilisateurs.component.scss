@@ -1,0 +1,76 @@
+.page-container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1a237e; }
+  p { margin: 4px 0 0; color: #666; font-size: 14px; }
+}
+
+.btn-add {
+  background: linear-gradient(135deg, #1a237e, #1565c0); color: white;
+  border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px;
+  font-weight: 600; cursor: pointer;
+  &:hover { opacity: 0.9; }
+}
+
+.success-banner { background: #e8f5e9; color: #2e7d32; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+.error-banner { background: #ffebee; color: #c62828; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+
+.form-card {
+  background: white; border-radius: 16px; padding: 24px; margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  h3 { margin: 0 0 20px; color: #1a237e; }
+}
+
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+
+.form-group {
+  label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+}
+
+.input {
+  width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0; border-radius: 8px;
+  font-size: 14px; outline: none; box-sizing: border-box;
+  &:focus { border-color: #1a237e; }
+}
+
+.form-actions { display: flex; gap: 12px; }
+
+.btn-save {
+  background: #1a237e; color: white; border: none; padding: 10px 24px;
+  border-radius: 8px; cursor: pointer; font-weight: 600;
+}
+.btn-cancel {
+  background: #f5f5f5; color: #666; border: none; padding: 10px 24px;
+  border-radius: 8px; cursor: pointer;
+}
+
+.table-card {
+  background: white; border-radius: 16px; padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 12px 16px; font-size: 13px; color: #666; border-bottom: 2px solid #f0f0f0; }
+  td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+}
+
+.user-info { display: flex; align-items: center; gap: 10px; }
+
+.avatar {
+  width: 36px; height: 36px; background: linear-gradient(135deg, #1a237e, #1565c0);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 12px; font-weight: 700;
+}
+
+.badge {
+  padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  &.role-admin { background: #e3f2fd; color: #1565c0; }
+  &.role-ingenieur { background: #e8f5e9; color: #2e7d32; }
+  &.role-technicien { background: #fff3e0; color: #e65100; }
+}
+
+.btn-delete {
+  background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 8px;
+  &:hover { background: #ffebee; border-radius: 6px; }
+}
+
+.center-state { text-align: center; padding: 32px; color: #666; }

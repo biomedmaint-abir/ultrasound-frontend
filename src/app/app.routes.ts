@@ -45,6 +45,14 @@ export const routes: Routes = [
         loadChildren: () => import('./optimisation/optimisation.module').then(m => m.OptimisationModule)
       },
       {
+        path: 'utilisateurs',
+        loadChildren: () => import('./utilisateurs/utilisateurs.module').then(m => m.UtilisateursModule)
+      },
+      {
+        path: 'historique',
+        loadChildren: () => import('./historique/historique.module').then(m => m.HistoriqueModule)
+      },
+      {
         path: 'assistant-ia',
         loadChildren: () => import('./assistant-ia/assistant-ia-module').then(m => m.AssistantIaModule)
       },
