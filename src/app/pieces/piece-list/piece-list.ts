@@ -29,7 +29,7 @@ export class PieceList implements OnInit {
   search = '';
   isLoading = true;
   hasError = false;
-  displayedColumns = ['id', 'nom', 'reference', 'quantiteStock', 'prixUnitaire', 'actions'];
+  displayedColumns = ['id', 'nom', 'reference', 'client', 'prixUnitaire', 'actions'];
 
   constructor(
     private pieceService: PieceService,
@@ -69,11 +69,5 @@ export class PieceList implements OnInit {
     if (confirm('Supprimer cette pièce ?')) {
       this.pieceService.delete(id).subscribe({ next: () => this.load() });
     }
-  }
-
-  getStockClass(qty: number): string {
-    if (qty <= 2) return 'stock-faible';
-    if (qty <= 5) return 'stock-moyen';
-    return 'stock-ok';
   }
 }

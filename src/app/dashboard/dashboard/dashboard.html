@@ -5,9 +5,21 @@
       <h1>Tableau de bord</h1>
       <p>Bienvenue, <strong>{{ email }}</strong> — {{ today | date:'EEEE dd MMMM yyyy' }}</p>
     </div>
+    <div class="parc-filter">
+      <label>🏥 Filtrer par parc :</label>
+      <select [(ngModel)]="selectedParc" (ngModelChange)="filterByParc()" class="parc-select">
+        <option value="">Tous les parcs</option>
+        <option *ngFor="let p of parcs" [value]="p">{{ p }}</option>
+      </select>
+    </div>
   </div>
 
   <ng-container *ngIf="!isLoading">
+
+    <div *ngIf="selectedParc" class="parc-banner">
+      🏥 Tableau de bord filtré pour : <strong>{{ selectedParc }}</strong>
+      <span> — {{ totalEquipements }} équipement(s)</span>
+    </div>
 
     <!-- KPIs -->
     <div class="kpi-grid">
@@ -48,22 +60,6 @@
       </div>
     </div>
 
-    <!-- Graphiques -->
-    <div class="charts-grid">
-      <div class="chart-card">
-        <h3>Répartition des interventions</h3>
-        <canvas id="typeChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>Statut des équipements</h3>
-        <canvas id="equipChart"></canvas>
-      </div>
-      <div class="chart-card wide">
-        <h3>Interventions par mois</h3>
-        <canvas id="monthChart"></canvas>
-      </div>
-    </div>
-
     <!-- Navigation rapide -->
     <div class="section-title">Accès rapide</div>
     <div class="nav-grid">
@@ -96,6 +92,11 @@
         <span class="nav-icon">📈</span>
         <h3>Rapports</h3>
         <p>Export et analyse</p>
+      </div>
+      <div class="nav-card" (click)="navigateTo('/optimisation')">
+        <span class="nav-icon">💹</span>
+        <h3>Optimisation</h3>
+        <p>Analyse économique</p>
       </div>
       <div class="nav-card highlight" (click)="navigateTo('/assistant-ia')">
         <span class="nav-icon">🤖</span>

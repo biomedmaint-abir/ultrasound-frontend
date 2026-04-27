@@ -3,61 +3,98 @@
     <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
     <div>
       <h1>{{ isEditMode ? 'Modifier l\'intervention' : 'Nouvelle intervention' }}</h1>
-      <p>{{ isEditMode ? 'Modifiez les informations' : 'Remplissez le formulaire' }}</p>
+      <p>Remplissez le formulaire</p>
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="center-state">
-    <mat-spinner diameter="48"></mat-spinner><p>Chargement...</p>
-  </div>
-
-  <mat-card *ngIf="!isLoading" class="form-card">
+  <mat-card class="form-card">
     <mat-card-content>
       <div *ngIf="errorMessage" class="error-banner">
         <mat-icon>error_outline</mat-icon> {{ errorMessage }}
       </div>
+
       <div class="form-grid">
         <mat-form-field appearance="outline">
           <mat-label>Date</mat-label>
           <input matInput type="date" [(ngModel)]="form.date" name="date">
         </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Type</mat-label>
           <mat-select [(ngModel)]="form.type" name="type">
             <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
           </mat-select>
         </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Équipement</mat-label>
           <mat-select [(ngModel)]="form.equipementId" name="equipementId">
-            <mat-option [value]="null">— Aucun —</mat-option>
-            <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }}</mat-option>
+            <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }} — {{ e.parc }}</mat-option>
           </mat-select>
         </mat-form-field>
+
         <mat-form-field appearance="outline">
-          <mat-label>Technicien</mat-label>
-          <input matInput [(ngModel)]="form.technicien" name="technicien">
+          <mat-label>FSE</mat-label>
+          <input matInput [(ngModel)]="form.fse" name="fse">
         </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Statut</mat-label>
           <mat-select [(ngModel)]="form.statut" name="statut">
             <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
           </mat-select>
         </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Durée (heures)</mat-label>
           <input matInput type="number" [(ngModel)]="form.duree" name="duree">
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description de la panne</mat-label>
+          <textarea matInput [(ngModel)]="form.description" name="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Actions effectuées</mat-label>
+          <textarea matInput [(ngModel)]="form.observations" name="observations" rows="3"></textarea>
+        </mat-form-field>
       </div>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Description</mat-label>
-        <textarea matInput [(ngModel)]="form.description" name="description" rows="3"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Observations</mat-label>
-        <textarea matInput [(ngModel)]="form.observations" name="observations" rows="3"></textarea>
-      </mat-form-field>
+
+      <!-- Section Pièces utilisées -->
+      <div class="pieces-section">
+        <div class="pieces-header">
+          <h3>🔩 Pièces de rechange utilisées</h3>
+          <button mat-stroked-button color="primary" type="button" (click)="ajouterPiece()">
+            <mat-icon>add</mat-icon> Ajouter une pièce
+          </button>
+        </div>
+
+        <div *ngIf="piecesUtilisees.length === 0" class="empty-pieces">
+          <p>Aucune pièce ajoutée — cliquez sur "Ajouter une pièce"</p>
+        </div>
+
+        <div *ngFor="let p of piecesUtilisees; let i = index" class="piece-row">
+          <mat-form-field appearance="outline" class="piece-select">
+            <mat-label>Pièce</mat-label>
+            <mat-select [(ngModel)]="p.pieceId" (ngModelChange)="onPieceChange(i)" [name]="'piece_' + i">
+              <mat-option *ngFor="let pd of piecesDisponibles" [value]="pd.id">{{ pd.nom }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="piece-quantite">
+            <mat-label>Quantité</mat-label>
+            <input matInput type="number" [(ngModel)]="p.quantite" [name]="'quantite_' + i" min="1">
+          </mat-form-field>
+
+          <button mat-icon-button color="warn" (click)="supprimerPiece(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
     </mat-card-content>
+
     <mat-card-actions>
       <button mat-button (click)="cancel()" [disabled]="isSaving">Annuler</button>
       <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaving">

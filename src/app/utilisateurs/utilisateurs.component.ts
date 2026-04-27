@@ -29,7 +29,7 @@ export class UtilisateursComponent implements OnInit {
   roles = [
     { id: 1, nom: 'ADMIN', label: 'Administrateur' },
     { id: 2, nom: 'INGENIEUR', label: 'Ingénieur' },
-    { id: 3, nom: 'TECHNICIEN', label: 'Technicien' },
+    { id: 3, nom: 'TECHNICIEN', label: 'FSE' },
   ];
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
@@ -48,7 +48,7 @@ export class UtilisateursComponent implements OnInit {
     switch (roleNom) {
       case 'ADMIN': return 'Administrateur';
       case 'INGENIEUR': return 'Ingénieur';
-      case 'TECHNICIEN': return 'Technicien';
+      case 'TECHNICIEN': return 'FSE';
       default: return roleNom || 'Admin';
     }
   }

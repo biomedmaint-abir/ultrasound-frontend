@@ -5,9 +5,32 @@
 }
 
 .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
+
   h1 { font-size: 28px; font-weight: 700; color: #1a237e; margin: 0; }
   p { margin: 4px 0 0; color: #666; font-size: 14px; }
+}
+
+.parc-filter {
+  display: flex; align-items: center; gap: 12px;
+  label { font-size: 14px; font-weight: 600; color: #1a237e; }
+}
+
+.parc-select {
+  padding: 10px 16px; border: 2px solid #1a237e; border-radius: 10px;
+  font-size: 14px; color: #1a237e; font-weight: 600; outline: none; cursor: pointer;
+  background: white;
+  &:focus { box-shadow: 0 0 0 3px rgba(26,35,126,0.1); }
+}
+
+.parc-banner {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-left: 4px solid #1a237e; border-radius: 10px;
+  padding: 12px 20px; margin-bottom: 20px;
+  font-size: 14px; color: #1a237e;
 }
 
 .kpi-grid {
@@ -63,6 +86,8 @@
   }
 
   canvas { max-height: 220px; }
+
+  &.wide { grid-column: span 1; }
 }
 
 .section-title {

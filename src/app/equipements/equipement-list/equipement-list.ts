@@ -29,7 +29,7 @@ export class EquipementList implements OnInit {
   search = '';
   isLoading = true;
   hasError = false;
-  displayedColumns = ['id', 'nom', 'numeroSerie', 'localisation', 'dateInstallation', 'statut', 'actions'];
+  displayedColumns = ['id', 'nom', 'numeroSerie', 'numInventaire', 'service', 'parc', 'dateInstallation', 'statut', 'actions'];
 
   constructor(
     private equipementService: EquipementService,

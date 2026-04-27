@@ -5,7 +5,6 @@
       <h1>{{ isEditMode ? 'Modifier l\'équipement' : 'Nouvel équipement' }}</h1>
     </div>
   </div>
-
   <mat-card class="form-card">
     <mat-card-content>
       <div *ngIf="errorMessage" class="error-banner">
@@ -13,7 +12,7 @@
       </div>
       <div class="form-grid">
         <mat-form-field appearance="outline">
-          <mat-label>Nom</mat-label>
+          <mat-label>Modèle</mat-label>
           <input matInput [(ngModel)]="form.nom" name="nom">
         </mat-form-field>
         <mat-form-field appearance="outline">
@@ -21,8 +20,16 @@
           <input matInput [(ngModel)]="form.numeroSerie" name="numeroSerie">
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Localisation</mat-label>
-          <input matInput [(ngModel)]="form.localisation" name="localisation">
+          <mat-label>N° Inventaire</mat-label>
+          <input matInput [(ngModel)]="form.numInventaire" name="numInventaire">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Service</mat-label>
+          <input matInput [(ngModel)]="form.service" name="service">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Parc</mat-label>
+          <input matInput [(ngModel)]="form.parc" name="parc">
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Date d'installation</mat-label>

@@ -38,16 +38,24 @@
         <td mat-cell *matCellDef="let row">{{ row.id }}</td>
       </ng-container>
       <ng-container matColumnDef="nom">
-        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <th mat-header-cell *matHeaderCellDef>modele</th>
         <td mat-cell *matCellDef="let row">{{ row.nom }}</td>
       </ng-container>
       <ng-container matColumnDef="numeroSerie">
         <th mat-header-cell *matHeaderCellDef>N° Série</th>
         <td mat-cell *matCellDef="let row">{{ row.numeroSerie }}</td>
       </ng-container>
-      <ng-container matColumnDef="localisation">
-        <th mat-header-cell *matHeaderCellDef>Localisation</th>
-        <td mat-cell *matCellDef="let row">{{ row.localisation }}</td>
+      <ng-container matColumnDef="numInventaire">
+        <th mat-header-cell *matHeaderCellDef>N° Inventaire</th>
+        <td mat-cell *matCellDef="let row">{{ row.numInventaire || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="service">
+        <th mat-header-cell *matHeaderCellDef>Service</th>
+        <td mat-cell *matCellDef="let row">{{ row.service || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="parc">
+        <th mat-header-cell *matHeaderCellDef>Parc</th>
+        <td mat-cell *matCellDef="let row">{{ row.parc || '—' }}</td>
       </ng-container>
       <ng-container matColumnDef="dateInstallation">
         <th mat-header-cell *matHeaderCellDef>Installation</th>

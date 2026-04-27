@@ -29,7 +29,7 @@ export class InterventionList implements OnInit {
   search = '';
   isLoading = true;
   hasError = false;
-  displayedColumns = ['id', 'date', 'type', 'equipement', 'technicien', 'statut', 'actions'];
+  displayedColumns = ['id', 'date', 'type', 'equipement', 'FSE', 'statut', 'actions'];
 
   constructor(
     private interventionService: InterventionService,

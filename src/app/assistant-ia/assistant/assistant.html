@@ -15,7 +15,7 @@
         <span class="stat-label">Codes erreur</span>
       </div>
       <div class="stat">
-        <span class="stat-num">27</span>
+        <span class="stat-num">57</span>
         <span class="stat-label">Équipements</span>
       </div>
     </div>
@@ -29,7 +29,8 @@
       <div class="avatar">🤖</div>
       <div class="bubble">
         <p>Bonjour ! Je suis l'assistant IA de <strong>BiomédMaint</strong>. Je peux diagnostiquer les pannes des équipements Philips.</p>
-        <p>Entrez un <strong>code erreur</strong> (ex: ERR-001) ou décrivez un <strong>symptôme</strong> en langage naturel (ex: "écran noir au démarrage").</p>
+        <p>Entrez un <strong>code erreur</strong> (ex: ERR-001) ou décrivez un <strong>symptôme</strong> en langage naturel.</p>
+        <p>📷 Vous pouvez aussi <strong>importer une image</strong> d'un document Philips pour extraction automatique !</p>
         <div class="quick-actions">
           <button *ngFor="let code of allCodes.slice(0,4)"
                   (click)="searchCode = code.code; search()"
@@ -47,7 +48,7 @@
         <div class="bubble">
           <p [innerHTML]="msg.text"></p>
 
-          <!-- Résultat simple (par code exact) -->
+          <!-- Résultat simple -->
           <div *ngIf="msg.result" class="result-card">
             <div class="confidence-bar" *ngIf="msg.confidence">
               <span>Confiance</span>
@@ -74,7 +75,7 @@
             </div>
           </div>
 
-          <!-- Résultats multiples (par symptôme) -->
+          <!-- Résultats multiples -->
           <div *ngIf="msg.results && msg.results.length > 0" class="multi-results">
             <div *ngFor="let r of msg.results; let i = index"
                  class="result-card"
@@ -133,10 +134,11 @@
     </div>
 
     <!-- Typing indicator -->
-    <div *ngIf="isLoading" class="message bot-message">
+    <div *ngIf="isLoading || isAnalyzingImage" class="message bot-message">
       <div class="avatar">🤖</div>
       <div class="bubble typing">
         <span></span><span></span><span></span>
+        <small *ngIf="isAnalyzingImage" style="margin-left:8px">Analyse de l'image...</small>
       </div>
     </div>
 
@@ -144,14 +146,22 @@
 
   <!-- Input -->
   <div class="chat-input">
+    <!-- Input caché pour l'image -->
+    <input #fileInput type="file" accept="image/*,.pdf" style="display:none"
+           (change)="onImageSelected($event)">
+
     <div class="input-row">
+      <!-- Bouton import image -->
+      <button (click)="fileInput.click()" class="image-btn" title="Importer une image ou document Philips">
+        📷
+      </button>
       <input
         [(ngModel)]="searchCode"
         (keyup.enter)="search()"
         placeholder="Code erreur (ERR-001) ou symptôme (écran noir)..."
         class="message-input"
-        [disabled]="isLoading">
-      <button (click)="search()" [disabled]="isLoading" class="send-btn">➤</button>
+        [disabled]="isLoading || isAnalyzingImage">
+      <button (click)="search()" [disabled]="isLoading || isAnalyzingImage" class="send-btn">➤</button>
     </div>
     <div class="suggestions">
       <span>Suggestions : </span>

@@ -33,7 +33,9 @@ export class EquipementForm implements OnInit {
   form = {
     nom: '',
     numeroSerie: '',
-    localisation: '',
+    numInventaire: '',
+    service: '',
+    parc: '',
     dateInstallation: '',
     statut: ''
   };
@@ -58,7 +60,9 @@ export class EquipementForm implements OnInit {
           this.form = {
             nom: data.nom || '',
             numeroSerie: data.numeroSerie || '',
-            localisation: data.localisation || '',
+            numInventaire: data.numInventaire || '',
+            service: data.service || '',
+            parc: data.parc || '',
             dateInstallation: data.dateInstallation?.substring(0, 10) || '',
             statut: data.statut || ''
           };

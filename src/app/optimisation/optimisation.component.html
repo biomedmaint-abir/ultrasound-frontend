@@ -2,57 +2,74 @@
   <div class="page-header">
     <div>
       <h1>📊 Optimisation technico-économique</h1>
-      <p>Analyse des performances et de la rentabilité du parc d'équipements</p>
+      <p>Analyse des pièces de rechange utilisées par parc</p>
     </div>
   </div>
 
-  <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="kpi-card blue">
-      <div class="kpi-icon">💰</div>
-      <div class="kpi-info">
-        <h2>{{ stats.coutTotal | number:'1.0-0' }} DH</h2>
-        <p>Coût total maintenance</p>
+  <!-- Section Pièces par Parc -->
+  <div class="section-header">
+    <div class="section-title">🔩 % Pièces utilisées par parc</div>
+    <div class="filters-row">
+      <div class="annee-filter">
+        <label>Année :</label>
+        <select [(ngModel)]="anneeSelectionnee" (ngModelChange)="loadPiecesParParc()" class="annee-select">
+          <option *ngFor="let a of annees" [value]="a">{{ a }}</option>
+        </select>
       </div>
-    </div>
-    <div class="kpi-card orange">
-      <div class="kpi-icon">📉</div>
-      <div class="kpi-info">
-        <h2>{{ stats.coutMoyen | number:'1.0-0' }} DH</h2>
-        <p>Coût moyen/intervention</p>
-      </div>
-    </div>
-    <div class="kpi-card green">
-      <div class="kpi-icon">✅</div>
-      <div class="kpi-info">
-        <h2>{{ stats.tauxDisponibilite }}%</h2>
-        <p>Taux de disponibilité</p>
-      </div>
-    </div>
-    <div class="kpi-card purple">
-      <div class="kpi-icon">⏱️</div>
-      <div class="kpi-info">
-        <h2>{{ stats.mttrMoyen | number:'1.0-1' }}h</h2>
-        <p>MTTR moyen</p>
-      </div>
-    </div>
-    <div class="kpi-card red">
-      <div class="kpi-icon">🔴</div>
-      <div class="kpi-info">
-        <h2>{{ stats.equipementsEnPanne }}</h2>
-        <p>Équipements en panne</p>
-      </div>
-    </div>
-    <div class="kpi-card teal">
-      <div class="kpi-icon">🔧</div>
-      <div class="kpi-info">
-        <h2>{{ stats.interventionsTerminees }}</h2>
-        <p>Interventions terminées</p>
+      <div class="annee-filter">
+        <label>Parc :</label>
+        <select [(ngModel)]="parcSelectionne" (ngModelChange)="filterParc()" class="annee-select">
+          <option value="">Tous les parcs</option>
+          <option *ngFor="let p of parcsList" [value]="p">{{ p }}</option>
+        </select>
       </div>
     </div>
   </div>
 
-  <!-- Graphiques -->
+  <!-- Graphique global -->
+  <div class="chart-card wide" style="margin-bottom: 24px;">
+    <h3>📊 Répartition des pièces — {{ parcSelectionne || 'Tous les parcs' }} — {{ anneeSelectionnee }}</h3>
+    <canvas id="piecesChart"></canvas>
+  </div>
+
+  <!-- Tableaux par parc -->
+  <div class="pieces-section">
+    <div *ngFor="let parc of parcsAffiches" class="parc-pieces-card">
+      <div class="parc-header">
+        <span class="parc-icon">🏥</span>
+        <h3>{{ parc }}</h3>
+      </div>
+      <table class="pieces-table">
+        <thead>
+          <tr>
+            <th>Pièce</th>
+            <th>Quantité</th>
+            <th>Coût total</th>
+            <th>% utilisation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of getPiecesForParc(parc)">
+            <td>{{ p.piece }}</td>
+            <td>{{ p.quantiteTotale }}</td>
+            <td>{{ p.coutTotal | number:'1.0-0' }} DH</td>
+            <td>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="p.pourcentage"></div>
+                <span>{{ p.pourcentage }}%</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="parcsList.length === 0" class="empty-state">
+      <p>Aucune donnée pour l'année {{ anneeSelectionnee }}</p>
+    </div>
+  </div>
+
+  <!-- Graphiques analytiques -->
+  <div class="section-title">📈 Analyses des interventions</div>
   <div class="charts-grid">
     <div class="chart-card">
       <h3>🔧 Pannes par type</h3>
@@ -94,5 +111,4 @@
       </div>
     </div>
   </div>
-
 </div>
