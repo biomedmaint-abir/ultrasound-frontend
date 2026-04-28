@@ -29,7 +29,10 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Parc</mat-label>
-          <input matInput [(ngModel)]="form.parc" name="parc">
+          <mat-select [(ngModel)]="form.parc" name="parc">
+            <mat-option value="">-- Sélectionner un parc --</mat-option>
+            <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Date d'installation</mat-label>

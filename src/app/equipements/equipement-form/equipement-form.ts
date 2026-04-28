@@ -9,7 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClient } from '@angular/common/http';
 import { EquipementService } from '../../services/equipement';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-equipement-form',
@@ -29,6 +31,7 @@ export class EquipementForm implements OnInit {
   isLoading = false;
   isSaving = false;
   errorMessage = '';
+  parcs: string[] = [];
 
   form = {
     nom: '',
@@ -44,12 +47,21 @@ export class EquipementForm implements OnInit {
 
   constructor(
     private equipementService: EquipementService,
+    private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    // Charger les parcs existants
+    this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
+      next: (data) => {
+        this.parcs = [...new Set(data.map((e: any) => e.parc).filter((p: any) => p))];
+        this.cdr.detectChanges();
+      }
+    });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEditMode = true;

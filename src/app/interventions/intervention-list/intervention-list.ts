@@ -49,7 +49,7 @@ export class InterventionList implements OnInit {
           id: i.id,
           date: i.dateIntervention,
           type: i.type,
-          technicien: i.technicien?.nom || i.technicien?.prenom || '-',
+          technicien: i.nomFse || '-',
           statut: i.statut,
           description: i.descriptionPanne,
           observations: i.actionsEffectuees,
