@@ -21,11 +21,15 @@
     <mat-card class="detail-card">
       <mat-card-header><mat-card-title>Informations</mat-card-title></mat-card-header>
       <mat-card-content>
-        <div class="info-row"><span class="label">Nom</span><span class="value">{{ equipement.nom }}</span></div>
+        <div class="info-row"><span class="label">Modèle</span><span class="value">{{ equipement.nom }}</span></div>
         <mat-divider></mat-divider>
         <div class="info-row"><span class="label">N° Série</span><span class="value">{{ equipement.numeroSerie }}</span></div>
         <mat-divider></mat-divider>
-        <div class="info-row"><span class="label">Localisation</span><span class="value">{{ equipement.localisation }}</span></div>
+        <div class="info-row"><span class="label">N° Inventaire</span><span class="value">{{ equipement.numInventaire || '—' }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Service</span><span class="value">{{ equipement.service || '—' }}</span></div>
+        <mat-divider></mat-divider>
+        <div class="info-row"><span class="label">Parc</span><span class="value">{{ equipement.parc || '—' }}</span></div>
         <mat-divider></mat-divider>
         <div class="info-row"><span class="label">Installation</span><span class="value">{{ equipement.dateInstallation | date:'dd/MM/yyyy' }}</span></div>
         <mat-divider></mat-divider>

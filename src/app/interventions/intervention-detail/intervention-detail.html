@@ -4,7 +4,7 @@
       <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
       <div>
         <h1>Détail de l'intervention</h1>
-        <p *ngIf="intervention">#{{ intervention.id }} — {{ intervention.date | date:'dd/MM/yyyy' }}</p>
+        <p *ngIf="intervention">#{{ intervention.id }} — {{ intervention.dateIntervention | date:'dd/MM/yyyy' }}</p>
       </div>
     </div>
     <div class="header-actions" *ngIf="intervention">
@@ -30,9 +30,7 @@
   <div *ngIf="!isLoading && !hasError && intervention" class="detail-grid">
 
     <mat-card class="detail-card">
-      <mat-card-header>
-        <mat-card-title>Informations générales</mat-card-title>
-      </mat-card-header>
+      <mat-card-header><mat-card-title>Informations générales</mat-card-title></mat-card-header>
       <mat-card-content>
         <div class="info-row">
           <span class="label">Statut</span>
@@ -46,20 +44,23 @@
         <mat-divider></mat-divider>
         <div class="info-row">
           <span class="label">Date</span>
-          <span class="value">{{ intervention.date | date:'dd/MM/yyyy' }}</span>
+          <span class="value">{{ intervention.dateIntervention | date:'dd/MM/yyyy' }}</span>
         </div>
         <mat-divider></mat-divider>
         <div class="info-row">
           <span class="label">Durée</span>
-          <span class="value">{{ intervention.duree ? intervention.duree + 'h' : '—' }}</span>
+          <span class="value">{{ intervention.dureeHeures ? intervention.dureeHeures + 'h' : '—' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">Coût total</span>
+          <span class="value">{{ intervention.coutTotal ? (intervention.coutTotal | number:'1.0-0') + ' DH' : '—' }}</span>
         </div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="detail-card">
-      <mat-card-header>
-        <mat-card-title>Équipement & Technicien</mat-card-title>
-      </mat-card-header>
+      <mat-card-header><mat-card-title>Équipement & FSE</mat-card-title></mat-card-header>
       <mat-card-content>
         <div class="info-row">
           <span class="label">Équipement</span>
@@ -67,32 +68,63 @@
         </div>
         <mat-divider></mat-divider>
         <div class="info-row">
-          <span class="label">Modèle</span>
-          <span class="value">{{ intervention.equipement?.modele || '—' }}</span>
+          <span class="label">Parc</span>
+          <span class="value">{{ intervention.equipement?.parc || '—' }}</span>
         </div>
         <mat-divider></mat-divider>
         <div class="info-row">
-          <span class="label">Technicien</span>
-          <span class="value">{{ intervention.technicien || '—' }}</span>
+          <span class="label">Service</span>
+          <span class="value">{{ intervention.equipement?.service || '—' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="info-row">
+          <span class="label">FSE</span>
+          <span class="value">{{ intervention.technicien?.nom || '—' }}</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="detail-card full-width">
-      <mat-card-header>
-        <mat-card-title>Description</mat-card-title>
-      </mat-card-header>
+    <mat-card class="detail-card full-width" *ngIf="intervention.descriptionPanne">
+      <mat-card-header><mat-card-title>Description de la panne</mat-card-title></mat-card-header>
       <mat-card-content>
-        <p class="text-content">{{ intervention.description || 'Aucune description.' }}</p>
+        <p class="text-content">{{ intervention.descriptionPanne }}</p>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="detail-card full-width" *ngIf="intervention.observations">
-      <mat-card-header>
-        <mat-card-title>Observations</mat-card-title>
-      </mat-card-header>
+    <mat-card class="detail-card full-width" *ngIf="intervention.actionsEffectuees">
+      <mat-card-header><mat-card-title>Actions effectuées</mat-card-title></mat-card-header>
       <mat-card-content>
-        <p class="text-content">{{ intervention.observations }}</p>
+        <p class="text-content">{{ intervention.actionsEffectuees }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Pièces utilisées -->
+    <mat-card class="detail-card full-width">
+      <mat-card-header><mat-card-title>🔩 Pièces de rechange utilisées</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div *ngIf="pieces.length === 0" class="empty-pieces">
+          <p>Aucune pièce enregistrée pour cette intervention.</p>
+        </div>
+        <table *ngIf="pieces.length > 0" class="pieces-table">
+          <thead>
+            <tr>
+              <th>Pièce</th>
+              <th>Référence</th>
+              <th>Quantité</th>
+              <th>Coût unitaire</th>
+              <th>Coût total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of pieces">
+              <td>{{ p.piece?.nom || '—' }}</td>
+              <td>{{ p.piece?.reference || '—' }}</td>
+              <td>{{ p.quantite }}</td>
+              <td>{{ p.coutUnitaire | number:'1.0-0' }} DH</td>
+              <td>{{ (p.quantite * p.coutUnitaire) | number:'1.0-0' }} DH</td>
+            </tr>
+          </tbody>
+        </table>
       </mat-card-content>
     </mat-card>
 

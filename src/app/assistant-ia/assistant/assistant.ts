@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AssistantService } from '../../services/assistant';
+import { environment } from '../../../environments/environment';
 
 interface Message {
   type: 'user' | 'bot';
@@ -29,6 +30,7 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
   searchCode = '';
   messages: Message[] = [];
   allCodes: any[] = [];
+  documentsPhilips: any[] = [];
   isLoading = false;
   isAnalyzingImage = false;
   newKnowledge: any = null;
@@ -52,17 +54,13 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.assistantService.getAll().subscribe({
-      next: (data: any[]) => {
-        this.allCodes = data;
-        this.cdr.detectChanges();
-      },
+      next: (data: any[]) => { this.allCodes = data; this.cdr.detectChanges(); },
       error: () => {}
     });
+    this.loadDocumentsPhilips();
   }
 
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
-  }
+  ngAfterViewChecked(): void { this.scrollToBottom(); }
 
   scrollToBottom(): void {
     try {
@@ -72,7 +70,43 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
     } catch (e) {}
   }
 
-  // ✅ Import image
+  loadDocumentsPhilips(): void {
+    this.http.get<any[]>(`${environment.apiUrl}/documents-philips`).subscribe({
+      next: (data) => { this.documentsPhilips = data; this.cdr.detectChanges(); },
+      error: () => {}
+    });
+  }
+
+  sauvegarderDocument(data: any): void {
+    const payload = {
+      titre: `Document Philips — ${data.code || 'Sans code'}`,
+      contenu: `Symptômes: ${data.symptomes || ''} | Causes: ${data.causesProbables || ''} | Actions: ${data.actionsCorrectives || ''} | Pièces: ${data.piecesConcernees || ''}`,
+      modeleEquipement: '',
+      codeErreur: data.code || ''
+    };
+    this.http.post(`${environment.apiUrl}/documents-philips`, payload).subscribe({
+      next: () => {
+        this.loadDocumentsPhilips();
+        this.messages.push({
+          type: 'bot',
+          text: `📚 <strong>Document sauvegardé dans la base documentaire !</strong> Il sera utilisé pour améliorer les diagnostics futurs.`,
+          time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+        });
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  rechercherDansDocuments(query: string): any[] {
+    const q = query.toLowerCase();
+    return this.documentsPhilips.filter(doc =>
+      doc.contenu?.toLowerCase().includes(q) ||
+      doc.codeErreur?.toLowerCase().includes(q) ||
+      doc.titre?.toLowerCase().includes(q)
+    ).slice(0, 3);
+  }
+
   onImageSelected(event: any): void {
     const file = event.target.files[0];
     if (!file) return;
@@ -98,10 +132,7 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
         messages: [{
           role: 'user',
           content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: mediaType, data: base64 }
-            },
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
             {
               type: 'text',
               text: `Tu es un expert en maintenance des équipements d'échographie Philips. 
@@ -130,6 +161,9 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
             const clean = text.replace(/```json|```/g, '').trim();
             const data = JSON.parse(clean);
             if (data) {
+              // Sauvegarder automatiquement dans la base documentaire
+              this.sauvegarderDocument(data);
+
               this.messages.push({
                 type: 'bot',
                 text: `🔍 <strong>Analyse de l'image terminée !</strong><br><br>
@@ -138,10 +172,9 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
                   🧠 <strong>Causes :</strong> ${data.causesProbables || '—'}<br>
                   🔧 <strong>Actions :</strong> ${data.actionsCorrectives || '—'}<br>
                   🔩 <strong>Pièces :</strong> ${data.piecesConcernees || '—'}<br><br>
-                  💡 <em>Voulez-vous ajouter ces informations à la base de connaissances ?</em>`,
+                  💡 <em>Voulez-vous aussi ajouter ce cas à la base de codes erreur ?</em>`,
                 time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
               });
-              // Pré-remplir le formulaire d'apprentissage
               this.learnForm = {
                 code: data.code || `ERR-${String(this.allCodes.length + 1).padStart(3, '0')}`,
                 symptomes: data.symptomes || '',
@@ -154,7 +187,7 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
             } else {
               this.messages.push({
                 type: 'bot',
-                text: '❌ Aucune information pertinente détectée dans l\'image. Essayez avec un document de code d\'erreur Philips.',
+                text: '❌ Aucune information pertinente détectée. Essayez avec un document de code d\'erreur Philips.',
                 time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
               });
             }
@@ -213,7 +246,17 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
             });
           });
         } else {
-          this.handleNotFound(code, time);
+          // Chercher dans les documents Philips
+          const docsResults = this.rechercherDansDocuments(code);
+          if (docsResults.length > 0) {
+            this.messages.push({
+              type: 'bot',
+              text: `📚 <strong>Trouvé dans la base documentaire Philips !</strong><br><br>${docsResults.map(d => `📄 ${d.titre}<br>${d.contenu}`).join('<br><br>')}`,
+              time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+            });
+          } else {
+            this.handleNotFound(code, time);
+          }
         }
         this.cdr.detectChanges();
       },
@@ -225,6 +268,8 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
     setTimeout(() => {
       this.isLoading = false;
       const queryLower = query.toLowerCase();
+
+      // 1. Chercher dans les codes erreur
       const scored = this.allCodes.map((code: any) => {
         let score = 0;
         const words = queryLower.split(' ').filter(w => w.length > 2);
@@ -239,16 +284,30 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
         .sort((a: any, b: any) => b.score - a.score)
         .slice(0, 3);
 
+      // 2. Chercher dans les documents Philips
+      const docsResults = this.rechercherDansDocuments(query);
+
       if (scored.length > 0) {
         this.messages.push({
           type: 'bot',
-          text: `🧠 Analyse IA terminée — <strong>${scored.length} correspondance(s)</strong> trouvée(s) pour "<em>${query}</em>"`,
+          text: `🧠 Analyse IA — <strong>${scored.length} correspondance(s)</strong> trouvée(s) pour "<em>${query}</em>"`,
           time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
           results: scored
         });
-      } else {
+      }
+
+      if (docsResults.length > 0) {
+        this.messages.push({
+          type: 'bot',
+          text: `📚 <strong>Trouvé dans ${docsResults.length} document(s) Philips :</strong><br><br>${docsResults.map(d => `📄 <strong>${d.titre}</strong><br><small>${d.contenu?.substring(0, 200)}...</small>`).join('<br><br>')}`,
+          time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+        });
+      }
+
+      if (scored.length === 0 && docsResults.length === 0) {
         this.handleNotFound(query, time);
       }
+
       this.cdr.detectChanges();
     }, 1500);
   }

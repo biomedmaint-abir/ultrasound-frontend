@@ -6,7 +6,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClient } from '@angular/common/http';
 import { InterventionService } from '../../services/intervention';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-intervention-detail',
@@ -21,11 +23,13 @@ import { InterventionService } from '../../services/intervention';
 })
 export class InterventionDetail implements OnInit {
   intervention: any = null;
+  pieces: any[] = [];
   isLoading = true;
   hasError = false;
 
   constructor(
     private interventionService: InterventionService,
+    private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef
@@ -40,25 +44,26 @@ export class InterventionDetail implements OnInit {
     this.isLoading = true;
     this.interventionService.getById(id).subscribe({
       next: (data) => {
-        this.intervention = {
-          id: data.id,
-          date: data.dateIntervention,
-          type: data.type,
-          technicien: data.technicien?.nom || data.technicien?.prenom || '—',
-          statut: data.statut,
-          description: data.descriptionPanne,
-          observations: data.actionsEffectuees,
-          duree: data.dureeHeures,
-          equipement: data.equipement
-        };
+        this.intervention = data;
         this.isLoading = false;
         this.cdr.detectChanges();
+        this.loadPieces(id);
       },
       error: () => {
         this.hasError = true;
         this.isLoading = false;
         this.cdr.detectChanges();
       }
+    });
+  }
+
+  loadPieces(interventionId: number): void {
+    this.http.get<any[]>(`${environment.apiUrl}/intervention-pieces`).subscribe({
+      next: (data) => {
+        this.pieces = data.filter(p => p.intervention?.id === interventionId);
+        this.cdr.detectChanges();
+      },
+      error: () => {}
     });
   }
 

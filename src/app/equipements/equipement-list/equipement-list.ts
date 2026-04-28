@@ -49,7 +49,9 @@ export class EquipementList implements OnInit {
           id: e.id,
           nom: e.nom,
           numeroSerie: e.numeroSerie,
-          localisation: e.localisation,
+          numInventaire: e.numInventaire,
+          service: e.service,
+          parc: e.parc,
           dateInstallation: e.dateInstallation,
           statut: e.statut,
           modele: e.modele,
@@ -58,7 +60,7 @@ export class EquipementList implements OnInit {
         this.filtered = [...this.equipements];
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: () => {
         this.hasError = true;
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -71,7 +73,8 @@ export class EquipementList implements OnInit {
     this.filtered = this.equipements.filter(e =>
       (e.nom?.toLowerCase().includes(q)) ||
       (e.numeroSerie?.toLowerCase().includes(q)) ||
-      (e.localisation?.toLowerCase().includes(q)) ||
+      (e.service?.toLowerCase().includes(q)) ||
+      (e.parc?.toLowerCase().includes(q)) ||
       (e.statut?.toLowerCase().includes(q))
     );
   }
