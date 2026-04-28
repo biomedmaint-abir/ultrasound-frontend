@@ -103,8 +103,8 @@
           <td mat-cell *matCellDef="let row">{{ row.equipement?.nom || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="technicien">
-          <th mat-header-cell *matHeaderCellDef>Technicien</th>
-          <td mat-cell *matCellDef="let row">{{ row.technicien?.nom || '—' }}</td>
+          <th mat-header-cell *matHeaderCellDef>FSE</th>
+          <td mat-cell *matCellDef="let row">{{ row.nomFse || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="duree">
           <th mat-header-cell *matHeaderCellDef>Durée</th>
