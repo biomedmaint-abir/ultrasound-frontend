@@ -8,7 +8,7 @@
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -35,7 +35,6 @@
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
   margin-bottom: 24px;
-
   .wide { grid-column: span 3; }
 }
 
@@ -44,6 +43,7 @@
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   h3 { margin: 0 0 16px; font-size: 15px; font-weight: 600; color: #1a237e; }
   canvas { max-height: 220px; }
+  &.wide { grid-column: span 3; }
 }
 
 .section-title {
@@ -55,6 +55,8 @@
   display: flex; justify-content: space-between; align-items: center;
   margin: 32px 0 16px;
 }
+
+.filters-row { display: flex; gap: 16px; align-items: center; }
 
 .annee-filter {
   display: flex; align-items: center; gap: 10px;
@@ -126,6 +128,7 @@
     span:first-child { color: #666; }
     span:last-child { font-weight: 600; color: #333; }
   }
+  .roi-row span:last-child { color: #2e7d32; font-size: 16px; }
 }
 
 .empty-state { text-align: center; padding: 32px; color: #999; }

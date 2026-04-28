@@ -6,6 +6,52 @@
     </div>
   </div>
 
+  <!-- KPIs ROI -->
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-info">
+        <h2>{{ stats.coutTotal | number:'1.0-0' }} DH</h2>
+        <p>Coût total maintenance</p>
+      </div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-icon">📉</div>
+      <div class="kpi-info">
+        <h2>{{ stats.coutMoyen | number:'1.0-0' }} DH</h2>
+        <p>Coût moyen/intervention</p>
+      </div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-info">
+        <h2>{{ stats.roi }}%</h2>
+        <p>ROI maintenance</p>
+      </div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">💹</div>
+      <div class="kpi-info">
+        <h2>{{ stats.rentabilite }}%</h2>
+        <p>Rentabilité contrats</p>
+      </div>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-info">
+        <h2>{{ stats.tauxDisponibilite }}%</h2>
+        <p>Taux de disponibilité</p>
+      </div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-icon">⏱️</div>
+      <div class="kpi-info">
+        <h2>{{ stats.mttrMoyen | number:'1.0-1' }}h</h2>
+        <p>MTTR moyen</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Section Pièces par Parc -->
   <div class="section-header">
     <div class="section-title">🔩 % Pièces utilisées par parc</div>
@@ -105,8 +151,15 @@
           <span>Montant</span><span>{{ c.montant | number:'1.0-0' }} DH</span>
         </div>
         <div class="info-row">
+          <span>Parc</span><span>{{ c.parc || '—' }}</span>
+        </div>
+        <div class="info-row">
           <span>Période</span>
           <span>{{ c.dateDebut | date:'MM/yyyy' }} → {{ c.dateFin | date:'MM/yyyy' }}</span>
+        </div>
+        <div class="info-row roi-row">
+          <span>ROI</span>
+          <span class="roi-value">{{ getContratRentabilite(c) }}%</span>
         </div>
       </div>
     </div>

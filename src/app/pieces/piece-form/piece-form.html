@@ -16,8 +16,11 @@
           <input matInput [(ngModel)]="form.reference" name="reference">
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Quantité en stock</mat-label>
-          <input matInput type="number" [(ngModel)]="form.quantiteStock" name="quantiteStock">
+          <mat-label>Client (Parc)</mat-label>
+          <mat-select [(ngModel)]="form.client" name="client">
+            <mat-option value="">-- Sélectionner un parc --</mat-option>
+            <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Prix unitaire (DH)</mat-label>

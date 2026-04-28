@@ -33,7 +33,9 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     mttrMoyen: 0,
     tauxDisponibilite: 0,
     interventionsTerminees: 0,
-    equipementsEnPanne: 0
+    equipementsEnPanne: 0,
+    roi: 0,
+    rentabilite: 0
   };
 
   piecesChart: any;
@@ -43,10 +45,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
-    this.loadData();
-  }
-
+  ngOnInit(): void { this.loadData(); }
   ngAfterViewInit(): void {}
 
   loadData(): void {
@@ -73,6 +72,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.contrats = data;
         this.isLoading = false;
+        this.calculateROI();
         this.cdr.detectChanges();
       }
     });
@@ -80,11 +80,33 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     this.loadPiecesParParc();
   }
 
+  calculateStats(): void {
+    const couts = this.interventions.filter(i => i.coutTotal).map(i => Number(i.coutTotal));
+    this.stats.coutTotal = couts.reduce((a, b) => a + b, 0);
+    this.stats.coutMoyen = couts.length > 0 ? this.stats.coutTotal / couts.length : 0;
+
+    const durees = this.interventions.filter(i => i.dureeHeures).map(i => i.dureeHeures);
+    this.stats.mttrMoyen = durees.length > 0 ? durees.reduce((a, b) => a + b, 0) / durees.length : 0;
+
+    this.stats.interventionsTerminees = this.interventions.filter(i => i.statut === 'TERMINEE').length;
+  }
+
+  calculateROI(): void {
+    const montantTotal = this.contrats
+      .filter(c => c.statut === 'ACTIF' && c.montant)
+      .reduce((a, b) => a + Number(b.montant), 0);
+
+    if (this.stats.coutTotal > 0 && montantTotal > 0) {
+      this.stats.roi = Math.round(((montantTotal - this.stats.coutTotal) / this.stats.coutTotal) * 100);
+      this.stats.rentabilite = Math.round(((montantTotal - this.stats.coutTotal) / montantTotal) * 100);
+    }
+    this.cdr.detectChanges();
+  }
+
   loadPiecesParParc(): void {
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
       next: (equips) => {
         const parcsEquip = [...new Set(equips.map((e: any) => e.parc).filter((p: any) => p))] as string[];
-
         this.http.get<any[]>(`${environment.apiUrl}/statistiques/pieces-par-parc?annee=${this.anneeSelectionnee}`).subscribe({
           next: (data) => {
             this.piecesParParc = data;
@@ -114,15 +136,10 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     return this.piecesParParc.filter(p => p.parc === parc);
   }
 
-  calculateStats(): void {
-    const couts = this.interventions.filter(i => i.coutTotal).map(i => i.coutTotal);
-    this.stats.coutTotal = couts.reduce((a, b) => a + b, 0);
-    this.stats.coutMoyen = couts.length > 0 ? this.stats.coutTotal / couts.length : 0;
-
-    const durees = this.interventions.filter(i => i.dureeHeures).map(i => i.dureeHeures);
-    this.stats.mttrMoyen = durees.length > 0 ? durees.reduce((a, b) => a + b, 0) / durees.length : 0;
-
-    this.stats.interventionsTerminees = this.interventions.filter(i => i.statut === 'TERMINEE').length;
+  getContratRentabilite(contrat: any): number {
+    const coutMaint = this.stats.coutTotal;
+    if (!contrat.montant || contrat.montant === 0 || coutMaint === 0) return 0;
+    return Math.round(((Number(contrat.montant) - coutMaint) / Number(contrat.montant)) * 100);
   }
 
   buildCharts(): void {
@@ -136,39 +153,19 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     if (this.piecesChart) this.piecesChart.destroy();
     const canvas = document.getElementById('piecesChart') as HTMLCanvasElement;
     if (!canvas) return;
-
     const dataFiltered = this.parcSelectionne
       ? this.piecesParParc.filter(p => p.parc === this.parcSelectionne)
       : this.piecesParParc;
-
     if (dataFiltered.length === 0) return;
-
     const labels = dataFiltered.map(p => `${p.parc} - ${p.piece}`);
     const data = dataFiltered.map(p => p.pourcentage);
     const colors = ['#1a237e','#1565c0','#42a5f5','#90caf9','#ef5350','#ff7043','#66bb6a','#26a69a','#ab47bc','#ffa726','#8d6e63'];
-
     this.piecesChart = new Chart(canvas, {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: '% utilisation',
-          data,
-          backgroundColor: colors.slice(0, data.length),
-          borderRadius: 8
-        }]
-      },
+      data: { labels, datasets: [{ label: '% utilisation', data, backgroundColor: colors.slice(0, data.length), borderRadius: 8 }] },
       options: {
-        responsive: true,
-        indexAxis: 'y',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => `${ctx.raw}% — Coût: ${dataFiltered[ctx.dataIndex]?.coutTotal} DH`
-            }
-          }
-        },
+        responsive: true, indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.raw}% — Coût: ${dataFiltered[ctx.dataIndex]?.coutTotal} DH` } } },
         scales: { x: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } }
       }
     });
@@ -181,10 +178,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     this.interventions.forEach(i => { types[i.type] = (types[i.type] || 0) + 1; });
     new Chart(canvas, {
       type: 'bar',
-      data: {
-        labels: Object.keys(types),
-        datasets: [{ label: 'Nombre', data: Object.values(types), backgroundColor: ['#ef5350', '#66bb6a', '#42a5f5'], borderRadius: 8 }]
-      },
+      data: { labels: Object.keys(types), datasets: [{ label: 'Nombre', data: Object.values(types), backgroundColor: ['#ef5350', '#66bb6a', '#42a5f5'], borderRadius: 8 }] },
       options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
     });
   }
@@ -196,10 +190,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     this.interventions.forEach(i => { statuts[i.statut] = (statuts[i.statut] || 0) + 1; });
     new Chart(canvas, {
       type: 'doughnut',
-      data: {
-        labels: Object.keys(statuts),
-        datasets: [{ data: Object.values(statuts), backgroundColor: ['#66bb6a', '#ffa726', '#ef5350'], borderWidth: 0 }]
-      },
+      data: { labels: Object.keys(statuts), datasets: [{ data: Object.values(statuts), backgroundColor: ['#66bb6a', '#ffa726', '#ef5350'], borderWidth: 0 }] },
       options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
   }
@@ -212,10 +203,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     const resilier = this.contrats.filter(c => c.statut === 'RESILIER').length;
     new Chart(canvas, {
       type: 'pie',
-      data: {
-        labels: ['Actif', 'Expiré', 'Résilié'],
-        datasets: [{ data: [actif, expire, resilier], backgroundColor: ['#66bb6a', '#bdbdbd', '#ef5350'], borderWidth: 0 }]
-      },
+      data: { labels: ['Actif', 'Expiré', 'Résilié'], datasets: [{ data: [actif, expire, resilier], backgroundColor: ['#66bb6a', '#bdbdbd', '#ef5350'], borderWidth: 0 }] },
       options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
   }
@@ -236,17 +224,8 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     const avgMttr = mttrByMonth.map((total, i) => countByMonth[i] > 0 ? parseFloat((total / countByMonth[i]).toFixed(1)) : 0);
     new Chart(canvas, {
       type: 'line',
-      data: {
-        labels: months,
-        datasets: [{ label: 'MTTR (h)', data: avgMttr, borderColor: '#1a237e', backgroundColor: 'rgba(26,35,126,0.1)', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#1a237e' }]
-      },
+      data: { labels: months, datasets: [{ label: 'MTTR (h)', data: avgMttr, borderColor: '#1a237e', backgroundColor: 'rgba(26,35,126,0.1)', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#1a237e' }] },
       options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
-  }
-
-  getContratRentabilite(contrat: any): number {
-    const coutMaint = this.interventions.filter(i => i.coutTotal).reduce((a, b) => a + b.coutTotal, 0);
-    if (!contrat.montant || contrat.montant === 0) return 0;
-    return Math.round(((contrat.montant - coutMaint) / contrat.montant) * 100);
   }
 }

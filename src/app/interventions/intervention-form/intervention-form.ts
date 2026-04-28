@@ -42,6 +42,7 @@ export class InterventionForm implements OnInit {
     fse: '',
     statut: '',
     duree: null as number | null,
+    coutTotal: null as number | null,
     observations: '',
     equipementId: null as number | null
   };
@@ -84,6 +85,7 @@ export class InterventionForm implements OnInit {
             fse: data.technicien?.nom || '',
             statut: data.statut || '',
             duree: data.dureeHeures || null,
+            coutTotal: data.coutTotal || null,
             observations: data.actionsEffectuees || '',
             equipementId: data.equipement?.id || null
           };
@@ -117,6 +119,7 @@ export class InterventionForm implements OnInit {
       descriptionPanne: this.form.description,
       statut: this.form.statut,
       dureeHeures: this.form.duree,
+      coutTotal: this.form.coutTotal,
       actionsEffectuees: this.form.observations,
       equipement: this.form.equipementId ? { id: this.form.equipementId } : null
     };
@@ -128,7 +131,6 @@ export class InterventionForm implements OnInit {
     req$.subscribe({
       next: (data) => {
         const interventionId = data.id || this.interventionId;
-        // Sauvegarder les pièces utilisées
         const piecesValides = this.piecesUtilisees.filter(p => p.pieceId && p.quantite > 0);
         if (piecesValides.length > 0) {
           const piecesPayload = piecesValides.map(p => ({
@@ -138,8 +140,15 @@ export class InterventionForm implements OnInit {
             coutUnitaire: this.piecesDisponibles.find(pd => pd.id === p.pieceId)?.prixUnitaire || 0
           }));
           this.http.post(`${environment.apiUrl}/intervention-pieces/bulk`, piecesPayload).subscribe({
-            next: () => { this.isSaving = false; this.router.navigate(['/interventions', interventionId]); },
-            error: () => { this.isSaving = false; this.router.navigate(['/interventions', interventionId]); }
+            next: () => {
+              this.isSaving = false;
+              this.router.navigate(['/interventions', interventionId]);
+            },
+            error: () => {
+              // Ignorer l'erreur et rediriger quand même
+              this.isSaving = false;
+              this.router.navigate(['/interventions', interventionId]);
+            }
           });
         } else {
           this.isSaving = false;

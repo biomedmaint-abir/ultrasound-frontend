@@ -25,7 +25,7 @@
         <mat-divider></mat-divider>
         <div class="info-row"><span class="label">Référence</span><span class="value">{{ piece.reference }}</span></div>
         <mat-divider></mat-divider>
-        <div class="info-row"><span class="label">Stock</span><span class="value">{{ piece.quantiteStock }}</span></div>
+        <div class="info-row"><span class="label">Client (Parc)</span><span class="value">{{ piece.client || '—' }}</span></div>
         <mat-divider></mat-divider>
         <div class="info-row"><span class="label">Prix unitaire</span><span class="value">{{ piece.prixUnitaire | number:'1.2-2' }} DH</span></div>
       </mat-card-content>

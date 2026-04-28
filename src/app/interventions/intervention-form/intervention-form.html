@@ -50,6 +50,11 @@
           <input matInput type="number" [(ngModel)]="form.duree" name="duree">
         </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>💰 Coût total (DH)</mat-label>
+          <input matInput type="number" [(ngModel)]="form.coutTotal" name="coutTotal">
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Description de la panne</mat-label>
           <textarea matInput [(ngModel)]="form.description" name="description" rows="3"></textarea>
