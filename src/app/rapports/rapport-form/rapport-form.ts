@@ -81,174 +81,123 @@ export class RapportForm implements OnInit {
 
     // ── HEADER SCRIM ───────────────────────────────────────────────────────
     doc.setFillColor(...navy);
-    doc.rect(0, 0, W, 30, 'F');
+    doc.rect(0, 0, W, 35, 'F');
     doc.setFillColor(...blue);
-    doc.roundedRect(10, 6, 35, 18, 2, 2, 'F');
+    doc.roundedRect(10, 7, 40, 20, 2, 2, 'F');
     doc.setTextColor(...white);
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('SCRIM', 27, 16, { align: 'center' });
-    doc.setFontSize(5.5);
+    doc.text('SCRIM', 30, 17, { align: 'center' });
+    doc.setFontSize(6);
     doc.setFont('helvetica', 'normal');
-    doc.text('Maintenance Biomédicale', 27, 20.5, { align: 'center' });
-    doc.text('Groupe Vicenne', 27, 24, { align: 'center' });
-    doc.setFontSize(15);
+    doc.text('Société de Commercialisation et de', 30, 21.5, { align: 'center' });
+    doc.text('Réparation des Instruments Médicaux', 30, 25, { align: 'center' });
+    doc.text('Groupe Vicenne — www.scrim.ma', 30, 28.5, { align: 'center' });
+    doc.setFontSize(17);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...white);
-    doc.text(this.rapport.titre, W / 2 + 15, 14, { align: 'center' });
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text('BiomédMaint — www.scrim.ma', W / 2 + 15, 22, { align: 'center' });
-
-    doc.setFillColor(...blue);
-    doc.rect(0, 30, W, 1.5, 'F');
-
-    // ── INFOS RAPPORT ──────────────────────────────────────────────────────
-    doc.setFillColor(...gray);
-    doc.rect(10, 35, W - 20, 26, 'F');
-    doc.setFillColor(...navy);
-    doc.rect(10, 35, 3, 26, 'F');
+    doc.text(this.rapport.titre, W / 2 + 20, 16, { align: 'center' });
     doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...navy);
-    doc.text('Informations générales', 16, 42);
+    doc.setFont('helvetica', 'normal');
+    doc.text('BiomédMaint — Application de Gestion de Maintenance Biomédicale', W / 2 + 20, 24, { align: 'center' });
+    doc.setFillColor(...blue);
+    doc.rect(0, 35, W, 1.5, 'F');
 
-    const infos = [
-      ['Parc :', this.rapport.parc || 'Tous les parcs'],
-      ['Période :', this.rapport.periode || '—'],
-      ['Responsable :', this.rapport.responsable || '—'],
-      ['Date :', new Date(this.rapport.dateRapport).toLocaleDateString('fr-FR')],
-    ];
-    infos.forEach((info, i) => {
-      const col = i % 2; const row = Math.floor(i / 2);
-      const x = col === 0 ? 16 : 110; const y = 49 + row * 7;
-      doc.setFont('helvetica', 'bold'); doc.setTextColor(...navy); doc.setFontSize(9);
-      doc.text(info[0], x, y);
-      doc.setFont('helvetica', 'normal'); doc.setTextColor(...text);
-      doc.text(info[1], x + 28, y);
-    });
-
-    // ── STATISTIQUES ───────────────────────────────────────────────────────
-    let y = 66;
+    // ── INFORMATIONS DU RAPPORT ────────────────────────────────────────────
+    let y = 45;
     doc.setFillColor(...navy);
-    doc.rect(10, y, W - 20, 7, 'F');
-    doc.setTextColor(...white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('Indicateurs de performance', 14, y + 5);
-    y += 9;
+    doc.rect(10, y, W - 20, 8, 'F');
+    doc.setTextColor(...white);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('Informations du rapport', 14, y + 5.5);
+    y += 13;
 
-    const kpis = [
-      { label: 'Total', val: String(this.stats.total) },
-      { label: 'Terminées', val: String(this.stats.terminees) },
-      { label: 'En cours', val: String(this.stats.enCours) },
-      { label: 'MTTR', val: this.stats.mttrMoyen.toFixed(1) + 'h' },
-      { label: 'Coût total', val: this.stats.coutTotal.toLocaleString('fr-FR') + ' DH' },
+    const champs = [
+      { label: 'Titre du rapport', val: this.rapport.titre },
+      { label: 'Parc / Établissement', val: this.rapport.parc || 'Tous les parcs' },
+      { label: 'Période couverte', val: this.rapport.periode || '—' },
+      { label: 'Responsable technique', val: this.rapport.responsable || '—' },
+      { label: 'Date du rapport', val: new Date(this.rapport.dateRapport).toLocaleDateString('fr-FR') },
     ];
-    const kpiW = (W - 20) / 5;
-    kpis.forEach((kpi, i) => {
-      const x = 10 + i * kpiW;
-      doc.setFillColor(...gray); doc.rect(x, y, kpiW - 1, 14, 'F');
-      doc.setFillColor(...navy); doc.rect(x, y, kpiW - 1, 3, 'F');
-      doc.setTextColor(...white); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
-      doc.text(kpi.label, x + (kpiW - 1) / 2, y + 2.5, { align: 'center' });
-      doc.setTextColor(...navy); doc.setFontSize(11);
-      doc.text(kpi.val, x + (kpiW - 1) / 2, y + 10, { align: 'center' });
+
+    champs.forEach((champ, i) => {
+      if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { doc.setFillColor(...gray); }
+      doc.rect(10, y - 4, W - 20, 10, 'F');
+      doc.setFillColor(...navy);
+      doc.rect(10, y - 4, 3, 10, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...navy);
+      doc.setFontSize(10);
+      doc.text(champ.label + ' :', 16, y + 2);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...text);
+      doc.text(champ.val, 80, y + 2);
+      y += 12;
     });
-    y += 18;
 
-    // ── TABLEAU ────────────────────────────────────────────────────────────
-    doc.setFillColor(...navy); doc.rect(10, y, W - 20, 7, 'F');
-    doc.setTextColor(...white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('Liste des interventions', 14, y + 5);
-    doc.setFontSize(8);
-    doc.text(`${this.filtered.length} intervention(s)`, W - 14, y + 5, { align: 'right' });
-    y += 9;
-
-    const headers = ['#', 'Date', 'Type', 'Statut', 'Équipement', 'Parc', 'FSE', 'Durée', 'Coût'];
-    const colW = [8, 18, 20, 22, 26, 30, 22, 14, 18];
-    let sx = 10;
-
-    doc.setFillColor(...blue); doc.rect(10, y, W - 20, 6, 'F');
-    doc.setTextColor(...white); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5);
-    headers.forEach((h, i) => {
-      doc.text(h, sx + colW[i] / 2, y + 4, { align: 'center' });
-      sx += colW[i];
-    });
-    y += 8;
-
-    this.filtered.forEach((row, idx) => {
-      if (y > 272) {
-        doc.addPage();
-        doc.setFillColor(...navy); doc.rect(0, 0, W, 10, 'F');
-        doc.setTextColor(...white); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
-        doc.text('SCRIM — BiomédMaint  |  ' + this.rapport.titre, W / 2, 7, { align: 'center' });
-        doc.setFillColor(...blue); doc.rect(10, 12, W - 20, 6, 'F');
-        doc.setTextColor(...white); sx = 10;
-        headers.forEach((h, i) => { doc.text(h, sx + colW[i] / 2, 16, { align: 'center' }); sx += colW[i]; });
-        y = 22;
-      }
-
-      if (idx % 2 === 0) { doc.setFillColor(255, 255, 255); } else { doc.setFillColor(248, 249, 252); }
-      doc.rect(10, y - 3.5, W - 20, 6.5, 'F');
-      doc.setTextColor(...text); doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
-
-      const cells = [
-        String(row.id),
-        row.dateIntervention ? new Date(row.dateIntervention).toLocaleDateString('fr-FR') : '—',
-        row.type || '—', row.statut || '—',
-        (row.equipement?.nom || '—').substring(0, 13),
-        (row.equipement?.parc || '—').substring(0, 15),
-        (row.nomFse || '—').substring(0, 11),
-        row.dureeHeures ? row.dureeHeures + 'h' : '—',
-        row.coutTotal ? Number(row.coutTotal).toLocaleString('fr-FR') : '—',
-      ];
-      sx = 10;
-      cells.forEach((cell, i) => {
-        doc.text(cell, sx + colW[i] / 2, y, { align: 'center' });
-        sx += colW[i];
-      });
-      doc.setDrawColor(230, 230, 230);
-      doc.line(10, y + 3, W - 10, y + 3);
-      y += 7;
-    });
+    y += 5;
 
     // ── OBSERVATIONS ───────────────────────────────────────────────────────
+    doc.setFillColor(...navy);
+    doc.rect(10, y, W - 20, 8, 'F');
+    doc.setTextColor(...white);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('Observations', 14, y + 5.5);
+    y += 13;
+
     if (this.rapport.observations) {
-      if (y > 250) { doc.addPage(); y = 20; }
-      y += 6;
-      doc.setFillColor(...navy); doc.rect(10, y, 3, 7, 'F');
-      doc.setFillColor(...gray); doc.rect(13, y, W - 23, 7, 'F');
-      doc.setTextColor(...navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Observations', 17, y + 5);
-      y += 12;
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...text);
-      const lines = doc.splitTextToSize(this.rapport.observations, W - 24);
-      doc.text(lines, 14, y);
-      y += lines.length * 5 + 5;
+      doc.setFillColor(...gray);
+      doc.rect(10, y, W - 20, 50, 'F');
+      doc.setFillColor(...navy);
+      doc.rect(10, y, 3, 50, 'F');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(...text);
+      const lines = doc.splitTextToSize(this.rapport.observations, W - 30);
+      doc.text(lines, 16, y + 8);
+      y += 58;
+    } else {
+      doc.setFillColor(...gray);
+      doc.rect(10, y, W - 20, 35, 'F');
+      doc.setFillColor(...navy);
+      doc.rect(10, y, 3, 35, 'F');
+      y += 42;
     }
+
+    y += 10;
 
     // ── SIGNATURES ─────────────────────────────────────────────────────────
-    const sigY = Math.min(y + 8, 260);
+    const sigY = Math.min(y, 230);
     doc.setFillColor(...gray);
-    doc.rect(10, sigY, 85, 22, 'F'); doc.rect(115, sigY, 85, 22, 'F');
+    doc.rect(10, sigY, 85, 30, 'F');
+    doc.rect(115, sigY, 85, 30, 'F');
     doc.setFillColor(...navy);
-    doc.rect(10, sigY, 85, 6, 'F'); doc.rect(115, sigY, 85, 6, 'F');
-    doc.setTextColor(...white); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
-    doc.text('Responsable FSE', 52, sigY + 4.5, { align: 'center' });
-    doc.text('Responsable SCRIM', 157, sigY + 4.5, { align: 'center' });
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...text);
-    doc.text(this.rapport.responsable || '______________________', 52, sigY + 16, { align: 'center' });
-    doc.text('______________________', 157, sigY + 16, { align: 'center' });
+    doc.rect(10, sigY, 85, 7, 'F');
+    doc.rect(115, sigY, 85, 7, 'F');
+    doc.setTextColor(...white);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('Responsable technique / FSE', 52, sigY + 5, { align: 'center' });
+    doc.text('Responsable SCRIM', 157, sigY + 5, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...text);
+    doc.text('Nom et prénom :', 15, sigY + 16);
+    doc.text(this.rapport.responsable || '______________________', 52, sigY + 24, { align: 'center' });
+    doc.text('______________________', 157, sigY + 24, { align: 'center' });
+    doc.text('Signature :', 15, sigY + 28);
 
     // ── FOOTER ─────────────────────────────────────────────────────────────
-    const totalPages = doc.getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p);
-      doc.setFillColor(...navy); doc.rect(0, 287, W, 10, 'F');
-      doc.setTextColor(...white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-      doc.text('SCRIM — BiomédMaint  |  Confidentiel', 14, 293);
-      doc.text(`Page ${p} / ${totalPages}`, W - 14, 293, { align: 'right' });
-      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, W / 2, 293, { align: 'center' });
-    }
+    doc.setFillColor(...navy);
+    doc.rect(0, 287, W, 10, 'F');
+    doc.setTextColor(...white);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.text('SCRIM — BiomédMaint  |  Confidentiel', 14, 293);
+    doc.text('Page 1 / 1', W - 14, 293, { align: 'right' });
+    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`, W / 2, 293, { align: 'center' });
 
     doc.save(`Rapport_SCRIM_${this.rapport.parc || 'Tous'}_${this.rapport.dateRapport}.pdf`);
   }
