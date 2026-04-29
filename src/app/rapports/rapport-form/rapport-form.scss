@@ -8,55 +8,72 @@
 
 .scrim-header-card {
   background: linear-gradient(135deg, #1a237e, #1565c0);
-  border-radius: 16px;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(26,35,126,0.3);
+  border-radius: 16px; padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; box-shadow: 0 4px 20px rgba(26,35,126,0.3);
 }
 
 .scrim-logo {
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
   .logo-text { font-size: 28px; font-weight: 900; color: white; letter-spacing: 4px; }
   .logo-sub { font-size: 11px; color: #90caf9; margin-top: 4px; }
 }
 
 .biomedmaint-badge {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 2px;
+  background: rgba(255,255,255,0.15); color: white;
+  padding: 8px 20px; border-radius: 20px;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px;
 }
 
 .form-card { border-radius: 16px !important; margin-bottom: 20px; }
 
-.filter-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;
-}
-
-.stats-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 8px;
-}
-
-.stat-card {
-  border-radius: 12px; padding: 12px 16px;
-  display: flex; flex-direction: column; align-items: center;
-  .stat-num { font-size: 22px; font-weight: 700; color: white; }
-  .stat-label { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px; }
-  &.blue   { background: linear-gradient(135deg, #1a237e, #1565c0); }
-  &.green  { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
-  &.orange { background: linear-gradient(135deg, #e65100, #f57c00); }
-  &.purple { background: linear-gradient(135deg, #4a148c, #7b1fa2); }
-  &.navy   { background: linear-gradient(135deg, #1a237e, #283593); }
+.type-card {
+  &.correctif { border-top: 4px solid #b71c1c !important; }
+  &.preventif { border-top: 4px solid #1b5e20 !important; }
+  &.maj { border-top: 4px solid #1565c0 !important; }
 }
 
 .rapport-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
   .full-width { grid-column: span 2; }
+}
+
+.pieces-section {
+  margin-top: 20px; border-top: 1px solid #e0e0e0; padding-top: 16px;
+  h3 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: #1a237e; }
+}
+
+.pieces-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+}
+
+.piece-row {
+  display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+  .small { max-width: 100px; }
+}
+
+.empty-pieces {
+  text-align: center; padding: 16px; background: #f5f5f5;
+  border-radius: 8px; color: #999; font-size: 14px;
+}
+
+.checklist-section {
+  margin-top: 20px; border-top: 1px solid #e0e0e0; padding-top: 16px;
+  h3 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: #1a237e; }
+}
+
+.checklist-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+
+.checklist-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: #333; cursor: pointer;
+  padding: 8px; border-radius: 8px; background: #f5f7fa;
+  &:hover { background: #e3f2fd; }
+}
+
+.form-actions {
+  display: flex; gap: 12px; margin-top: 8px; margin-bottom: 32px;
+  justify-content: flex-end;
 }
