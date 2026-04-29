@@ -8,7 +8,7 @@
 }
 
 .stats-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;
 }
 
 .stat-card {
@@ -23,12 +23,14 @@
   &.green  { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; }
   &.orange { background: linear-gradient(135deg, #e65100, #f57c00); color: white; }
   &.purple { background: linear-gradient(135deg, #4a148c, #7b1fa2); color: white; }
+  &.navy   { background: linear-gradient(135deg, #1a237e, #283593); color: white; }
 }
 
 .filter-card {
   border-radius: 16px !important; margin-bottom: 24px;
-  .filter-row { display: flex; gap: 16px; align-items: center;
-    mat-form-field { flex: 1; }
+  .filter-row {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    mat-form-field { flex: 1; min-width: 140px; }
   }
 }
 
@@ -48,7 +50,58 @@
 
 .center-state { display: flex; justify-content: center; padding: 32px; color: #666; }
 
+.rapport-form-card {
+  margin-bottom: 20px;
+  border-radius: 16px !important;
+  border-top: 4px solid #1a237e;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 16px;
+    color: #1a237e;
+  }
+}
+
+.scrim-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #1a237e;
+  padding: 6px 14px;
+  border-radius: 8px;
+
+  .logo-text {
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+  }
+
+  .logo-sub {
+    font-size: 9px;
+    color: #90caf9;
+    letter-spacing: 1px;
+  }
+}
+
+.rapport-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 12px;
+
+  .full-width { grid-column: span 2; }
+}
+
+.rapport-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 @media print {
-  .page-header .header-actions, .filter-card { display: none; }
+  .page-header .header-actions, .filter-card, .rapport-form-card { display: none; }
   .stat-card { break-inside: avoid; }
 }
