@@ -25,8 +25,8 @@ import jsPDF from 'jspdf';
 })
 export class RapportForm implements OnInit {
 
-  interventions: any[] = [];
   equipements: any[] = [];
+  piecesDisponibles: any[] = [];
   parcsList: string[] = [];
   isLoading = true;
 
@@ -84,6 +84,11 @@ export class RapportForm implements OnInit {
       },
       error: () => { this.isLoading = false; }
     });
+
+    this.http.get<any[]>(`${environment.apiUrl}/pieces`).subscribe({
+      next: (data) => { this.piecesDisponibles = data; this.cdr.detectChanges(); },
+      error: () => {}
+    });
   }
 
   onTypeChange(): void {
@@ -113,6 +118,15 @@ export class RapportForm implements OnInit {
     this.rapport.pieces.splice(i, 1);
   }
 
+  onPieceSelectChange(p: any): void {
+    const found = this.piecesDisponibles.find(pd => pd.nom === p.nom);
+    if (found) {
+      p.reference = found.reference || '';
+      p.cout = found.prixUnitaire || 0;
+    }
+    this.cdr.detectChanges();
+  }
+
   genererPDF(): void {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const W = 210;
@@ -135,16 +149,12 @@ export class RapportForm implements OnInit {
     fc(navy); doc.rect(0, 0, W, 35, 'F');
     fc(blue); doc.roundedRect(10, 7, 40, 20, 2, 2, 'F');
     tc(white);
-    doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-    doc.text('SCRIM', 30, 17, { align: 'center' });
-    doc.setFontSize(6); doc.setFont('helvetica', 'normal');
-    doc.text('Société de Commercialisation et de', 30, 21.5, { align: 'center' });
-    doc.text('Réparation des Instruments Médicaux', 30, 25, { align: 'center' });
-    doc.text('Groupe Vicenne — www.scrim.ma', 30, 28.5, { align: 'center' });
+    doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+    doc.text('SCRIM', 30, 20, { align: 'center' });
     doc.setFontSize(17); doc.setFont('helvetica', 'bold'); tc(white);
     doc.text(this.rapport.titre, W / 2 + 20, 16, { align: 'center' });
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.text('BiomédMaint — Application de Gestion de Maintenance Biomédicale', W / 2 + 20, 24, { align: 'center' });
+    doc.text('Rapport généré par BiomédMaint', W / 2 + 20, 26, { align: 'center' });
     fc(typeColor); doc.rect(0, 35, W, 2, 'F');
 
     let y = 43;
@@ -200,7 +210,6 @@ export class RapportForm implements OnInit {
         y += 24;
       });
 
-      // Pièces
       if (this.rapport.pieces.length > 0) {
         if (y > 220) { doc.addPage(); this.addPageHeader(doc, navy, white, this.rapport.titre); y = 25; }
         fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');

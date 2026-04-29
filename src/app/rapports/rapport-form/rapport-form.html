@@ -115,46 +115,32 @@
       </div>
 
       <!-- Pièces de rechange -->
-      <div class="pieces-section">
-        <div class="pieces-header">
-          <h3>🔩 Pièces de rechange utilisées</h3>
-          <button mat-stroked-button color="primary" (click)="ajouterPiece()">
-            <mat-icon>add</mat-icon> Ajouter une pièce
-          </button>
-        </div>
-        <div *ngIf="rapport.pieces.length === 0" class="empty-pieces">
-          Aucune pièce ajoutée
-        </div>
-        <div *ngFor="let p of rapport.pieces; let i = index" class="piece-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Nom de la pièce</mat-label>
-            <input matInput [(ngModel)]="p.nom" placeholder="Ex: EBOX, IMB2...">
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Référence</mat-label>
-            <input matInput [(ngModel)]="p.reference">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="small">
-            <mat-label>Qté</mat-label>
-            <input matInput type="number" [(ngModel)]="p.quantite">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="small">
-            <mat-label>Coût (DH)</mat-label>
-            <input matInput type="number" [(ngModel)]="p.cout">
-          </mat-form-field>
-          <button mat-icon-button color="warn" (click)="supprimerPiece(i)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </div>
-
-      <mat-form-field appearance="outline" class="full-width" style="margin-top:16px">
-        <mat-label>Observations finales</mat-label>
-        <textarea matInput [(ngModel)]="rapport.observations" rows="3"
-          placeholder="Recommandations, état final de l'équipement..."></textarea>
-      </mat-form-field>
-    </mat-card-content>
-  </mat-card>
+     <div *ngFor="let p of rapport.pieces; let i = index" class="piece-row">
+  <mat-form-field appearance="outline">
+    <mat-label>Pièce</mat-label>
+    <mat-select [(ngModel)]="p.nom" (ngModelChange)="onPieceSelectChange(p)">
+      <mat-option value="">-- Sélectionner --</mat-option>
+      <mat-option *ngFor="let pd of piecesDisponibles" [value]="pd.nom">
+        {{ pd.nom }} — {{ pd.reference }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Référence</mat-label>
+    <input matInput [(ngModel)]="p.reference" readonly>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="small">
+    <mat-label>Qté</mat-label>
+    <input matInput type="number" [(ngModel)]="p.quantite">
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="small">
+    <mat-label>Coût (DH)</mat-label>
+    <input matInput type="number" [(ngModel)]="p.cout">
+  </mat-form-field>
+  <button mat-icon-button color="warn" (click)="supprimerPiece(i)">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>
 
   <!-- ── SECTION PRÉVENTIF ── -->
   <mat-card class="form-card type-card preventif" *ngIf="rapport.type === 'PREVENTIF'">
