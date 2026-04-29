@@ -1,0 +1,112 @@
+<div class="page-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+    <div>
+      <h1>📄 Nouveau rapport PDF</h1>
+      <p>Configurez et générez votre rapport SCRIM</p>
+    </div>
+  </div>
+
+  <!-- Logo SCRIM -->
+  <div class="scrim-header-card">
+    <div class="scrim-logo">
+      <span class="logo-text">SCRIM</span>
+      <span class="logo-sub">Société de Commercialisation et de Réparation des Instruments Médicaux</span>
+    </div>
+    <div class="biomedmaint-badge">BiomédMaint</div>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="form-card">
+    <mat-card-header><mat-card-title>🔍 Filtrer les interventions</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <div class="filter-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Parc / Établissement</mat-label>
+          <mat-select [(ngModel)]="filterParc" (ngModelChange)="applyFilter()">
+            <mat-option value="">Tous les parcs</mat-option>
+            <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="filterType" (ngModelChange)="applyFilter()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date début</mat-label>
+          <input matInput type="date" [(ngModel)]="filterDateDebut" (ngModelChange)="applyFilter()">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date fin</mat-label>
+          <input matInput type="date" [(ngModel)]="filterDateFin" (ngModelChange)="applyFilter()">
+        </mat-form-field>
+      </div>
+
+      <!-- KPIs -->
+      <div class="stats-grid">
+        <div class="stat-card blue"><span class="stat-num">{{ stats.total }}</span><span class="stat-label">Interventions</span></div>
+        <div class="stat-card green"><span class="stat-num">{{ stats.terminees }}</span><span class="stat-label">Terminées</span></div>
+        <div class="stat-card orange"><span class="stat-num">{{ stats.enCours }}</span><span class="stat-label">En cours</span></div>
+        <div class="stat-card purple"><span class="stat-num">{{ stats.mttrMoyen | number:'1.0-1' }}h</span><span class="stat-label">MTTR</span></div>
+        <div class="stat-card navy"><span class="stat-num">{{ stats.coutTotal | number:'1.0-0' }} DH</span><span class="stat-label">Coût total</span></div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Formulaire rapport -->
+  <mat-card class="form-card">
+    <mat-card-header><mat-card-title>📝 Informations du rapport</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <div class="rapport-grid">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Titre du rapport</mat-label>
+          <input matInput [(ngModel)]="rapport.titre">
+          <mat-icon matSuffix>title</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Parc / Établissement</mat-label>
+          <mat-select [(ngModel)]="rapport.parc">
+            <mat-option value="">Tous les parcs</mat-option>
+            <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Période couverte</mat-label>
+          <input matInput [(ngModel)]="rapport.periode" placeholder="Ex: Janvier - Mars 2025">
+          <mat-icon matSuffix>date_range</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Responsable technique / FSE</mat-label>
+          <input matInput [(ngModel)]="rapport.responsable" placeholder="Nom du responsable">
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date du rapport</mat-label>
+          <input matInput type="date" [(ngModel)]="rapport.dateRapport">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Observations générales</mat-label>
+          <textarea matInput [(ngModel)]="rapport.observations" rows="4"
+            placeholder="Commentaires, recommandations, conclusions..."></textarea>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="goBack()">Annuler</button>
+      <button mat-raised-button color="primary" (click)="genererPDF()" [disabled]="isLoading">
+        <mat-icon>picture_as_pdf</mat-icon>
+        {{ isLoading ? 'Chargement...' : 'Générer et télécharger le PDF' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

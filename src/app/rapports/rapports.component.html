@@ -5,9 +5,8 @@
       <p>{{ filtered.length }} rapport(s) trouvé(s)</p>
     </div>
     <div class="header-actions">
-      <button mat-raised-button color="primary" (click)="showRapportForm = !showRapportForm">
-        <mat-icon>picture_as_pdf</mat-icon>
-        {{ showRapportForm ? 'Masquer formulaire' : 'Générer rapport PDF' }}
+      <button mat-raised-button color="primary" (click)="router.navigate(['/rapports/nouveau'])">
+        <mat-icon>picture_as_pdf</mat-icon> Nouveau rapport PDF
       </button>
     </div>
   </div>
@@ -35,68 +34,6 @@
       <div class="stat-info"><h2>{{ stats.coutTotal | number:'1.0-0' }} DH</h2><p>Coût total</p></div>
     </div>
   </div>
-
-  <!-- Formulaire rapport PDF -->
-  <mat-card class="rapport-form-card" *ngIf="showRapportForm">
-    <mat-card-header>
-      <mat-card-title>
-        <div class="scrim-logo">
-          <span class="logo-text">SCRIM</span>
-          <span class="logo-sub">BiomédMaint</span>
-        </div>
-        📝 Paramètres du rapport PDF
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="rapport-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Titre du rapport</mat-label>
-          <input matInput [(ngModel)]="rapport.titre" placeholder="Rapport de Maintenance Biomédicale">
-          <mat-icon matSuffix>title</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Parc / Établissement</mat-label>
-          <mat-select [(ngModel)]="rapport.parc">
-            <mat-option value="">Tous les parcs</mat-option>
-            <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Période couverte</mat-label>
-          <input matInput [(ngModel)]="rapport.periode" placeholder="Ex: Janvier - Mars 2025">
-          <mat-icon matSuffix>date_range</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Responsable technique</mat-label>
-          <input matInput [(ngModel)]="rapport.responsable" placeholder="Nom du FSE ou responsable">
-          <mat-icon matSuffix>person</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Date du rapport</mat-label>
-          <input matInput type="date" [(ngModel)]="rapport.dateRapport">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Observations générales</mat-label>
-          <textarea matInput [(ngModel)]="rapport.observations" rows="3"
-            placeholder="Commentaires, recommandations, conclusions..."></textarea>
-        </mat-form-field>
-      </div>
-
-      <div class="rapport-actions">
-        <button mat-raised-button color="primary" (click)="genererPDF()">
-          <mat-icon>picture_as_pdf</mat-icon> Générer et télécharger le PDF
-        </button>
-        <button mat-stroked-button (click)="showRapportForm = false">
-          <mat-icon>close</mat-icon> Fermer
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
 
   <!-- Filtres -->
   <mat-card class="filter-card">
