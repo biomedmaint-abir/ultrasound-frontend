@@ -71,7 +71,7 @@
           <mat-label>Équipement</mat-label>
           <mat-select [(ngModel)]="form.equipementId">
             <mat-option [value]="null">— Aucun —</mat-option>
-            <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }}</mat-option>
+            <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }} — {{ e.parc || '—' }} — N°{{ e.numeroSerie }}</mat-option>
           </mat-select>
         </mat-form-field>
 
