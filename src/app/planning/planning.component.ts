@@ -99,6 +99,14 @@ export class PlanningComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  getInterventionsDuMois(): any[] {
+    return this.interventions.filter(i => {
+      if (!i.dateIntervention) return false;
+      const date = new Date(i.dateIntervention);
+      return date.getMonth() === this.currentMonth && date.getFullYear() === this.currentYear;
+    });
+  }
+
   prevMonth(): void {
     if (this.currentMonth === 0) { this.currentMonth = 11; this.currentYear--; }
     else this.currentMonth--;
@@ -124,7 +132,7 @@ export class PlanningComponent implements OnInit {
     const payload = {
       dateIntervention: this.form.dateIntervention,
       type: this.form.type,
-      description: this.form.description,
+      descriptionPanne: this.form.description,
       dureeHeures: this.form.dureeHeures,
       statut: 'EN_COURS',
       equipement: this.form.equipementId ? { id: this.form.equipementId } : null

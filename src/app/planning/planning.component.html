@@ -101,11 +101,11 @@
       <mat-card-title>Interventions de {{ monthNames[currentMonth] }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <div *ngIf="interventions.length === 0" class="empty-state">
+      <div *ngIf="getInterventionsDuMois().length === 0" class="empty-state">
         <p>Aucune intervention ce mois.</p>
       </div>
       <div class="intervention-list">
-        <div *ngFor="let inv of interventions" class="intervention-item">
+        <div *ngFor="let inv of getInterventionsDuMois()" class="intervention-item">
           <span class="inv-date">{{ inv.dateIntervention | date:'dd/MM' }}</span>
           <span class="inv-type" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
           <span class="inv-desc">{{ inv.descriptionPanne || '—' }}</span>
