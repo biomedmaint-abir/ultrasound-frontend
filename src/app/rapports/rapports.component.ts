@@ -254,7 +254,7 @@ export class RapportsComponent implements OnInit {
         y = 30;
       }
 
-      doc.setFillColor(idx % 2 === 0 ? ...[255, 255, 255] : ...[245, 247, 250]);
+      if (idx % 2 === 0) { doc.setFillColor(255, 255, 255); } else { doc.setFillColor(245, 247, 250); }
       doc.rect(10, y - 4, W - 20, 7, 'F');
 
       doc.setTextColor(...text);
