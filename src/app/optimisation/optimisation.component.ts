@@ -23,9 +23,9 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
   parcsList: string[] = [];
   parcsAffiches: string[] = [];
   isLoading = true;
-  anneeSelectionnee = 2024;
+  anneeSelectionnee = new Date().getFullYear();
   parcSelectionne = '';
-  annees = [2024, 2025, 2026];
+  annees: number[] = [];
 
   stats = {
     coutTotal: 0,
@@ -45,7 +45,10 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void { this.loadData(); }
+  ngOnInit(): void {
+    this.loadData();
+  }
+
   ngAfterViewInit(): void {}
 
   loadData(): void {
@@ -53,6 +56,20 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.interventions = data;
         this.calculateStats();
+
+        // Générer les années dynamiquement depuis les interventions réelles
+        const anneesInterventions = data
+          .filter(i => i.dateIntervention)
+          .map(i => new Date(i.dateIntervention).getFullYear());
+        const currentYear = new Date().getFullYear();
+        const minYear = Math.min(2024, ...anneesInterventions);
+        const maxYear = Math.max(currentYear + 1, ...anneesInterventions);
+        this.annees = [];
+        for (let y = minYear; y <= maxYear; y++) {
+          this.annees.push(y);
+        }
+        this.anneeSelectionnee = currentYear;
+
         this.cdr.detectChanges();
         setTimeout(() => this.buildCharts(), 300);
       }
