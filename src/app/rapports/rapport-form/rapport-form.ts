@@ -57,15 +57,15 @@ export class RapportForm implements OnInit {
 
   checklistItems = [
     { label: 'Nettoyage des sondes ultrasonores', fait: false },
-    { label: 'Vérification des connecteurs', fait: false },
-    { label: 'Test de l\'alimentation électrique', fait: false },
-    { label: 'Vérification des câbles et connections', fait: false },
+    { label: 'Verification des connecteurs', fait: false },
+    { label: 'Test de l alimentation electrique', fait: false },
+    { label: 'Verification des cables et connections', fait: false },
     { label: 'Test fonctionnel des modes B, M, Doppler', fait: false },
-    { label: 'Vérification de la qualité image', fait: false },
-    { label: 'Nettoyage du panneau de contrôle', fait: false },
-    { label: 'Test de l\'imprimante intégrée', fait: false },
-    { label: 'Vérification des mises à jour logicielles', fait: false },
-    { label: 'Test de l\'archivage et connectivité réseau', fait: false },
+    { label: 'Verification de la qualite image', fait: false },
+    { label: 'Nettoyage du panneau de controle', fait: false },
+    { label: 'Test de l imprimante integree', fait: false },
+    { label: 'Verification des mises a jour logicielles', fait: false },
+    { label: 'Test de l archivage et connectivite reseau', fait: false },
   ];
 
   constructor(
@@ -84,7 +84,6 @@ export class RapportForm implements OnInit {
       },
       error: () => { this.isLoading = false; }
     });
-
     this.http.get<any[]>(`${environment.apiUrl}/pieces`).subscribe({
       next: (data) => { this.piecesDisponibles = data; this.cdr.detectChanges(); },
       error: () => {}
@@ -94,17 +93,17 @@ export class RapportForm implements OnInit {
   onTypeChange(): void {
     const titres: any = {
       'CORRECTIF': 'Rapport de Maintenance Corrective',
-      'PREVENTIF': 'Rapport de Maintenance Préventive',
-      'MISE_A_JOUR': 'Rapport de Mise à Jour Philips',
+      'PREVENTIF': 'Rapport de Maintenance Preventive',
+      'MISE_A_JOUR': 'Rapport de Mise a Jour Philips',
     };
-    this.rapport.titre = titres[this.rapport.type] || 'Rapport de Maintenance Biomédicale';
+    this.rapport.titre = titres[this.rapport.type] || 'Rapport de Maintenance Biomedicale';
     this.cdr.detectChanges();
   }
 
   onEquipementChange(): void {
     const equip = this.equipements.find(e => e.id === this.rapport.equipementId);
     if (equip) {
-      this.rapport.equipementNom = equip.nom + ' — ' + (equip.numeroSerie || '');
+      this.rapport.equipementNom = equip.nom + ' - ' + (equip.numeroSerie || '');
       this.rapport.parc = equip.parc || '';
     }
     this.cdr.detectChanges();
@@ -127,6 +126,15 @@ export class RapportForm implements OnInit {
     this.cdr.detectChanges();
   }
 
+  addPageHeader(doc: jsPDF, navy: number[], white: number[], titre: string): void {
+    doc.setFillColor(navy[0], navy[1], navy[2]);
+    doc.rect(0, 0, 210, 10, 'F');
+    doc.setTextColor(white[0], white[1], white[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text('SCRIM - BiomédMaint  |  ' + titre, 105, 7, { align: 'center' });
+  }
+
   genererPDF(): void {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const W = 210;
@@ -136,16 +144,14 @@ export class RapportForm implements OnInit {
     const white = [255, 255, 255];
     const text = [51, 51, 51];
     const typeColors: any = {
-      'CORRECTIF': [183, 28, 28],
+      'CORRECTIF': [21, 101, 192],
       'PREVENTIF': [27, 94, 32],
       'MISE_A_JOUR': [21, 101, 192],
     };
     const typeColor = typeColors[this.rapport.type] || navy;
-
     const fc = (c: number[]) => doc.setFillColor(c[0], c[1], c[2]);
     const tc = (c: number[]) => doc.setTextColor(c[0], c[1], c[2]);
 
-    // ── HEADER SCRIM ───────────────────────────────────────────────────────
     fc(navy); doc.rect(0, 0, W, 35, 'F');
     fc(blue); doc.roundedRect(10, 7, 40, 20, 2, 2, 'F');
     tc(white);
@@ -154,24 +160,23 @@ export class RapportForm implements OnInit {
     doc.setFontSize(17); doc.setFont('helvetica', 'bold'); tc(white);
     doc.text(this.rapport.titre, W / 2 + 20, 16, { align: 'center' });
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.text('Rapport généré par BiomédMaint', W / 2 + 20, 26, { align: 'center' });
+    doc.text('Rapport genere par BiomédMaint', W / 2 + 20, 26, { align: 'center' });
     fc(typeColor); doc.rect(0, 35, W, 2, 'F');
 
     let y = 43;
 
-    // ── INFOS GÉNÉRALES ────────────────────────────────────────────────────
     fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
     tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('Informations générales', 14, y + 5);
+    doc.text('Informations generales', 14, y + 5);
     y += 10;
 
     const infosGen = [
-      ['Équipement :', this.rapport.equipementNom || '—'],
-      ['Parc :', this.rapport.parc || '—'],
-      ['Responsable FSE :', this.rapport.responsable || '—'],
-      ['Période :', this.rapport.periode || '—'],
+      ['Equipement :', this.rapport.equipementNom || '-'],
+      ['Parc :', this.rapport.parc || '-'],
+      ['Responsable FSE :', this.rapport.responsable || '-'],
+      ['Periode :', this.rapport.periode || '-'],
       ['Date :', new Date(this.rapport.dateRapport).toLocaleDateString('fr-FR')],
-      ['Durée :', this.rapport.duree ? this.rapport.duree + ' heures' : '—'],
+      ['Duree :', this.rapport.duree ? this.rapport.duree + ' heures' : '-'],
     ];
 
     infosGen.forEach((info, i) => {
@@ -186,14 +191,13 @@ export class RapportForm implements OnInit {
     });
     y += 5;
 
-    // ── SECTION CORRECTIF ──────────────────────────────────────────────────
     if (this.rapport.type === 'CORRECTIF') {
       const sections = [
-        { title: 'Code erreur Philips', val: this.rapport.codeErreur || '—' },
-        { title: 'Description de la panne', val: this.rapport.descriptionPanne || '—' },
-        { title: 'Causes identifiées', val: this.rapport.causes || '—' },
-        { title: 'Actions correctives effectuées', val: this.rapport.actions || '—' },
-        { title: 'Observations finales', val: this.rapport.observations || '—' },
+        { title: 'Code erreur Philips', val: this.rapport.codeErreur || '-' },
+        { title: 'Description de la panne', val: this.rapport.descriptionPanne || '-' },
+        { title: 'Causes identifiees', val: this.rapport.causes || '-' },
+        { title: 'Actions correctives effectuees', val: this.rapport.actions || '-' },
+        { title: 'Observations finales', val: this.rapport.observations || '-' },
       ];
 
       sections.forEach((sec) => {
@@ -214,15 +218,14 @@ export class RapportForm implements OnInit {
         if (y > 220) { doc.addPage(); this.addPageHeader(doc, navy, white, this.rapport.titre); y = 25; }
         fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
         tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-        doc.text('Pièces de rechange utilisées', 14, y + 5);
+        doc.text('Pieces de rechange utilisees', 14, y + 5);
         y += 10;
-
         fc(navy); doc.rect(10, y, W - 20, 6, 'F');
         tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
-        doc.text('Désignation', 20, y + 4);
-        doc.text('Référence', 75, y + 4);
-        doc.text('Quantité', 120, y + 4);
-        doc.text('Coût unitaire (DH)', 145, y + 4);
+        doc.text('Designation', 20, y + 4);
+        doc.text('Reference', 75, y + 4);
+        doc.text('Quantite', 120, y + 4);
+        doc.text('Cout unitaire (DH)', 145, y + 4);
         doc.text('Total (DH)', 180, y + 4);
         y += 8;
 
@@ -230,8 +233,8 @@ export class RapportForm implements OnInit {
           if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { fc(gray); }
           doc.rect(10, y - 3, W - 20, 7, 'F');
           doc.setFont('helvetica', 'normal'); doc.setFontSize(8); tc(text);
-          doc.text(p.nom || '—', 14, y + 1);
-          doc.text(p.reference || '—', 75, y + 1);
+          doc.text(p.nom || '-', 14, y + 1);
+          doc.text(p.reference || '-', 75, y + 1);
           doc.text(String(p.quantite || 0), 128, y + 1, { align: 'center' });
           doc.text(String(p.cout || 0), 165, y + 1, { align: 'center' });
           doc.text(String((p.quantite || 0) * (p.cout || 0)), 193, y + 1, { align: 'right' });
@@ -241,7 +244,7 @@ export class RapportForm implements OnInit {
         const totalPieces = this.rapport.pieces.reduce((a: number, p: any) => a + (p.quantite || 0) * (p.cout || 0), 0);
         fc(navy); doc.rect(10, y, W - 20, 7, 'F');
         tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
-        doc.text('TOTAL PIÈCES :', 140, y + 5);
+        doc.text('TOTAL PIECES :', 140, y + 5);
         doc.text(totalPieces.toLocaleString('fr-FR') + ' DH', 193, y + 5, { align: 'right' });
         y += 12;
       }
@@ -250,28 +253,27 @@ export class RapportForm implements OnInit {
         fc(gray); doc.rect(10, y, W - 20, 8, 'F');
         fc(typeColor); doc.rect(10, y, 2.5, 8, 'F');
         doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(10);
-        doc.text('Coût total de l\'intervention :', 15, y + 5.5);
+        doc.text("Cout total de l'intervention :", 15, y + 5.5);
         doc.text(Number(this.rapport.cout).toLocaleString('fr-FR') + ' DH', W - 14, y + 5.5, { align: 'right' });
         y += 12;
       }
     }
 
-    // ── SECTION PRÉVENTIF ──────────────────────────────────────────────────
     if (this.rapport.type === 'PREVENTIF') {
       fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
       tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Opérations préventives effectuées', 14, y + 5);
+      doc.text('Operations preventives effectuees', 14, y + 5);
       y += 10;
       fc(gray); doc.rect(10, y, W - 20, 25, 'F');
       fc(typeColor); doc.rect(10, y, 2.5, 25, 'F');
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9); tc(text);
-      const linesOp = doc.splitTextToSize(this.rapport.operationsEffectuees || '—', W - 28);
+      const linesOp = doc.splitTextToSize(this.rapport.operationsEffectuees || '-', W - 28);
       doc.text(linesOp, 15, y + 6);
       y += 30;
 
       fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
       tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Checklist des opérations', 14, y + 5);
+      doc.text('Checklist des operations', 14, y + 5);
       y += 10;
 
       this.checklistItems.forEach((item, i) => {
@@ -280,7 +282,7 @@ export class RapportForm implements OnInit {
         doc.rect(10, y - 3, W - 20, 7, 'F');
         if (item.fait) { doc.setTextColor(46, 125, 50); } else { doc.setTextColor(189, 189, 189); }
         doc.setFontSize(11);
-        doc.text(item.fait ? '✓' : '○', 16, y + 2);
+        doc.text(item.fait ? 'v' : 'o', 16, y + 2);
         doc.setFontSize(9); doc.setFont('helvetica', 'normal'); tc(text);
         doc.text(item.label, 24, y + 2);
         y += 7;
@@ -288,16 +290,16 @@ export class RapportForm implements OnInit {
       y += 5;
 
       const etats: any = {
-        'BON': 'Bon état — Équipement opérationnel',
-        'ACCEPTABLE': 'État acceptable — Surveillance recommandée',
-        'DEGRADÉ': 'État dégradé — Intervention corrective nécessaire',
+        'BON': 'Bon etat - Equipement operationnel',
+        'ACCEPTABLE': 'Etat acceptable - Surveillance recommandee',
+        'DEGRADÉ': 'Etat degrade - Intervention corrective necessaire',
       };
       fc(gray); doc.rect(10, y, W - 20, 8, 'F');
       fc(typeColor); doc.rect(10, y, 2.5, 8, 'F');
       doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(10);
-      doc.text('État général :', 15, y + 5.5);
+      doc.text('Etat general :', 15, y + 5.5);
       doc.setFont('helvetica', 'normal'); tc(text);
-      doc.text(etats[this.rapport.etatEquipement] || this.rapport.etatEquipement || '—', 55, y + 5.5);
+      doc.text(etats[this.rapport.etatEquipement] || this.rapport.etatEquipement || '-', 55, y + 5.5);
       y += 12;
 
       if (this.rapport.prochaineMaintenance) {
@@ -324,14 +326,13 @@ export class RapportForm implements OnInit {
       }
     }
 
-    // ── SECTION MISE À JOUR ────────────────────────────────────────────────
     if (this.rapport.type === 'MISE_A_JOUR') {
       const secMAJ = [
-        { title: 'Référence FCO Philips', val: this.rapport.referenceFCO || '—' },
-        { title: 'Version avant mise à jour', val: this.rapport.versionAvant || '—' },
-        { title: 'Version après mise à jour', val: this.rapport.versionApres || '—' },
-        { title: 'Description de la mise à jour', val: this.rapport.actions || '—' },
-        { title: 'Tests de validation effectués', val: this.rapport.observations || '—' },
+        { title: 'Reference FCO Philips', val: this.rapport.referenceFCO || '-' },
+        { title: 'Version avant mise a jour', val: this.rapport.versionAvant || '-' },
+        { title: 'Version apres mise a jour', val: this.rapport.versionApres || '-' },
+        { title: 'Description de la mise a jour', val: this.rapport.actions || '-' },
+        { title: 'Tests de validation effectues', val: this.rapport.observations || '-' },
       ];
 
       secMAJ.forEach((sec) => {
@@ -351,13 +352,12 @@ export class RapportForm implements OnInit {
         fc(gray); doc.rect(10, y, W - 20, 8, 'F');
         fc(typeColor); doc.rect(10, y, 2.5, 8, 'F');
         doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(10);
-        doc.text('Coût total de l\'intervention :', 15, y + 5.5);
+        doc.text("Cout total de l'intervention :", 15, y + 5.5);
         doc.text(Number(this.rapport.cout).toLocaleString('fr-FR') + ' DH', W - 14, y + 5.5, { align: 'right' });
         y += 12;
       }
     }
 
-    // ── SIGNATURES ─────────────────────────────────────────────────────────
     y += 10;
     const sigY = Math.min(y, 248);
     fc(gray);
@@ -373,27 +373,17 @@ export class RapportForm implements OnInit {
     doc.text('______________________', 157, sigY + 22, { align: 'center' });
     doc.text('Signature :', 14, sigY + 24);
 
-    // ── FOOTER ─────────────────────────────────────────────────────────────
     const totalPages = doc.getNumberOfPages();
     for (let p = 1; p <= totalPages; p++) {
       doc.setPage(p);
       fc(navy); doc.rect(0, 287, W, 10, 'F');
       tc(white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-      doc.text('SCRIM — BiomédMaint  |  Confidentiel', 14, 293);
-      doc.text(`Page ${p} / ${totalPages}`, W - 14, 293, { align: 'right' });
-      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, W / 2, 293, { align: 'center' });
+      doc.text('SCRIM - BiomédMaint  |  Confidentiel', 14, 293);
+      doc.text('Page ' + p + ' / ' + totalPages, W - 14, 293, { align: 'right' });
+      doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W / 2, 293, { align: 'center' });
     }
 
-    doc.save(`Rapport_${this.rapport.type}_SCRIM_${this.rapport.dateRapport}.pdf`);
-  }
-
-  addPageHeader(doc: jsPDF, navy: number[], white: number[], titre: string): void {
-    doc.setFillColor(navy[0], navy[1], navy[2]);
-    doc.rect(0, 0, 210, 10, 'F');
-    doc.setTextColor(white[0], white[1], white[2]);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.text('SCRIM — BiomédMaint  |  ' + titre, 105, 7, { align: 'center' });
+    doc.save('Rapport_' + this.rapport.type + '_SCRIM_' + this.rapport.dateRapport + '.pdf');
   }
 
   goBack(): void { this.router.navigate(['/rapports']); }
