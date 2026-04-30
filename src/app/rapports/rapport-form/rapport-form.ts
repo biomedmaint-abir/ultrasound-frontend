@@ -32,7 +32,7 @@ export class RapportForm implements OnInit {
 
   rapport: any = {
     type: '',
-    titre: 'Rapport de Maintenance Biomédicale',
+    titre: 'Rapport de Maintenance Biomedicale',
     parc: '',
     periode: '',
     responsable: '',
@@ -132,7 +132,7 @@ export class RapportForm implements OnInit {
     doc.setTextColor(white[0], white[1], white[2]);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
-    doc.text('SCRIM - BiomédMaint  |  ' + titre, 105, 7, { align: 'center' });
+    doc.text('SCRIM  |  ' + titre, 105, 7, { align: 'center' });
   }
 
   genererPDF(): void {
@@ -160,7 +160,7 @@ export class RapportForm implements OnInit {
     doc.setFontSize(17); doc.setFont('helvetica', 'bold'); tc(white);
     doc.text(this.rapport.titre, W / 2 + 20, 16, { align: 'center' });
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.text('Rapport genere par BiomédMaint', W / 2 + 20, 26, { align: 'center' });
+    doc.text('www.scrim.ma', W / 2 + 20, 26, { align: 'center' });
     fc(typeColor); doc.rect(0, 35, W, 2, 'F');
 
     let y = 43;
@@ -378,7 +378,7 @@ export class RapportForm implements OnInit {
       doc.setPage(p);
       fc(navy); doc.rect(0, 287, W, 10, 'F');
       tc(white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-      doc.text('SCRIM - BiomédMaint  |  Confidentiel', 14, 293);
+      doc.text('SCRIM  |  Confidentiel', 14, 293);
       doc.text('Page ' + p + ' / ' + totalPages, W - 14, 293, { align: 'right' });
       doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W / 2, 293, { align: 'center' });
     }
