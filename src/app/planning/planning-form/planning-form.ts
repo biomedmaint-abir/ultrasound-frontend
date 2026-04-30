@@ -125,7 +125,7 @@ export class PlanningForm implements OnInit {
     doc.setFontSize(16); doc.setFont('helvetica', 'bold');
     doc.text(this.planning.titre, W / 2 + 20, 15, { align: 'center' });
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.text('Soumis pour accord client - BiomédMaint', W / 2 + 20, 25, { align: 'center' });
+    doc.text('Soumis pour accord client', W / 2 + 20, 25, { align: 'center' });
     fc(green); doc.rect(0, 35, W, 2, 'F');
 
     let y = 43;
@@ -274,7 +274,7 @@ export class PlanningForm implements OnInit {
       doc.setPage(p);
       fc(navy); doc.rect(0, 287, W, 10, 'F');
       tc(white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-      doc.text('SCRIM - BiomédMaint  |  Document soumis pour accord client', 14, 293);
+      doc.text('SCRIM  |  Document soumis pour accord client', 14, 293);
       doc.text('Page ' + p + ' / ' + totalPages, W - 14, 293, { align: 'right' });
       doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W / 2, 293, { align: 'center' });
     }
