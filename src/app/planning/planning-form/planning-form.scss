@@ -1,0 +1,54 @@
+.page-container { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+.page-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+  h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1b5e20; }
+  p { margin: 4px 0 0; color: #666; font-size: 14px; }
+}
+
+.scrim-header-card {
+  background: linear-gradient(135deg, #1a237e, #1b5e20);
+  border-radius: 16px; padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; box-shadow: 0 4px 20px rgba(26,35,126,0.3);
+}
+
+.scrim-logo {
+  .logo-text { font-size: 28px; font-weight: 900; color: white; letter-spacing: 4px; }
+}
+
+.planning-badge {
+  background: rgba(255,255,255,0.15); color: white;
+  padding: 8px 20px; border-radius: 20px;
+  font-size: 14px; font-weight: 700; letter-spacing: 1px;
+}
+
+.form-card {
+  border-radius: 16px !important; margin-bottom: 20px;
+  border-top: 4px solid #1b5e20 !important;
+}
+
+.rapport-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+  .full-width { grid-column: span 2; }
+}
+
+.operations-header {
+  display: flex; justify-content: flex-end; margin-bottom: 12px;
+}
+
+.operation-row {
+  display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+  .op-select { flex: 2; }
+  .op-small { flex: 1; }
+}
+
+.empty-pieces {
+  text-align: center; padding: 16px; background: #f5f5f5;
+  border-radius: 8px; color: #999; font-size: 14px; margin-bottom: 12px;
+}
+
+.form-actions {
+  display: flex; gap: 12px; justify-content: flex-end;
+  margin-top: 8px; margin-bottom: 32px;
+}

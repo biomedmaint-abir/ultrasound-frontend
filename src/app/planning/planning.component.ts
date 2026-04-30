@@ -52,7 +52,7 @@ export class PlanningComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private router: Router,
+    public router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -71,7 +71,6 @@ export class PlanningComponent implements OnInit {
       },
       error: () => { this.isLoading = false; this.cdr.detectChanges(); }
     });
-
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
       next: (data) => { this.equipements = data; this.cdr.detectChanges(); },
       error: () => {}
@@ -82,19 +81,14 @@ export class PlanningComponent implements OnInit {
     const firstDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     const days = [];
-
     for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
       days.push({ day: null, interventions: [] });
     }
-
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      const dayInterventions = this.interventions.filter(i =>
-        i.dateIntervention?.startsWith(dateStr)
-      );
+      const dayInterventions = this.interventions.filter(i => i.dateIntervention?.startsWith(dateStr));
       days.push({ day: d, date: dateStr, interventions: dayInterventions });
     }
-
     this.calendarDays = days;
     this.cdr.detectChanges();
   }

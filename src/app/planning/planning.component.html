@@ -5,6 +5,9 @@
       <p>{{ monthNames[currentMonth] }} {{ currentYear }}</p>
     </div>
     <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="router.navigate(['/planning/nouveau'])">
+        <mat-icon>picture_as_pdf</mat-icon> Nouveau planning PDF
+      </button>
       <button mat-icon-button (click)="prevMonth()"><mat-icon>chevron_left</mat-icon></button>
       <button mat-icon-button (click)="nextMonth()"><mat-icon>chevron_right</mat-icon></button>
     </div>
