@@ -13,7 +13,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Ne pas rediriger si c'est une requête IA (import image = longue)
       const isAiRequest = req.url.includes('/assistant') ||
                           req.url.includes('/documents') ||
                           req.url.includes('/codes-erreur');
