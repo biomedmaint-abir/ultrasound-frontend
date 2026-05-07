@@ -15,7 +15,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       const isAiRequest = req.url.includes('/assistant') ||
                           req.url.includes('/documents') ||
-                          req.url.includes('/codes-erreur');
+                          req.url.includes('/documents-philips') ||
+                          req.url.includes('/codes-erreur') ||
+                          req.url.includes('anthropic.com');
 
       if ((error.status === 401 || error.status === 403) && !isAiRequest) {
         localStorage.removeItem('token');
