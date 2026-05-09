@@ -30,42 +30,23 @@ export class PlanningForm implements OnInit {
   isLoading = true;
 
   planning: any = {
-    titre: 'Planning de Maintenance Préventive',
+    annee: new Date().getFullYear().toString(),
     client: '',
-    parc: '',
-    equipementId: '',
-    equipementNom: '',
+    ville: '',
+    appareil: '',
+    marque: 'PHILIPS MEDICAL SYSTEMS',
+    numeroSerie: '',
     responsable: '',
+    frequence: 'trimestrielles',
     dateCreation: new Date().toISOString().slice(0, 10),
-    dateDebut: '',
-    dateFin: '',
-    typeMaintenance: 'PREVENTIF',
-    dureeEstimee: null,
-    frequence: '',
-    objectifs: '',
-    operations: [],
-    observations: '',
-    contactClient: '',
-    emailClient: '',
-    telephoneClient: '',
   };
 
-  operationsDisponibles = [
-    'Nettoyage des sondes ultrasonores',
-    'Verification et nettoyage des connecteurs',
-    'Test de l alimentation electrique',
-    'Verification des cables et connections',
-    'Test fonctionnel des modes B, M, Doppler',
-    'Verification de la qualite image',
-    'Nettoyage du panneau de controle',
-    'Test de l imprimante integree',
-    'Verification et mise a jour logiciels',
-    'Test de l archivage et connectivite reseau',
-    'Calibration des parametres acoustiques',
-    'Inspection mecanique generale',
+  visites: { dateDebut: string, dateFin: string }[] = [
+    { dateDebut: '', dateFin: '' },
+    { dateDebut: '', dateFin: '' },
+    { dateDebut: '', dateFin: '' },
+    { dateDebut: '', dateFin: '' },
   ];
-
-  operationsSelectionnees: { operation: string, duree: string, responsable: string }[] = [];
 
   constructor(
     private http: HttpClient,
@@ -86,21 +67,22 @@ export class PlanningForm implements OnInit {
   }
 
   onEquipementChange(): void {
-    const equip = this.equipements.find(e => e.id === this.planning.equipementId);
+    const equip = this.equipements.find(e => e.nom === this.planning.appareil);
     if (equip) {
-      this.planning.equipementNom = equip.nom + ' - ' + (equip.numeroSerie || '');
-      this.planning.parc = equip.parc || '';
+      this.planning.numeroSerie = equip.numeroSerie || '';
       this.planning.client = equip.parc || '';
     }
     this.cdr.detectChanges();
   }
 
-  ajouterOperation(): void {
-    this.operationsSelectionnees.push({ operation: '', duree: '', responsable: '' });
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
-  supprimerOperation(i: number): void {
-    this.operationsSelectionnees.splice(i, 1);
+  getOrdinal(n: number): string {
+    return n === 1 ? '1ere' : n + 'eme';
   }
 
   genererPDF(): void {
@@ -108,178 +90,125 @@ export class PlanningForm implements OnInit {
     const W = 210;
     const navy = [26, 35, 126];
     const blue = [21, 101, 192];
-    const gray = [245, 247, 250];
     const white = [255, 255, 255];
-    const text = [51, 51, 51];
-    const green = [27, 94, 32];
+    const text = [30, 30, 30];
+    const gray = [245, 247, 250];
 
     const fc = (c: number[]) => doc.setFillColor(c[0], c[1], c[2]);
     const tc = (c: number[]) => doc.setTextColor(c[0], c[1], c[2]);
 
-    // HEADER
-    fc(navy); doc.rect(0, 0, W, 35, 'F');
-    fc(blue); doc.roundedRect(10, 7, 40, 20, 2, 2, 'F');
+    // ── HEADER SCRIM ───────────────────────────────────────────────────────
+    fc(navy); doc.rect(0, 0, W, 40, 'F');
+    fc(blue); doc.roundedRect(10, 8, 45, 22, 2, 2, 'F');
     tc(white);
-    doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-    doc.text('SCRIM', 30, 20, { align: 'center' });
-    doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-    doc.text(this.planning.titre, W / 2 + 20, 15, { align: 'center' });
+    doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+    doc.text('SCRIM', 32, 21, { align: 'center' });
+    doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+    doc.text('Societe de Commercialisation et de', 32, 26, { align: 'center' });
+    doc.text('Reparation des Instruments Medicaux', 32, 30, { align: 'center' });
+
+    // Titre principal
+    doc.setFontSize(16); doc.setFont('helvetica', 'bold'); tc(white);
+    doc.text('Planning Maintenances Preventives ' + this.planning.annee, W / 2 + 18, 20, { align: 'center' });
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.text('Soumis pour accord client', W / 2 + 20, 25, { align: 'center' });
-    fc(green); doc.rect(0, 35, W, 2, 'F');
+    doc.text('sav@scrim.ma  |  N Eco Scrim: 0802 000 089', W / 2 + 18, 30, { align: 'center' });
 
-    let y = 43;
+    // Ligne de séparation
+    fc(blue); doc.rect(0, 40, W, 1.5, 'F');
 
-    // INFOS CLIENT
-    fc(green); doc.rect(10, y, W - 20, 7, 'F');
-    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('Informations client', 14, y + 5);
-    y += 10;
+    let y = 55;
 
-    const infosClient = [
-      ['Client / Etablissement :', this.planning.client || '-'],
-      ['Parc :', this.planning.parc || '-'],
-      ['Contact client :', this.planning.contactClient || '-'],
-      ['Email :', this.planning.emailClient || '-'],
-      ['Telephone :', this.planning.telephoneClient || '-'],
+    // ── INFORMATIONS CLIENT ────────────────────────────────────────────────
+    doc.setFontSize(13); doc.setFont('helvetica', 'bold'); tc(navy);
+    doc.text('Informations client', 15, y);
+    y += 3;
+    doc.setDrawColor(navy[0], navy[1], navy[2]);
+    doc.line(15, y, W - 15, y);
+    y += 8;
+
+    const infos = [
+      ['Client', this.planning.client || '—'],
+      ['Ville', this.planning.ville || '—'],
+      ['Appareil', this.planning.appareil || '—'],
+      ['Marque', this.planning.marque || 'PHILIPS MEDICAL SYSTEMS'],
+      ['Numero de Serie', this.planning.numeroSerie || '—'],
     ];
 
-    infosClient.forEach((info, i) => {
-      if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { fc(gray); }
-      doc.rect(10, y - 3, W - 20, 8, 'F');
-      fc(green); doc.rect(10, y - 3, 2.5, 8, 'F');
-      doc.setFont('helvetica', 'bold'); tc(green); doc.setFontSize(9);
-      doc.text(info[0], 15, y + 2);
+    infos.forEach((info, i) => {
+      if (i % 2 === 0) { doc.setFillColor(248, 249, 252); } else { doc.setFillColor(255, 255, 255); }
+      doc.rect(15, y - 4, W - 30, 9, 'F');
+      doc.setFont('helvetica', 'bold'); tc(navy); doc.setFontSize(10);
+      doc.text(info[0] + ' :', 18, y + 1);
       doc.setFont('helvetica', 'normal'); tc(text);
-      doc.text(info[1], 75, y + 2);
-      y += 9;
+      doc.text(info[1], 75, y + 1);
+      y += 10;
     });
-    y += 5;
 
-    // INFOS PLANNING
-    fc(navy); doc.rect(10, y, W - 20, 7, 'F');
-    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('Informations du planning', 14, y + 5);
+    y += 8;
+
+    // ── TEXTE OFFICIEL ────────────────────────────────────────────────────
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); tc(text);
+    const texteOfficiel = `Nous vous saurions gre de trouver ci-apres, les dates retenues au titre des maintenances preventives ${this.planning.frequence} assignees a l appareil precite :`;
+    const lines = doc.splitTextToSize(texteOfficiel, W - 30);
+    doc.text(lines, 15, y);
+    y += lines.length * 7 + 5;
+
+    // ── VISITES ──────────────────────────────────────────────────────────
+    const ordinals = ['1ere', '2eme', '3eme', '4eme'];
+    this.visites.forEach((visite, i) => {
+      if (visite.dateDebut && visite.dateFin) {
+        const d1 = new Date(visite.dateDebut);
+        const d2 = new Date(visite.dateFin);
+        const jour1 = d1.getDate().toString().padStart(2, '0');
+        const jour2 = d2.getDate().toString().padStart(2, '0');
+        const mois = d2.toLocaleDateString('fr-FR', { month: '2-digit' });
+        const annee = d2.getFullYear();
+
+        doc.setFont('helvetica', 'bold'); tc(navy); doc.setFontSize(11);
+        doc.text('•', 18, y);
+        doc.setFont('helvetica', 'normal'); tc(text);
+        doc.text(`${ordinals[i]} Visite : Entre le ${jour1} et le ${jour2}/${mois}/${annee}.`, 25, y);
+        y += 10;
+      }
+    });
+
     y += 10;
 
-    const infosPlanning = [
-      ['Equipement :', this.planning.equipementNom || '-'],
-      ['Type de maintenance :', this.planning.typeMaintenance || '-'],
-      ['Responsable SCRIM :', this.planning.responsable || '-'],
-      ['Date de debut :', this.planning.dateDebut ? new Date(this.planning.dateDebut).toLocaleDateString('fr-FR') : '-'],
-      ['Date de fin :', this.planning.dateFin ? new Date(this.planning.dateFin).toLocaleDateString('fr-FR') : '-'],
-      ['Duree estimee :', this.planning.dureeEstimee ? this.planning.dureeEstimee + ' heures' : '-'],
-      ['Frequence :', this.planning.frequence || '-'],
-      ['Date creation :', new Date(this.planning.dateCreation).toLocaleDateString('fr-FR')],
-    ];
+    // ── LIGNE SÉPARATION ──────────────────────────────────────────────────
+    doc.setDrawColor(200, 200, 200);
+    doc.line(15, y, W - 15, y);
+    y += 15;
 
-    infosPlanning.forEach((info, i) => {
-      if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { fc(gray); }
-      doc.rect(10, y - 3, W - 20, 8, 'F');
-      fc(navy); doc.rect(10, y - 3, 2.5, 8, 'F');
-      doc.setFont('helvetica', 'bold'); tc(navy); doc.setFontSize(9);
-      doc.text(info[0], 15, y + 2);
-      doc.setFont('helvetica', 'normal'); tc(text);
-      doc.text(info[1], 75, y + 2);
-      y += 9;
-    });
-    y += 5;
+    // ── SIGNATURES ────────────────────────────────────────────────────────
+    fc([245, 247, 250]); doc.rect(10, y, W - 20, 35, 'F');
 
-    // OBJECTIFS
-    if (this.planning.objectifs) {
-      fc(navy); doc.rect(10, y, W - 20, 7, 'F');
-      tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Objectifs de la maintenance', 14, y + 5);
-      y += 10;
-      fc(gray); doc.rect(10, y, W - 20, 20, 'F');
-      fc(navy); doc.rect(10, y, 2.5, 20, 'F');
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); tc(text);
-      const linesObj = doc.splitTextToSize(this.planning.objectifs, W - 28);
-      doc.text(linesObj, 15, y + 6);
-      y += 25;
-    }
-
-    // OPERATIONS PLANIFIEES
-    if (this.operationsSelectionnees.length > 0) {
-      if (y > 200) { doc.addPage(); y = 20; }
-      fc(green); doc.rect(10, y, W - 20, 7, 'F');
-      tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Operations planifiees', 14, y + 5);
-      y += 10;
-
-      fc(navy); doc.rect(10, y, W - 20, 6, 'F');
-      tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
-      doc.text('Operation', 14, y + 4);
-      doc.text('Duree estimee', 120, y + 4);
-      doc.text('Responsable', 160, y + 4);
-      y += 8;
-
-      this.operationsSelectionnees.forEach((op, i) => {
-        if (y > 270) { doc.addPage(); y = 20; }
-        if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { fc(gray); }
-        doc.rect(10, y - 3, W - 20, 7, 'F');
-        fc(green); doc.rect(10, y - 3, 2.5, 7, 'F');
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); tc(text);
-        doc.text(op.operation || '-', 15, y + 1);
-        doc.text(op.duree || '-', 120, y + 1);
-        doc.text(op.responsable || '-', 160, y + 1);
-        doc.setDrawColor(220, 220, 220);
-        doc.line(10, y + 4, W - 10, y + 4);
-        y += 7;
-      });
-      y += 5;
-    }
-
-    // OBSERVATIONS
-    if (this.planning.observations) {
-      if (y > 240) { doc.addPage(); y = 20; }
-      fc(navy); doc.rect(10, y, W - 20, 7, 'F');
-      tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Observations', 14, y + 5);
-      y += 10;
-      fc(gray); doc.rect(10, y, W - 20, 20, 'F');
-      fc(navy); doc.rect(10, y, 2.5, 20, 'F');
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); tc(text);
-      const linesObs = doc.splitTextToSize(this.planning.observations, W - 28);
-      doc.text(linesObs, 15, y + 6);
-      y += 25;
-    }
-
-    // ACCORD CLIENT
-    y += 10;
-    const sigY = Math.min(y, 240);
-    fc(gray); doc.rect(10, sigY, W - 20, 35, 'F');
-    fc(green); doc.rect(10, sigY, W - 20, 7, 'F');
+    // Signature gauche — SCRIM
+    fc(navy); doc.rect(10, y, 90, 7, 'F');
     tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('Accord et signatures', 14, sigY + 5);
+    doc.text('Direction Technique SCRIM', 55, y + 5, { align: 'center' });
 
-    fc(gray);
-    doc.rect(10, sigY + 10, 85, 22, 'F');
-    doc.rect(115, sigY + 10, 85, 22, 'F');
-    fc(navy);
-    doc.rect(10, sigY + 10, 85, 6, 'F');
-    doc.rect(115, sigY + 10, 85, 6, 'F');
-    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
-    doc.text('Representant Client', 52, sigY + 14.5, { align: 'center' });
-    doc.text('Responsable SCRIM', 157, sigY + 14.5, { align: 'center' });
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); tc(text);
-    doc.text('Nom :', 14, sigY + 22);
-    doc.text(this.planning.contactClient || '______________________', 52, sigY + 28, { align: 'center' });
-    doc.text(this.planning.responsable || '______________________', 157, sigY + 28, { align: 'center' });
-    doc.text('Signature :', 14, sigY + 31);
+    // Signature droite — Client
+    fc(blue); doc.rect(110, y, 90, 7, 'F');
+    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+    const clientShort = this.planning.client.length > 20 ? this.planning.client.substring(0, 18) + '...' : this.planning.client;
+    doc.text(clientShort || 'Client', 155, y + 5, { align: 'center' });
 
-    // FOOTER
-    const totalPages = doc.getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p);
-      fc(navy); doc.rect(0, 287, W, 10, 'F');
-      tc(white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-      doc.text('SCRIM  |  Document soumis pour accord client', 14, 293);
-      doc.text('Page ' + p + ' / ' + totalPages, W - 14, 293, { align: 'right' });
-      doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W / 2, 293, { align: 'center' });
-    }
+    // Zones signature
+    tc(text); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+    doc.text('Nom et Signature :', 15, y + 18);
+    doc.text('Nom et Signature :', 115, y + 18);
+    doc.setDrawColor(150, 150, 150);
+    doc.line(15, y + 30, 95, y + 30);
+    doc.line(115, y + 30, 195, y + 30);
 
-    doc.save('Planning_Maintenance_SCRIM_' + this.planning.client + '_' + this.planning.dateCreation + '.pdf');
+    // ── FOOTER ────────────────────────────────────────────────────────────
+    fc(navy); doc.rect(0, 287, W, 10, 'F');
+    tc(white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+    doc.text('SCRIM  |  sav@scrim.ma  |  N Eco: 0802 000 089', 14, 293);
+    doc.text('Document confidentiel', W - 14, 293, { align: 'right' });
+    doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W / 2, 293, { align: 'center' });
+
+    doc.save('Planning_Maintenance_SCRIM_' + (this.planning.client || 'Client') + '_' + this.planning.annee + '.pdf');
   }
 
   goBack(): void { this.router.navigate(['/planning']); }
