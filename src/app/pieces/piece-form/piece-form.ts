@@ -29,11 +29,17 @@ export class PieceForm implements OnInit {
   errorMessage = '';
   parcs: string[] = [];
 
-  form = {
+  form: any = {
     nom: '',
     reference: '',
     client: '',
-    prixUnitaire: null as number | null
+    prixUnitaire: null,
+    statut: 'EN_STOCK',
+    clientEchange: '',
+    dateEchange: '',
+    retourFournisseur: false,
+    dateRetourPrevu: '',
+    notesSuivi: ''
   };
 
   constructor(
@@ -45,7 +51,6 @@ export class PieceForm implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Charger les parcs depuis les équipements
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
       next: (data) => {
         this.parcs = [...new Set(data.map((e: any) => e.parc).filter((p: any) => p))];
@@ -61,10 +66,16 @@ export class PieceForm implements OnInit {
       this.pieceService.getById(+id).subscribe({
         next: (data) => {
           this.form = {
-            nom: data.nom,
-            reference: data.reference,
+            nom: data.nom || '',
+            reference: data.reference || '',
             client: data.client || '',
-            prixUnitaire: data.prixUnitaire
+            prixUnitaire: data.prixUnitaire || null,
+            statut: data.statut || 'EN_STOCK',
+            clientEchange: data.clientEchange || '',
+            dateEchange: data.dateEchange || '',
+            retourFournisseur: data.retourFournisseur || false,
+            dateRetourPrevu: data.dateRetourPrevu || '',
+            notesSuivi: data.notesSuivi || ''
           };
           this.isLoading = false;
           this.cdr.detectChanges();
@@ -76,11 +87,19 @@ export class PieceForm implements OnInit {
 
   save(): void {
     this.isSaving = true;
+    const payload = {
+      ...this.form,
+      dateEchange: this.form.dateEchange || null,
+      dateRetourPrevu: this.form.dateRetourPrevu || null,
+    };
     const req$ = this.isEditMode && this.pieceId
-      ? this.pieceService.update(this.pieceId, this.form)
-      : this.pieceService.create(this.form);
+      ? this.pieceService.update(this.pieceId, payload)
+      : this.pieceService.create(payload);
     req$.subscribe({
-      next: (data) => { this.isSaving = false; this.router.navigate(['/pieces', data.id || this.pieceId]); },
+      next: (data) => {
+        this.isSaving = false;
+        this.router.navigate(['/pieces', data.id || this.pieceId]);
+      },
       error: () => { this.errorMessage = 'Erreur sauvegarde.'; this.isSaving = false; }
     });
   }
