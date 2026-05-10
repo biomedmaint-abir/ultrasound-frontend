@@ -160,6 +160,10 @@ export class PieceList implements OnInit {
     });
   }
 
+  countByStatut(statut: string): number {
+    return this.pieces.filter(p => (p.statut || "EN_STOCK") === statut).length;
+  }
+
   goToDetail(id: number): void { this.router.navigate(['/pieces', id]); }
   goToEdit(id: number, e: Event): void { e.stopPropagation(); this.router.navigate(['/pieces', id, 'edit']); }
   goToNew(): void { this.router.navigate(['/pieces/new']); }
