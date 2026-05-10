@@ -32,27 +32,42 @@ export class RapportForm implements OnInit {
 
   rapport: any = {
     type: '',
-    titre: 'Rapport de Maintenance Biomedicale',
-    parc: '',
-    periode: '',
-    responsable: '',
-    observations: '',
+    numeroRapport: '',
+    client: '',
+    ville: '',
+    salle: '',
     dateRapport: new Date().toISOString().slice(0, 10),
     equipementId: '',
     equipementNom: '',
-    duree: null,
-    cout: null,
-    descriptionPanne: '',
-    causes: '',
-    actions: '',
+    numeroSerie: '',
+    utilisationConforme: true,
+    interventionAchevee: true,
+    // Ingénieurs
+    ingenieur1Nom: '',
+    ingenieur1Date: '',
+    ingenieur1Arrivee: '',
+    ingenieur1Depart: '',
+    ingenieur2Nom: '',
+    ingenieur2Date: '',
+    ingenieur2Arrivee: '',
+    ingenieur2Depart: '',
+    // Rapport technique
+    rapportTechnique: '',
     codeErreur: '',
+    // Pièces
     pieces: [],
-    operationsEffectuees: '',
-    etatEquipement: '',
-    prochaineMaintenance: '',
-    referenceFCO: '',
-    versionAvant: '',
-    versionApres: '',
+    // Type intervention
+    typeInstallation: false,
+    typeFormation: false,
+    typeGarantie: false,
+    typePreventif: false,
+    typeCorrectif: false,
+    typeFacturable: false,
+    // Signatures
+    nomClient: '',
+    nomServiceClient: '',
+    fonctionServiceClient: '',
+    etablissementClient: '',
   };
 
   checklistItems = [
@@ -91,26 +106,24 @@ export class RapportForm implements OnInit {
   }
 
   onTypeChange(): void {
-    const titres: any = {
-      'CORRECTIF': 'Rapport de Maintenance Corrective',
-      'PREVENTIF': 'Rapport de Maintenance Preventive',
-      'MISE_A_JOUR': 'Rapport de Mise a Jour Philips',
-    };
-    this.rapport.titre = titres[this.rapport.type] || 'Rapport de Maintenance Biomedicale';
+    this.rapport.typePreventif = this.rapport.type === 'PREVENTIF';
+    this.rapport.typeCorrectif = this.rapport.type === 'CORRECTIF';
     this.cdr.detectChanges();
   }
 
   onEquipementChange(): void {
     const equip = this.equipements.find(e => e.id === this.rapport.equipementId);
     if (equip) {
-      this.rapport.equipementNom = equip.nom + ' - ' + (equip.numeroSerie || '');
-      this.rapport.parc = equip.parc || '';
+      this.rapport.equipementNom = equip.nom || '';
+      this.rapport.numeroSerie = equip.numeroSerie || '';
+      this.rapport.client = equip.parc || '';
+      this.rapport.ville = '';
     }
     this.cdr.detectChanges();
   }
 
   ajouterPiece(): void {
-    this.rapport.pieces.push({ nom: '', reference: '', quantite: 1, cout: 0 });
+    this.rapport.pieces.push({ reference: '', quantite: 1, numeroBs: '', designation: '' });
   }
 
   supprimerPiece(i: number): void {
@@ -118,21 +131,11 @@ export class RapportForm implements OnInit {
   }
 
   onPieceSelectChange(p: any): void {
-    const found = this.piecesDisponibles.find(pd => pd.nom === p.nom);
+    const found = this.piecesDisponibles.find(pd => pd.nom === p.designation);
     if (found) {
       p.reference = found.reference || '';
-      p.cout = found.prixUnitaire || 0;
     }
     this.cdr.detectChanges();
-  }
-
-  addPageHeader(doc: jsPDF, navy: number[], white: number[], titre: string): void {
-    doc.setFillColor(navy[0], navy[1], navy[2]);
-    doc.rect(0, 0, 210, 10, 'F');
-    doc.setTextColor(white[0], white[1], white[2]);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.text('SCRIM  |  ' + titre, 105, 7, { align: 'center' });
   }
 
   genererPDF(): void {
@@ -140,250 +143,229 @@ export class RapportForm implements OnInit {
     const W = 210;
     const navy = [26, 35, 126];
     const blue = [21, 101, 192];
-    const gray = [245, 247, 250];
     const white = [255, 255, 255];
-    const text = [51, 51, 51];
-    const typeColors: any = {
-      'CORRECTIF': [21, 101, 192],
-      'PREVENTIF': [27, 94, 32],
-      'MISE_A_JOUR': [21, 101, 192],
-    };
-    const typeColor = typeColors[this.rapport.type] || navy;
+    const text = [30, 30, 30];
+    const gray = [245, 247, 250];
+    const lightBlue = [227, 242, 253];
+
     const fc = (c: number[]) => doc.setFillColor(c[0], c[1], c[2]);
     const tc = (c: number[]) => doc.setTextColor(c[0], c[1], c[2]);
+    const border = (x: number, y: number, w: number, h: number) => {
+      doc.setDrawColor(150, 150, 150);
+      doc.rect(x, y, w, h);
+    };
 
-    fc(navy); doc.rect(0, 0, W, 35, 'F');
-    fc(blue); doc.roundedRect(10, 7, 40, 20, 2, 2, 'F');
-    tc(white);
-    doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-    doc.text('SCRIM', 30, 20, { align: 'center' });
-    doc.setFontSize(17); doc.setFont('helvetica', 'bold'); tc(white);
-    doc.text(this.rapport.titre, W / 2 + 20, 16, { align: 'center' });
-    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.text('www.scrim.ma', W / 2 + 20, 26, { align: 'center' });
-    fc(typeColor); doc.rect(0, 35, W, 2, 'F');
+    const dateFormatted = this.rapport.dateRapport
+      ? new Date(this.rapport.dateRapport).toLocaleDateString('fr-FR')
+      : '—';
 
-    let y = 43;
+    // ── HEADER ────────────────────────────────────────────────────────────
+    fc(navy); doc.rect(0, 0, W, 22, 'F');
+    fc(blue); doc.roundedRect(8, 4, 38, 14, 1, 1, 'F');
+    tc(white); doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+    doc.text('SCRIM', 27, 13, { align: 'center' });
 
-    fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
-    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('Informations generales', 14, y + 5);
-    y += 10;
+    tc(white); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.text('SCRIM  -  Fiche 34 - Version 01', W / 2 + 15, 9, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    doc.text('N Eco : 0802 000 089  |  sav@scrim.ma', W / 2 + 15, 15, { align: 'center' });
 
-    const infosGen = [
-      ['Equipement :', this.rapport.equipementNom || '-'],
-      ['Parc :', this.rapport.parc || '-'],
-      ['Responsable FSE :', this.rapport.responsable || '-'],
-      ['Periode :', this.rapport.periode || '-'],
-      ['Date :', new Date(this.rapport.dateRapport).toLocaleDateString('fr-FR')],
-      ['Duree :', this.rapport.duree ? this.rapport.duree + ' heures' : '-'],
+    // Titre rapport
+    fc(blue); doc.rect(0, 22, W, 10, 'F');
+    tc(white); doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+    doc.text('RAPPORT D INTERVENTION  -  N ' + (this.rapport.numeroRapport || '______'), W / 2, 29, { align: 'center' });
+
+    let y = 36;
+
+    // ── INFOS CLIENT ──────────────────────────────────────────────────────
+    const colW = (W - 20) / 2;
+
+    // Cadre gauche
+    border(10, y, colW, 30);
+    doc.setFont('helvetica', 'bold'); tc(navy); doc.setFontSize(8.5);
+    doc.text('Client      :', 13, y + 7);
+    doc.text('Ville         :', 13, y + 14);
+    doc.text('Materiel   :', 13, y + 21);
+    doc.text('N de serie :', 13, y + 28);
+    doc.setFont('helvetica', 'normal'); tc(text);
+    doc.text(this.rapport.client || '—', 40, y + 7);
+    doc.text(this.rapport.ville || '—', 40, y + 14);
+    doc.text(this.rapport.equipementNom || '—', 40, y + 21);
+    doc.text(this.rapport.numeroSerie || '—', 40, y + 28);
+
+    // Cadre droit
+    border(10 + colW, y, colW, 30);
+    doc.setFont('helvetica', 'bold'); tc(navy);
+    doc.text('Date                    :', 13 + colW, y + 7);
+    doc.text('Salle                    :', 13 + colW, y + 14);
+    doc.text('Utilisation conforme :', 13 + colW, y + 21);
+    doc.setFont('helvetica', 'normal'); tc(text);
+    doc.text(dateFormatted, 55 + colW, y + 7);
+    doc.text(this.rapport.salle || '—', 55 + colW, y + 14);
+    doc.text(this.rapport.utilisationConforme ? '[X] Oui   [ ] Non' : '[ ] Oui   [X] Non', 55 + colW, y + 21);
+
+    y += 34;
+
+    // ── INGÉNIEURS ────────────────────────────────────────────────────────
+    fc(navy); doc.rect(10, y, W - 20, 7, 'F');
+    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    doc.text('INGENIEURS INTERVENANTS', W / 2, y + 5, { align: 'center' });
+    y += 7;
+
+    // En-têtes tableau
+    fc(lightBlue); doc.rect(10, y, W - 20, 6, 'F');
+    border(10, y, W - 20, 6);
+    tc(navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+    doc.text('Nom', 30, y + 4);
+    doc.text('Date', 90, y + 4);
+    doc.text('H. Arrivee', 130, y + 4);
+    doc.text('H. Depart', 165, y + 4);
+    y += 6;
+
+    // Ligne ingénieur 1
+    border(10, y, W - 20, 8);
+    tc(text); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+    doc.text(this.rapport.ingenieur1Nom || '—', 15, y + 5.5);
+    doc.text(this.rapport.ingenieur1Date ? new Date(this.rapport.ingenieur1Date).toLocaleDateString('fr-FR') : '—', 85, y + 5.5);
+    doc.text(this.rapport.ingenieur1Arrivee || '—', 130, y + 5.5);
+    doc.text(this.rapport.ingenieur1Depart || '—', 165, y + 5.5);
+    y += 8;
+
+    // Ligne ingénieur 2
+    border(10, y, W - 20, 8);
+    tc(text); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+    doc.text(this.rapport.ingenieur2Nom || '—', 15, y + 5.5);
+    doc.text(this.rapport.ingenieur2Date ? new Date(this.rapport.ingenieur2Date).toLocaleDateString('fr-FR') : '—', 85, y + 5.5);
+    doc.text(this.rapport.ingenieur2Arrivee || '—', 130, y + 5.5);
+    doc.text(this.rapport.ingenieur2Depart || '—', 165, y + 5.5);
+    y += 12;
+
+    // ── RAPPORT TECHNIQUE ─────────────────────────────────────────────────
+    fc(navy); doc.rect(10, y, W - 20, 7, 'F');
+    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    doc.text('RAPPORT TECHNIQUE', W / 2, y + 5, { align: 'center' });
+    y += 7;
+
+    border(10, y, W - 20, 30);
+    doc.setFont('helvetica', 'normal'); tc(text); doc.setFontSize(8.5);
+    const techLines = doc.splitTextToSize(this.rapport.rapportTechnique || '—', W - 26);
+    doc.text(techLines, 14, y + 7);
+    y += 34;
+
+    // ── PIÈCES FOURNIES ───────────────────────────────────────────────────
+    fc(navy); doc.rect(10, y, W - 20, 7, 'F');
+    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    doc.text('PIECES FOURNIES', W / 2, y + 5, { align: 'center' });
+    y += 7;
+
+    // En-têtes pièces
+    fc(lightBlue); doc.rect(10, y, W - 20, 6, 'F');
+    border(10, y, W - 20, 6);
+    tc(navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+    doc.text('Ref. pieces', 20, y + 4);
+    doc.text('Qte', 72, y + 4);
+    doc.text('N BS', 95, y + 4);
+    doc.text('Designation', 130, y + 4);
+    y += 6;
+
+    if (this.rapport.pieces.length === 0) {
+      border(10, y, W - 20, 8);
+      tc(text); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+      doc.text('—', 50, y + 5.5);
+      doc.text('—', 72, y + 5.5);
+      doc.text('—', 95, y + 5.5);
+      doc.text('—', 130, y + 5.5);
+      y += 8;
+    } else {
+      this.rapport.pieces.forEach((p: any) => {
+        border(10, y, W - 20, 8);
+        tc(text); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text(p.reference || '—', 15, y + 5.5);
+        doc.text(String(p.quantite || '—'), 72, y + 5.5);
+        doc.text(p.numeroBs || '—', 95, y + 5.5);
+        doc.text(p.designation || '—', 130, y + 5.5);
+        y += 8;
+      });
+    }
+    y += 6;
+
+    // ── TYPE D'INTERVENTION ───────────────────────────────────────────────
+    fc(navy); doc.rect(10, y, W - 20, 7, 'F');
+    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    doc.text("TYPE D INTERVENTION", W / 2, y + 5, { align: 'center' });
+    y += 7;
+
+    border(10, y, W - 20, 42);
+    tc(text); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+
+    const types = [
+      { label: 'Installation / Mise en service', val: this.rapport.typeInstallation },
+      { label: 'Formation', val: this.rapport.typeFormation },
+      { label: 'Garantie', val: this.rapport.typeGarantie },
+      { label: 'Maintenance preventive', val: this.rapport.typePreventif },
+      { label: 'Maintenance corrective', val: this.rapport.typeCorrectif },
+      { label: 'Intervention facturable', val: this.rapport.typeFacturable },
     ];
 
-    infosGen.forEach((info, i) => {
-      if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { fc(gray); }
-      doc.rect(10, y - 3, W - 20, 8, 'F');
-      fc(typeColor); doc.rect(10, y - 3, 2.5, 8, 'F');
-      doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(9);
-      doc.text(info[0], 15, y + 2);
-      doc.setFont('helvetica', 'normal'); tc(text);
-      doc.text(info[1], 70, y + 2);
-      y += 9;
+    types.forEach((t, i) => {
+      const col = i < 3 ? 0 : 1;
+      const row = i < 3 ? i : i - 3;
+      const x = col === 0 ? 15 : 110;
+      const ty = y + 7 + row * 9;
+      doc.text(t.val ? '[X]' : '[ ]', x, ty);
+      doc.text(t.label, x + 8, ty);
     });
-    y += 5;
 
-    if (this.rapport.type === 'CORRECTIF') {
-      const sections = [
-        { title: 'Code erreur Philips', val: this.rapport.codeErreur || '-' },
-        { title: 'Description de la panne', val: this.rapport.descriptionPanne || '-' },
-        { title: 'Causes identifiees', val: this.rapport.causes || '-' },
-        { title: 'Actions correctives effectuees', val: this.rapport.actions || '-' },
-        { title: 'Observations finales', val: this.rapport.observations || '-' },
-      ];
+    y += 42;
 
-      sections.forEach((sec) => {
-        if (y > 240) { doc.addPage(); this.addPageHeader(doc, navy, white, this.rapport.titre); y = 25; }
-        fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
-        tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-        doc.text(sec.title, 14, y + 5);
-        y += 10;
-        fc(gray); doc.rect(10, y, W - 20, 20, 'F');
-        fc(typeColor); doc.rect(10, y, 2.5, 20, 'F');
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); tc(text);
-        const lines = doc.splitTextToSize(sec.val, W - 28);
-        doc.text(lines, 15, y + 6);
-        y += 24;
-      });
+    // Intervention achevée
+    border(10, y, W - 20, 8);
+    tc(navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+    doc.text('Intervention achevee :', 15, y + 5.5);
+    tc(text); doc.setFont('helvetica', 'normal');
+    doc.text(this.rapport.interventionAchevee ? '[X] Oui   [ ] Non' : '[ ] Oui   [X] Non', 65, y + 5.5);
+    y += 12;
 
-      if (this.rapport.pieces.length > 0) {
-        if (y > 220) { doc.addPage(); this.addPageHeader(doc, navy, white, this.rapport.titre); y = 25; }
-        fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
-        tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-        doc.text('Pieces de rechange utilisees', 14, y + 5);
-        y += 10;
-        fc(navy); doc.rect(10, y, W - 20, 6, 'F');
-        tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
-        doc.text('Designation', 20, y + 4);
-        doc.text('Reference', 75, y + 4);
-        doc.text('Quantite', 120, y + 4);
-        doc.text('Cout unitaire (DH)', 145, y + 4);
-        doc.text('Total (DH)', 180, y + 4);
-        y += 8;
+    // ── SIGNATURES ────────────────────────────────────────────────────────
+    fc(navy); doc.rect(10, y, W - 20, 7, 'F');
+    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    doc.text('SIGNATURES', W / 2, y + 5, { align: 'center' });
+    y += 7;
 
-        this.rapport.pieces.forEach((p: any, i: number) => {
-          if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { fc(gray); }
-          doc.rect(10, y - 3, W - 20, 7, 'F');
-          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); tc(text);
-          doc.text(p.nom || '-', 14, y + 1);
-          doc.text(p.reference || '-', 75, y + 1);
-          doc.text(String(p.quantite || 0), 128, y + 1, { align: 'center' });
-          doc.text(String(p.cout || 0), 165, y + 1, { align: 'center' });
-          doc.text(String((p.quantite || 0) * (p.cout || 0)), 193, y + 1, { align: 'right' });
-          y += 7;
-        });
+    const sigColW = (W - 20) / 3;
 
-        const totalPieces = this.rapport.pieces.reduce((a: number, p: any) => a + (p.quantite || 0) * (p.cout || 0), 0);
-        fc(navy); doc.rect(10, y, W - 20, 7, 'F');
-        tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
-        doc.text('TOTAL PIECES :', 140, y + 5);
-        doc.text(totalPieces.toLocaleString('fr-FR') + ' DH', 193, y + 5, { align: 'right' });
-        y += 12;
-      }
+    // En-têtes signatures
+    fc(lightBlue); doc.rect(10, y, W - 20, 6, 'F');
+    border(10, y, W - 20, 6);
+    tc(navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+    doc.text('Intervenant', 10 + sigColW / 2, y + 4, { align: 'center' });
+    doc.text('Client', 10 + sigColW + sigColW / 2, y + 4, { align: 'center' });
+    doc.text('Service client', 10 + 2 * sigColW + sigColW / 2, y + 4, { align: 'center' });
+    y += 6;
 
-      if (this.rapport.cout) {
-        fc(gray); doc.rect(10, y, W - 20, 8, 'F');
-        fc(typeColor); doc.rect(10, y, 2.5, 8, 'F');
-        doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(10);
-        doc.text("Cout total de l'intervention :", 15, y + 5.5);
-        doc.text(Number(this.rapport.cout).toLocaleString('fr-FR') + ' DH', W - 14, y + 5.5, { align: 'right' });
-        y += 12;
-      }
-    }
+    border(10, y, W - 20, 28);
+    doc.setDrawColor(150, 150, 150);
+    doc.line(10 + sigColW, y, 10 + sigColW, y + 28);
+    doc.line(10 + 2 * sigColW, y, 10 + 2 * sigColW, y + 28);
 
-    if (this.rapport.type === 'PREVENTIF') {
-      fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
-      tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Operations preventives effectuees', 14, y + 5);
-      y += 10;
-      fc(gray); doc.rect(10, y, W - 20, 25, 'F');
-      fc(typeColor); doc.rect(10, y, 2.5, 25, 'F');
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); tc(text);
-      const linesOp = doc.splitTextToSize(this.rapport.operationsEffectuees || '-', W - 28);
-      doc.text(linesOp, 15, y + 6);
-      y += 30;
+    tc(text); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    // Colonne intervenant
+    doc.text('(signe)', 10 + sigColW / 2, y + 15, { align: 'center' });
+    // Colonne client
+    doc.text(this.rapport.nomClient || '—', 10 + sigColW + sigColW / 2, y + 10, { align: 'center' });
+    // Colonne service client
+    doc.text(this.rapport.nomServiceClient || '—', 10 + 2 * sigColW + sigColW / 2, y + 8, { align: 'center' });
+    doc.text(this.rapport.fonctionServiceClient || '—', 10 + 2 * sigColW + sigColW / 2, y + 14, { align: 'center' });
+    doc.text(this.rapport.etablissementClient || '—', 10 + 2 * sigColW + sigColW / 2, y + 20, { align: 'center' });
+    y += 32;
 
-      fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
-      tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-      doc.text('Checklist des operations', 14, y + 5);
-      y += 10;
+    // ── FOOTER ────────────────────────────────────────────────────────────
+    fc(navy); doc.rect(0, 287, W, 10, 'F');
+    tc(white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
+    doc.text('Avenue Mohamed Elyazidi, Villa N7, Bloc D, Secteur 9, Hay Riad - Rabat', W / 2, 291, { align: 'center' });
+    doc.text('Tel : +212 (5) 37 56 64 84  |  Fax : +212 (5) 37 56 64 85  |  www.scrim.ma', W / 2, 295, { align: 'center' });
 
-      this.checklistItems.forEach((item, i) => {
-        if (y > 270) { doc.addPage(); this.addPageHeader(doc, navy, white, this.rapport.titre); y = 25; }
-        if (i % 2 === 0) { doc.setFillColor(255, 255, 255); } else { fc(gray); }
-        doc.rect(10, y - 3, W - 20, 7, 'F');
-        if (item.fait) { doc.setTextColor(46, 125, 50); } else { doc.setTextColor(189, 189, 189); }
-        doc.setFontSize(11);
-        doc.text(item.fait ? 'v' : 'o', 16, y + 2);
-        doc.setFontSize(9); doc.setFont('helvetica', 'normal'); tc(text);
-        doc.text(item.label, 24, y + 2);
-        y += 7;
-      });
-      y += 5;
-
-      const etats: any = {
-        'BON': 'Bon etat - Equipement operationnel',
-        'ACCEPTABLE': 'Etat acceptable - Surveillance recommandee',
-        'DEGRADÉ': 'Etat degrade - Intervention corrective necessaire',
-      };
-      fc(gray); doc.rect(10, y, W - 20, 8, 'F');
-      fc(typeColor); doc.rect(10, y, 2.5, 8, 'F');
-      doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(10);
-      doc.text('Etat general :', 15, y + 5.5);
-      doc.setFont('helvetica', 'normal'); tc(text);
-      doc.text(etats[this.rapport.etatEquipement] || this.rapport.etatEquipement || '-', 55, y + 5.5);
-      y += 12;
-
-      if (this.rapport.prochaineMaintenance) {
-        fc(gray); doc.rect(10, y, W - 20, 8, 'F');
-        fc(typeColor); doc.rect(10, y, 2.5, 8, 'F');
-        doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(10);
-        doc.text('Prochaine maintenance :', 15, y + 5.5);
-        doc.setFont('helvetica', 'normal'); tc(text);
-        doc.text(new Date(this.rapport.prochaineMaintenance).toLocaleDateString('fr-FR'), 80, y + 5.5);
-        y += 12;
-      }
-
-      if (this.rapport.observations) {
-        fc(typeColor); doc.rect(10, y, W - 20, 7, 'F');
-        tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-        doc.text('Recommandations', 14, y + 5);
-        y += 10;
-        fc(gray); doc.rect(10, y, W - 20, 20, 'F');
-        fc(typeColor); doc.rect(10, y, 2.5, 20, 'F');
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); tc(text);
-        const linesObs = doc.splitTextToSize(this.rapport.observations, W - 28);
-        doc.text(linesObs, 15, y + 6);
-        y += 24;
-      }
-    }
-
-    if (this.rapport.type === 'MISE_A_JOUR') {
-      const secMAJ = [
-        { title: 'Reference FCO Philips', val: this.rapport.referenceFCO || '-' },
-        { title: 'Version avant mise a jour', val: this.rapport.versionAvant || '-' },
-        { title: 'Version apres mise a jour', val: this.rapport.versionApres || '-' },
-        { title: 'Description de la mise a jour', val: this.rapport.actions || '-' },
-        { title: 'Tests de validation effectues', val: this.rapport.observations || '-' },
-      ];
-
-      secMAJ.forEach((sec) => {
-        if (y > 240) { doc.addPage(); this.addPageHeader(doc, navy, white, this.rapport.titre); y = 25; }
-        fc(gray); doc.rect(10, y - 3, W - 20, 8, 'F');
-        fc(typeColor); doc.rect(10, y - 3, 2.5, 8, 'F');
-        doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(9);
-        doc.text(sec.title + ' :', 15, y + 2);
-        doc.setFont('helvetica', 'normal'); tc(text);
-        const linesMAJ = doc.splitTextToSize(sec.val, W - 80);
-        doc.text(linesMAJ, 80, y + 2);
-        y += 12;
-      });
-
-      if (this.rapport.cout) {
-        y += 5;
-        fc(gray); doc.rect(10, y, W - 20, 8, 'F');
-        fc(typeColor); doc.rect(10, y, 2.5, 8, 'F');
-        doc.setFont('helvetica', 'bold'); tc(typeColor); doc.setFontSize(10);
-        doc.text("Cout total de l'intervention :", 15, y + 5.5);
-        doc.text(Number(this.rapport.cout).toLocaleString('fr-FR') + ' DH', W - 14, y + 5.5, { align: 'right' });
-        y += 12;
-      }
-    }
-
-    y += 10;
-    const sigY = Math.min(y, 248);
-    fc(gray);
-    doc.rect(10, sigY, 85, 28, 'F'); doc.rect(115, sigY, 85, 28, 'F');
-    fc(typeColor);
-    doc.rect(10, sigY, 85, 6, 'F'); doc.rect(115, sigY, 85, 6, 'F');
-    tc(white); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
-    doc.text('Responsable technique / FSE', 52, sigY + 4.5, { align: 'center' });
-    doc.text('Responsable SCRIM', 157, sigY + 4.5, { align: 'center' });
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); tc(text);
-    doc.text('Nom :', 14, sigY + 14);
-    doc.text(this.rapport.responsable || '______________________', 52, sigY + 22, { align: 'center' });
-    doc.text('______________________', 157, sigY + 22, { align: 'center' });
-    doc.text('Signature :', 14, sigY + 24);
-
-    const totalPages = doc.getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p);
-      fc(navy); doc.rect(0, 287, W, 10, 'F');
-      tc(white); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-      doc.text('SCRIM  |  Confidentiel', 14, 293);
-      doc.text('Page ' + p + ' / ' + totalPages, W - 14, 293, { align: 'right' });
-      doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W / 2, 293, { align: 'center' });
-    }
-
-    doc.save('Rapport_' + this.rapport.type + '_SCRIM_' + this.rapport.dateRapport + '.pdf');
+    doc.save('Rapport_Intervention_SCRIM_' + (this.rapport.numeroRapport || 'N') + '_' + this.rapport.dateRapport + '.pdf');
   }
 
   goBack(): void { this.router.navigate(['/rapports']); }
