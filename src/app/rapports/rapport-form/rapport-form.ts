@@ -28,7 +28,7 @@ export class RapportForm implements OnInit {
   equipements: any[] = [];
   piecesDisponibles: any[] = [];
   parcsList: string[] = [];
-  isLoading = true;
+  isLoading = false;
 
   rapport: any = {
     type: '',
