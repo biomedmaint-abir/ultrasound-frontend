@@ -9,7 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
+import { StatutFilterPipe } from '../../shared/statut-filter.pipe';
 import { PieceService } from '../../services/piece';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-piece-list',
@@ -18,7 +23,9 @@ import { PieceService } from '../../services/piece';
     CommonModule, FormsModule,
     MatTableModule, MatButtonModule, MatIconModule,
     MatInputModule, MatFormFieldModule,
-    MatTooltipModule, MatProgressSpinnerModule
+    MatTooltipModule, MatProgressSpinnerModule,
+    MatSelectModule, MatDialogModule,
+    StatutFilterPipe
   ],
   templateUrl: './piece-list.html',
   styleUrl: './piece-list.scss'
@@ -27,12 +34,35 @@ export class PieceList implements OnInit {
   pieces: any[] = [];
   filtered: any[] = [];
   search = '';
+  filterStatut = '';
   isLoading = true;
   hasError = false;
-  displayedColumns = ['id', 'nom', 'reference', 'client', 'prixUnitaire', 'actions'];
+
+  displayedColumns = ['id', 'nom', 'reference', 'client', 'prixUnitaire', 'statut', 'clientEchange', 'retourFournisseur', 'actions'];
+
+  // Modale suivi
+  showSuiviModal = false;
+  selectedPiece: any = null;
+  suiviForm: any = {
+    statut: '',
+    clientEchange: '',
+    dateEchange: '',
+    retourFournisseur: false,
+    dateRetourPrevu: '',
+    notesSuivi: ''
+  };
+
+  parcs = [
+    'CHU Tanger', 'HCZ Rabat', 'CHU Mohamed VI Oujda',
+    'Clinique Tarik Ibn Ziyad', 'HCK Casablanca',
+    'Clinique Slaoui Rabat', 'ODM Fes', 'Clinique Ibn Sina Tanger',
+    'Clinique Dar DMANA', 'Dr Lamhani Marrakech',
+    'Dr SAFI Asfi', 'Dr Boudhar Safi', 'Dr ESSAKET Bani Mellal'
+  ];
 
   constructor(
     private pieceService: PieceService,
+    private http: HttpClient,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -54,9 +84,80 @@ export class PieceList implements OnInit {
 
   applyFilter(): void {
     const q = this.search.toLowerCase();
-    this.filtered = this.pieces.filter(p =>
-      p.nom?.toLowerCase().includes(q) || p.reference?.toLowerCase().includes(q)
-    );
+    this.filtered = this.pieces.filter(p => {
+      const matchSearch = p.nom?.toLowerCase().includes(q) || p.reference?.toLowerCase().includes(q);
+      const matchStatut = !this.filterStatut || p.statut === this.filterStatut;
+      return matchSearch && matchStatut;
+    });
+  }
+
+  getStatutClass(statut: string): string {
+    switch(statut) {
+      case 'EN_STOCK': return 'statut-stock';
+      case 'DEFECTUEUSE': return 'statut-defect';
+      case 'EN_ATTENTE_RETOUR': return 'statut-attente';
+      case 'RETOURNEE': return 'statut-retour';
+      default: return 'statut-stock';
+    }
+  }
+
+  getStatutLabel(statut: string): string {
+    switch(statut) {
+      case 'EN_STOCK': return '✅ En stock';
+      case 'DEFECTUEUSE': return '❌ Défectueuse';
+      case 'EN_ATTENTE_RETOUR': return '⏳ Attente retour';
+      case 'RETOURNEE': return '🔄 Retournée';
+      default: return '✅ En stock';
+    }
+  }
+
+  ouvrirSuivi(piece: any, event: Event): void {
+    event.stopPropagation();
+    this.selectedPiece = piece;
+    this.suiviForm = {
+      statut: piece.statut || 'EN_STOCK',
+      clientEchange: piece.clientEchange || '',
+      dateEchange: piece.dateEchange || '',
+      retourFournisseur: piece.retourFournisseur || false,
+      dateRetourPrevu: piece.dateRetourPrevu || '',
+      notesSuivi: piece.notesSuivi || ''
+    };
+    this.showSuiviModal = true;
+    this.cdr.detectChanges();
+  }
+
+  fermerSuivi(): void {
+    this.showSuiviModal = false;
+    this.selectedPiece = null;
+    this.cdr.detectChanges();
+  }
+
+  sauvegarderSuivi(): void {
+    if (!this.selectedPiece) return;
+    const payload = {
+      ...this.selectedPiece,
+      statut: this.suiviForm.statut,
+      clientEchange: this.suiviForm.clientEchange,
+      dateEchange: this.suiviForm.dateEchange || null,
+      retourFournisseur: this.suiviForm.retourFournisseur,
+      dateRetourPrevu: this.suiviForm.dateRetourPrevu || null,
+      notesSuivi: this.suiviForm.notesSuivi
+    };
+    this.http.put(`${environment.apiUrl}/pieces/${this.selectedPiece.id}`, payload).subscribe({
+      next: () => {
+        this.fermerSuivi();
+        this.load();
+      },
+      error: () => { alert('Erreur lors de la sauvegarde'); }
+    });
+  }
+
+  changerStatutRapide(piece: any, statut: string, event: Event): void {
+    event.stopPropagation();
+    const payload = { ...piece, statut };
+    this.http.put(`${environment.apiUrl}/pieces/${piece.id}`, payload).subscribe({
+      next: () => this.load()
+    });
   }
 
   goToDetail(id: number): void { this.router.navigate(['/pieces', id]); }
