@@ -121,63 +121,66 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
     this.isAnalyzingImage = true;
     this.cdr.detectChanges();
 
-    // Simulation réaliste avec vrais codes erreurs Philips
-    const mockResponses = [
-      {
-        code: 'ERR-042',
-        symptomes: 'Écran noir au démarrage, absence d\'image sur le moniteur principal',
-        causesProbables: 'Défaillance de l\'alimentation VPPM, court-circuit sur la carte EBOX',
-        actionsCorrectives: '1. Vérifier les connexions du Power Supply VPPM\n2. Tester la tension de sortie (doit être 12V)\n3. Remplacer le Power Supply VPPM si tension incorrecte\n4. Vérifier la carte EBOX',
-        piecesConcernees: 'Power Supply VPPM, EBOX, Power Regulator Board'
-      },
-      {
-        code: 'ERR-103',
-        symptomes: 'Image dégradée, artefacts visuels, perte de signal sur sonde convexe',
-        causesProbables: 'Défaillance du module d\'acquisition IMB2, connecteur sonde oxydé',
-        actionsCorrectives: '1. Nettoyer les connecteurs de la sonde\n2. Tester avec une autre sonde\n3. Vérifier le module IMB2\n4. Remplacer IMB2 si le problème persiste',
-        piecesConcernees: 'IMB2, Acquisition Module, connecteur sonde'
-      },
-      {
-        code: 'ERR-215',
-        symptomes: 'Perte de connectivité réseau DICOM, impossibilité d\'envoyer les images au PACS',
-        causesProbables: 'Défaillance de la carte AIO, configuration réseau incorrecte',
-        actionsCorrectives: '1. Vérifier la configuration IP de l\'équipement\n2. Tester le câble réseau\n3. Redémarrer le service DICOM\n4. Remplacer la carte AIO si nécessaire',
-        piecesConcernees: 'AIO, carte réseau, User Interface'
-      }
-    ];
-
-    // Sélectionner une réponse aléatoire
-    const randomData = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-
-    // Simuler le délai d'analyse (3 secondes)
-    setTimeout(() => {
+    const reader = new FileReader();
+    reader.onerror = () => {
       this.isAnalyzingImage = false;
-      this.sauvegarderDocument(randomData);
-
       this.messages.push({
         type: 'bot',
-        text: `🔍 <strong>Analyse de l'image terminée !</strong><br><br>
-          📋 <strong>Code :</strong> ${randomData.code}<br>
-          🔴 <strong>Symptômes :</strong> ${randomData.symptomes}<br>
-          🧠 <strong>Causes :</strong> ${randomData.causesProbables}<br>
-          🔧 <strong>Actions :</strong> ${randomData.actionsCorrectives}<br>
-          🔩 <strong>Pièces :</strong> ${randomData.piecesConcernees}<br><br>
-          💡 <em>Voulez-vous aussi ajouter ce cas à la base de codes erreur ?</em>`,
+        text: '❌ <strong>Lecture du fichier impossible.</strong> Veuillez réessayer avec une autre image.',
         time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
       });
-
-      this.learnForm = {
-        code: randomData.code,
-        symptomes: randomData.symptomes,
-        causesProbables: randomData.causesProbables,
-        actionsCorrectives: randomData.actionsCorrectives,
-        piecesConcernees: randomData.piecesConcernees,
-        tempsResolutionMoyen: null
-      };
-      this.showLearnForm = true;
       this.cdr.detectChanges();
-    }, 3000);
+    };
+    reader.onload = () => {
+      const result = reader.result as string;
+      const comma = result.indexOf(',');
+      const base64 = comma >= 0 ? result.substring(comma + 1) : result;
+      const mediaType = file.type && file.type.length > 0 ? file.type : 'image/jpeg';
 
+      this.http
+        .post<any>(`${environment.apiUrl}/assistant/analyze-image`, { imageBase64: base64, mediaType })
+        .subscribe({
+          next: (data) => {
+            this.isAnalyzingImage = false;
+            this.sauvegarderDocument(data);
+
+            this.messages.push({
+              type: 'bot',
+              text: `🔍 <strong>Analyse de l'image terminée !</strong><br><br>
+          📋 <strong>Code :</strong> ${data.code ?? '—'}<br>
+          🔴 <strong>Symptômes :</strong> ${data.symptomes ?? ''}<br>
+          🧠 <strong>Causes :</strong> ${data.causesProbables ?? ''}<br>
+          🔧 <strong>Actions :</strong> ${data.actionsCorrectives ?? ''}<br>
+          🔩 <strong>Pièces :</strong> ${data.piecesConcernees ?? '—'}<br><br>
+          💡 <em>Voulez-vous aussi ajouter ce cas à la base de codes erreur ?</em>`,
+              time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            this.learnForm = {
+              code: data.code ?? '',
+              symptomes: data.symptomes ?? '',
+              causesProbables: data.causesProbables ?? '',
+              actionsCorrectives: data.actionsCorrectives ?? '',
+              piecesConcernees: data.piecesConcernees ?? '',
+              tempsResolutionMoyen: null
+            };
+            this.showLearnForm = true;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.isAnalyzingImage = false;
+            const backendMsg = err?.error?.error;
+            const detail = typeof backendMsg === 'string' ? backendMsg : '';
+            this.messages.push({
+              type: 'bot',
+              text: `❌ <strong>L'analyse de l'image a échoué.</strong>${detail ? ' ' + detail : ''}`,
+              time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+            });
+            this.cdr.detectChanges();
+          }
+        });
+    };
+    reader.readAsDataURL(file);
 
     event.target.value = '';
   }
