@@ -1,148 +1,70 @@
 .login-container {
   display: flex;
   min-height: 100vh;
-}
-
-.login-left {
-  flex: 1;
-  background: linear-gradient(160deg, #1C2B5A 0%, #2563EB 100%);
-  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px;
-
-  .brand-section {
-    color: white;
-    text-align: center;
-  }
-
-  .scrim-logo {
-    display: inline-block;
-    background: white;
-    border-radius: 16px;
-    padding: 12px 28px;
-    margin-bottom: 28px;
-
-    .scrim-text {
-      font-size: 32px;
-      font-weight: 900;
-      color: #1C2B5A;
-      letter-spacing: 6px;
-    }
-  }
-
-  .app-name {
-    font-size: 42px;
-    font-weight: 800;
-    color: white;
-    margin: 0 0 6px;
-    letter-spacing: 1px;
-  }
-
-  .app-by {
-    font-size: 16px;
-    color: rgba(255,255,255,0.7);
-    margin: 0 0 20px;
-    font-style: italic;
-  }
-
-  .app-desc {
-    font-size: 15px;
-    color: rgba(255,255,255,0.85);
-    line-height: 1.7;
-    margin: 0 0 40px;
-  }
-
-  .stats {
-    display: flex;
-    gap: 32px;
-    justify-content: center;
-
-    .stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255,255,255,0.12);
-      border-radius: 16px;
-      padding: 16px 24px;
-
-      .stat-num {
-        font-size: 32px;
-        font-weight: 800;
-        color: white;
-      }
-
-      .stat-lbl {
-        font-size: 11px;
-        color: rgba(255,255,255,0.7);
-        margin-top: 4px;
-        text-align: center;
-      }
-    }
-  }
-}
-
-.login-right {
-  width: 480px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #F8F9FA;
-  padding: 48px;
+  background: linear-gradient(135deg, #1C2B5A 0%, #2563EB 100%);
 }
 
 .login-card {
-  width: 100%;
+  width: 420px;
   background: white;
   border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  padding: 40px 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 
   .login-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 
-    .logo-small {
-      width: 56px;
-      height: 56px;
+    .scrim-logo {
+      display: inline-block;
       background: linear-gradient(135deg, #1C2B5A, #2563EB);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
+      border-radius: 14px;
+      padding: 10px 24px;
+      margin-bottom: 14px;
 
-      .logo-s {
+      .scrim-text {
         font-size: 26px;
         font-weight: 900;
         color: white;
+        letter-spacing: 6px;
       }
     }
 
     h2 {
-      margin: 0 0 6px;
+      margin: 0 0 4px;
       font-size: 24px;
-      font-weight: 700;
+      font-weight: 800;
       color: #1C2B5A;
     }
 
-    p {
+    .by-scrim {
+      margin: 0 0 6px;
+      font-size: 13px;
+      color: #2563EB;
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    .subtitle {
       margin: 0;
       color: #888;
-      font-size: 13px;
+      font-size: 12px;
     }
   }
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  padding: 0 12px;
 
   label {
     display: block;
     font-size: 13px;
     font-weight: 600;
     color: #333;
-    margin-bottom: 8px;
+    margin-bottom: 7px;
   }
 }
 
@@ -154,12 +76,12 @@
   .input-icon {
     position: absolute;
     left: 14px;
-    font-size: 16px;
+    font-size: 15px;
   }
 
   input {
     width: 100%;
-    padding: 14px 14px 14px 44px;
+    padding: 12px 12px 12px 42px;
     border: 2px solid #E9ECEF;
     border-radius: 12px;
     font-size: 14px;
@@ -173,34 +95,34 @@
 
   .toggle-pass {
     position: absolute;
-    right: 14px;
+    right: 12px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
 .error-banner {
   background: #ffebee;
   color: #c62828;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 10px;
-  font-size: 13px;
-  margin-bottom: 16px;
+  font-size: 12px;
+  margin: 0 12px 14px;
 }
 
 .login-btn {
-  width: 100%;
-  padding: 16px;
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 12px 20px;
+  padding: 13px;
   background: linear-gradient(135deg, #1C2B5A, #2563EB);
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: 24px;
-  letter-spacing: 0.5px;
 
   &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,99,235,0.35); }
   &:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
@@ -208,10 +130,5 @@
 
 .login-footer {
   text-align: center;
-
-  p {
-    color: #aaa;
-    font-size: 11px;
-    margin: 4px 0 0;
-  }
+  p { color: #aaa; font-size: 11px; margin: 0; }
 }
