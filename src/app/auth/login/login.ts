@@ -29,7 +29,7 @@ export class LoginComponent {
     this.errorMessage = '';
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        this.authService.saveToken(response.token, response.email);
+        this.authService.saveToken(response.token, response.email, response.role);
         this.router.navigate(['/dashboard']);
       },
       error: () => {
