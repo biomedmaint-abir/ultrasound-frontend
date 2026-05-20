@@ -138,7 +138,12 @@ export class RapportForm implements OnInit {
     this.cdr.detectChanges();
   }
 
+  get isFormValid(): boolean { return !!(this.rapport.client && this.rapport.equipementId && this.rapport.dateRapport); }
+  isInvalid(field: any): boolean { return this.submitted && !field; }
+
   genererPDF(): void {
+    this.submitted = true;
+    if (!this.isFormValid) return;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const W = 210;
     const navy = [26, 35, 126];

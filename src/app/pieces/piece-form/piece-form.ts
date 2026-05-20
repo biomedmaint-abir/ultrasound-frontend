@@ -25,6 +25,7 @@ export class PieceForm implements OnInit {
   isEditMode = false;
   pieceId: number | null = null;
   isSaving = false;
+  submitted = false;
   isLoading = false;
   errorMessage = '';
   parcs: string[] = [];
@@ -85,7 +86,12 @@ export class PieceForm implements OnInit {
     }
   }
 
+  get isFormValid(): boolean { return !!(this.form.nom && this.form.reference); }
+  isInvalid(field: any): boolean { return this.submitted && !field; }
+
   save(): void {
+    this.submitted = true;
+    if (!this.isFormValid) return;
     this.isSaving = true;
     const payload = {
       ...this.form,
@@ -98,9 +104,11 @@ export class PieceForm implements OnInit {
     req$.subscribe({
       next: (data) => {
         this.isSaving = false;
+  submitted = false;
         this.router.navigate(['/pieces', data.id || this.pieceId]);
       },
-      error: () => { this.errorMessage = 'Erreur sauvegarde.'; this.isSaving = false; }
+      error: () => { this.errorMessage = 'Erreur sauvegarde.'; this.isSaving = false;
+  submitted = false; }
     });
   }
 

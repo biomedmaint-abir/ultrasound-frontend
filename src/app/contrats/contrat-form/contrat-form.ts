@@ -25,10 +25,17 @@ export class ContratForm implements OnInit {
   isSaving = false;
   isLoading = false;
   errorMessage = '';
+  submitted = false;
 
   form = { reference: '', type: '', statut: '', dateDebut: '', dateFin: '', montant: null as number | null };
   types = ['TOTAL', 'PREVENTIF', 'CORRECTIF'];
   statuts = ['ACTIF', 'EXPIRE', 'RESILIER'];
+
+  get isFormValid(): boolean {
+    return !!(this.form.reference && this.form.type && this.form.statut && this.form.dateDebut && this.form.dateFin && this.form.montant);
+  }
+
+  isInvalid(field: any): boolean { return this.submitted && !field; }
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -47,6 +54,8 @@ export class ContratForm implements OnInit {
   }
 
   save(): void {
+    this.submitted = true;
+    if (!this.isFormValid) return;
     this.isSaving = true;
     const req$ = this.isEditMode && this.contratId
       ? this.http.put<any>(`${environment.apiUrl}/contrats/${this.contratId}`, this.form)

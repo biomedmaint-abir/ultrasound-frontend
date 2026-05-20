@@ -1,40 +1,69 @@
 <div class="page-container">
   <div class="page-header">
     <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
-    <h1>{{ isEditMode ? 'Modifier le contrat' : 'Nouveau contrat' }}</h1>
+    <div>
+      <h1>{{ isEditMode ? 'Modifier le contrat' : 'Nouveau contrat' }}</h1>
+      <p>Les champs marqués <span class="required-star">*</span> sont obligatoires</p>
+    </div>
   </div>
   <mat-card class="form-card">
     <mat-card-content>
       <div *ngIf="errorMessage" class="error-banner"><mat-icon>error_outline</mat-icon> {{ errorMessage }}</div>
+      <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
       <div class="form-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Référence</mat-label>
-          <input matInput [(ngModel)]="form.reference" name="reference">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Type</mat-label>
-          <mat-select [(ngModel)]="form.type" name="type">
-            <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Statut</mat-label>
-          <mat-select [(ngModel)]="form.statut" name="statut">
-            <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Montant (DH)</mat-label>
-          <input matInput type="number" [(ngModel)]="form.montant" name="montant">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date début</mat-label>
-          <input matInput type="date" [(ngModel)]="form.dateDebut" name="dateDebut">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date fin</mat-label>
-          <input matInput type="date" [(ngModel)]="form.dateFin" name="dateFin">
-        </mat-form-field>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.reference)">
+          <label>Référence <span class="required-star" *ngIf="isInvalid(form.reference)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput [(ngModel)]="form.reference" name="reference">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.reference)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.type)">
+          <label>Type <span class="required-star" *ngIf="isInvalid(form.type)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.type" name="type">
+              <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.type)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.statut)">
+          <label>Statut <span class="required-star" *ngIf="isInvalid(form.statut)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.statut" name="statut">
+              <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.statut)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.montant)">
+          <label>Montant (DH) <span class="required-star" *ngIf="isInvalid(form.montant)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput type="number" [(ngModel)]="form.montant" name="montant">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.montant)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.dateDebut)">
+          <label>Date début <span class="required-star" *ngIf="isInvalid(form.dateDebut)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput type="date" [(ngModel)]="form.dateDebut" name="dateDebut">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.dateDebut)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.dateFin)">
+          <label>Date fin <span class="required-star" *ngIf="isInvalid(form.dateFin)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput type="date" [(ngModel)]="form.dateFin" name="dateFin">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.dateFin)">Ce champ est obligatoire</span>
+        </div>
+
       </div>
     </mat-card-content>
     <mat-card-actions>

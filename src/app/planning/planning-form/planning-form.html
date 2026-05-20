@@ -7,6 +7,7 @@
     </div>
   </div>
 
+  <div *ngIf="submitted && !isFormValid" class="validation-banner" style="margin:8px 0;background:#FEF2F2;color:#DC2626;padding:12px 16px;border-radius:10px;font-size:13px;border-left:4px solid #DC2626;">⚠️ Veuillez remplir tous les champs obligatoires (Client, Ville, Appareil, Année).</div>
   <div class="scrim-header-card">
     <div class="scrim-logo"><span class="logo-text">SCRIM</span></div>
     <div class="planning-badge">Planning Maintenances Préventives</div>

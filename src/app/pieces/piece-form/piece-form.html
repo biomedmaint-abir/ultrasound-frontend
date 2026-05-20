@@ -1,82 +1,104 @@
 <div class="page-container">
   <div class="page-header">
     <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
-    <h1>{{ isEditMode ? 'Modifier la pièce' : 'Nouvelle pièce' }}</h1>
+    <div>
+      <h1>{{ isEditMode ? 'Modifier la pièce' : 'Nouvelle pièce' }}</h1>
+      <p>Les champs marqués <span class="required-star">*</span> sont obligatoires</p>
+    </div>
   </div>
   <mat-card class="form-card">
     <mat-card-content>
       <div *ngIf="errorMessage" class="error-banner"><mat-icon>error_outline</mat-icon> {{ errorMessage }}</div>
+      <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
 
-      <!-- Infos de base -->
       <div class="section-title">📦 Informations de base</div>
       <div class="form-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Nom</mat-label>
-          <input matInput [(ngModel)]="form.nom" name="nom">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Référence</mat-label>
-          <input matInput [(ngModel)]="form.reference" name="reference">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Client (Parc stock)</mat-label>
-          <mat-select [(ngModel)]="form.client" name="client">
-            <mat-option value="">-- Sélectionner un parc --</mat-option>
-            <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Prix unitaire (DH)</mat-label>
-          <input matInput type="number" [(ngModel)]="form.prixUnitaire" name="prixUnitaire">
-        </mat-form-field>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.nom)">
+          <label>Nom <span class="required-star" *ngIf="isInvalid(form.nom)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput [(ngModel)]="form.nom" name="nom">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.nom)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.reference)">
+          <label>Référence <span class="required-star" *ngIf="isInvalid(form.reference)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput [(ngModel)]="form.reference" name="reference">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.reference)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper">
+          <label>Client (Parc stock)</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.client" name="client">
+              <mat-option value="">-- Sélectionner un parc --</mat-option>
+              <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label>Prix unitaire (DH)</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput type="number" [(ngModel)]="form.prixUnitaire" name="prixUnitaire">
+          </mat-form-field>
+        </div>
+
       </div>
 
-      <!-- Suivi défectueuse -->
       <div class="section-title">🔧 Suivi pièce défectueuse</div>
       <div class="form-grid">
-
-        <mat-form-field appearance="outline">
-          <mat-label>Statut de la pièce</mat-label>
-          <mat-select [(ngModel)]="form.statut" name="statut">
-            <mat-option value="EN_STOCK">✅ En stock — Disponible</mat-option>
-            <mat-option value="DEFECTUEUSE">❌ Défectueuse — À retourner</mat-option>
-            <mat-option value="EN_ATTENTE_RETOUR">⏳ En attente retour fournisseur</mat-option>
-            <mat-option value="RETOURNEE">🔄 Retournée au fournisseur</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Échangée avec (client)</mat-label>
-          <mat-select [(ngModel)]="form.clientEchange" name="clientEchange">
-            <mat-option value="">— Non échangée —</mat-option>
-            <mat-option *ngFor="let p of parcs" [value]="p">🏥 {{ p }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Date de l'échange</mat-label>
-          <input matInput type="date" [(ngModel)]="form.dateEchange" name="dateEchange">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Retour fournisseur</mat-label>
-          <mat-select [(ngModel)]="form.retourFournisseur" name="retourFournisseur">
-            <mat-option [value]="false">❌ Non — Pas encore retournée</mat-option>
-            <mat-option [value]="true">✅ Oui — Retournée au fournisseur</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" *ngIf="!form.retourFournisseur">
-          <mat-label>Date de retour prévue du fournisseur</mat-label>
-          <input matInput type="date" [(ngModel)]="form.dateRetourPrevu" name="dateRetourPrevu">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Notes de suivi</mat-label>
-          <textarea matInput [(ngModel)]="form.notesSuivi" name="notesSuivi" rows="3"
-            placeholder="N° bon de retour, contact fournisseur, observations..."></textarea>
-        </mat-form-field>
-
+        <div class="field-wrapper">
+          <label>Statut de la pièce</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.statut" name="statut">
+              <mat-option value="EN_STOCK">✅ En stock — Disponible</mat-option>
+              <mat-option value="DEFECTUEUSE">❌ Défectueuse — À retourner</mat-option>
+              <mat-option value="EN_ATTENTE_RETOUR">⏳ En attente retour fournisseur</mat-option>
+              <mat-option value="RETOURNEE">🔄 Retournée au fournisseur</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="field-wrapper">
+          <label>Échangée avec (client)</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.clientEchange" name="clientEchange">
+              <mat-option value="">— Non échangée —</mat-option>
+              <mat-option *ngFor="let p of parcs" [value]="p">🏥 {{ p }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="field-wrapper">
+          <label>Date de l'échange</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput type="date" [(ngModel)]="form.dateEchange" name="dateEchange">
+          </mat-form-field>
+        </div>
+        <div class="field-wrapper">
+          <label>Retour fournisseur</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.retourFournisseur" name="retourFournisseur">
+              <mat-option [value]="false">❌ Non — Pas encore retournée</mat-option>
+              <mat-option [value]="true">✅ Oui — Retournée au fournisseur</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="field-wrapper" *ngIf="!form.retourFournisseur">
+          <label>Date de retour prévue</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput type="date" [(ngModel)]="form.dateRetourPrevu" name="dateRetourPrevu">
+          </mat-form-field>
+        </div>
+        <div class="field-wrapper full-width">
+          <label>Notes de suivi</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <textarea matInput [(ngModel)]="form.notesSuivi" name="notesSuivi" rows="3"
+              placeholder="N° bon de retour, contact fournisseur..."></textarea>
+          </mat-form-field>
+        </div>
       </div>
     </mat-card-content>
     <mat-card-actions>

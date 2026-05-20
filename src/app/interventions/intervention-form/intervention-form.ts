@@ -17,12 +17,8 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-intervention-form',
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatSelectModule,
-    MatProgressSpinnerModule
-  ],
+  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule,
+    MatButtonModule, MatIconModule, MatSelectModule, MatProgressSpinnerModule],
   templateUrl: './intervention-form.html',
   styleUrl: './intervention-form.scss'
 })
@@ -32,45 +28,34 @@ export class InterventionForm implements OnInit {
   isLoading = false;
   isSaving = false;
   errorMessage = '';
+  submitted = false;
   equipements: any[] = [];
   piecesDisponibles: any[] = [];
 
   form = {
-    date: '',
-    type: '',
-    description: '',
-    fse: '',
-    statut: '',
-    duree: null as number | null,
-    coutTotal: null as number | null,
-    observations: '',
-    equipementId: null as number | null
+    date: '', type: '', description: '', fse: '', statut: '',
+    duree: null as number | null, coutTotal: null as number | null,
+    observations: '', equipementId: null as number | null
   };
 
   piecesUtilisees: { pieceId: number | null, quantite: number, nom: string }[] = [];
-
   types = ['PREVENTIF', 'CORRECTIF', 'MISE_A_JOUR'];
   statuts = ['EN_ATTENTE', 'EN_COURS', 'TERMINEE', 'EN_ATTENTE_PIECE'];
 
-  constructor(
-    private interventionService: InterventionService,
-    private equipementService: EquipementService,
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+  get isFormValid(): boolean {
+    return !!(this.form.date && this.form.type && this.form.equipementId && this.form.fse && this.form.statut);
+  }
+
+  isInvalid(field: any): boolean {
+    return this.submitted && !field;
+  }
+
+  constructor(private interventionService: InterventionService, private equipementService: EquipementService,
+    private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    this.equipementService.getAll().subscribe({
-      next: (data) => this.equipements = data,
-      error: (err) => console.error(err)
-    });
-
-    this.http.get<any[]>(`${environment.apiUrl}/pieces`).subscribe({
-      next: (data) => this.piecesDisponibles = data,
-      error: () => {}
-    });
-
+    this.equipementService.getAll().subscribe({ next: (data) => this.equipements = data });
+    this.http.get<any[]>(`${environment.apiUrl}/pieces`).subscribe({ next: (data) => this.piecesDisponibles = data, error: () => {} });
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEditMode = true;
@@ -80,14 +65,10 @@ export class InterventionForm implements OnInit {
         next: (data) => {
           this.form = {
             date: data.dateIntervention?.substring(0, 10) || '',
-            type: data.type || '',
-            description: data.descriptionPanne || '',
-            fse: data.nomFse || '',
-            statut: data.statut || '',
-            duree: data.dureeHeures || null,
-            coutTotal: data.coutTotal || null,
-            observations: data.actionsEffectuees || '',
-            equipementId: data.equipement?.id || null
+            type: data.type || '', description: data.descriptionPanne || '',
+            fse: data.nomFse || '', statut: data.statut || '',
+            duree: data.dureeHeures || null, coutTotal: data.coutTotal || null,
+            observations: data.actionsEffectuees || '', equipementId: data.equipement?.id || null
           };
           this.isLoading = false;
         },
@@ -96,47 +77,35 @@ export class InterventionForm implements OnInit {
     }
   }
 
-  ajouterPiece(): void {
-    this.piecesUtilisees.push({ pieceId: null, quantite: 1, nom: '' });
-  }
-
-  supprimerPiece(index: number): void {
-    this.piecesUtilisees.splice(index, 1);
-  }
-
+  ajouterPiece(): void { this.piecesUtilisees.push({ pieceId: null, quantite: 1, nom: '' }); }
+  supprimerPiece(index: number): void { this.piecesUtilisees.splice(index, 1); }
   onPieceChange(index: number): void {
-    const pieceId = this.piecesUtilisees[index].pieceId;
-    const piece = this.piecesDisponibles.find(p => p.id === pieceId);
+    const piece = this.piecesDisponibles.find(p => p.id === this.piecesUtilisees[index].pieceId);
     if (piece) this.piecesUtilisees[index].nom = piece.nom;
   }
 
   save(): void {
+    this.submitted = true;
+    if (!this.isFormValid) return;
     this.isSaving = true;
     this.errorMessage = '';
     const payload = {
-      dateIntervention: this.form.date,
-      type: this.form.type,
-      descriptionPanne: this.form.description,
-      statut: this.form.statut,
-      dureeHeures: this.form.duree,
-      coutTotal: this.form.coutTotal,
-      nomFse: this.form.fse,
-      actionsEffectuees: this.form.observations,
+      dateIntervention: this.form.date, type: this.form.type,
+      descriptionPanne: this.form.description, statut: this.form.statut,
+      dureeHeures: this.form.duree, coutTotal: this.form.coutTotal,
+      nomFse: this.form.fse, actionsEffectuees: this.form.observations,
       equipement: this.form.equipementId ? { id: this.form.equipementId } : null
     };
-
     const req$ = this.isEditMode && this.interventionId
       ? this.interventionService.update(this.interventionId, payload)
       : this.interventionService.create(payload);
-
     req$.subscribe({
       next: (data) => {
         const interventionId = data.id || this.interventionId;
         const piecesValides = this.piecesUtilisees.filter(p => p.pieceId && p.quantite > 0);
         if (piecesValides.length > 0) {
           const piecesPayload = piecesValides.map(p => ({
-            intervention: { id: interventionId },
-            piece: { id: p.pieceId },
+            intervention: { id: interventionId }, piece: { id: p.pieceId },
             quantite: p.quantite,
             coutUnitaire: this.piecesDisponibles.find(pd => pd.id === p.pieceId)?.prixUnitaire || 0
           }));

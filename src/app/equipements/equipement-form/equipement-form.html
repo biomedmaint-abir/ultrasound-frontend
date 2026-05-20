@@ -3,47 +3,73 @@
     <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
     <div>
       <h1>{{ isEditMode ? 'Modifier l\'équipement' : 'Nouvel équipement' }}</h1>
+      <p>Les champs marqués <span class="required-star">*</span> sont obligatoires</p>
     </div>
   </div>
   <mat-card class="form-card">
     <mat-card-content>
-      <div *ngIf="errorMessage" class="error-banner">
-        <mat-icon>error_outline</mat-icon> {{ errorMessage }}
-      </div>
+      <div *ngIf="errorMessage" class="error-banner"><mat-icon>error_outline</mat-icon> {{ errorMessage }}</div>
+      <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
       <div class="form-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Modèle</mat-label>
-          <input matInput [(ngModel)]="form.nom" name="nom">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Numéro de série</mat-label>
-          <input matInput [(ngModel)]="form.numeroSerie" name="numeroSerie">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>N° Inventaire</mat-label>
-          <input matInput [(ngModel)]="form.numInventaire" name="numInventaire">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Service</mat-label>
-          <input matInput [(ngModel)]="form.service" name="service">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Parc</mat-label>
-          <mat-select [(ngModel)]="form.parc" name="parc">
-            <mat-option value="">-- Sélectionner un parc --</mat-option>
-            <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date d'installation</mat-label>
-          <input matInput type="date" [(ngModel)]="form.dateInstallation" name="dateInstallation">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Statut</mat-label>
-          <mat-select [(ngModel)]="form.statut" name="statut">
-            <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.nom)">
+          <label>Modèle <span class="required-star" *ngIf="isInvalid(form.nom)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput [(ngModel)]="form.nom" name="nom">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.nom)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.numeroSerie)">
+          <label>Numéro de série <span class="required-star" *ngIf="isInvalid(form.numeroSerie)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput [(ngModel)]="form.numeroSerie" name="numeroSerie">
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.numeroSerie)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper">
+          <label>N° Inventaire</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput [(ngModel)]="form.numInventaire" name="numInventaire">
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper">
+          <label>Service</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput [(ngModel)]="form.service" name="service">
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.parc)">
+          <label>Parc <span class="required-star" *ngIf="isInvalid(form.parc)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.parc" name="parc">
+              <mat-option value="">-- Sélectionner un parc --</mat-option>
+              <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.parc)">Ce champ est obligatoire</span>
+        </div>
+
+        <div class="field-wrapper">
+          <label>Date d'installation</label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <input matInput type="date" [(ngModel)]="form.dateInstallation" name="dateInstallation">
+          </mat-form-field>
+        </div>
+
+        <div class="field-wrapper" [class.invalid]="isInvalid(form.statut)">
+          <label>Statut <span class="required-star" *ngIf="isInvalid(form.statut)">*</span></label>
+          <mat-form-field appearance="outline" class="full-mat">
+            <mat-select [(ngModel)]="form.statut" name="statut">
+              <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <span class="error-msg" *ngIf="isInvalid(form.statut)">Ce champ est obligatoire</span>
+        </div>
+
       </div>
     </mat-card-content>
     <mat-card-actions>

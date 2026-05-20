@@ -16,12 +16,8 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-equipement-form',
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatSelectModule,
-    MatProgressSpinnerModule
-  ],
+  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule,
+    MatButtonModule, MatIconModule, MatSelectModule, MatProgressSpinnerModule],
   templateUrl: './equipement-form.html',
   styleUrl: './equipement-form.scss'
 })
@@ -31,55 +27,33 @@ export class EquipementForm implements OnInit {
   isLoading = false;
   isSaving = false;
   errorMessage = '';
+  submitted = false;
   parcs: string[] = [];
 
-  form = {
-    nom: '',
-    numeroSerie: '',
-    numInventaire: '',
-    service: '',
-    parc: '',
-    dateInstallation: '',
-    statut: ''
-  };
-
+  form = { nom: '', numeroSerie: '', numInventaire: '', service: '', parc: '', dateInstallation: '', statut: '' };
   statuts = ['EN_SERVICE', 'EN_MAINTENANCE', 'EN_PANNE', 'HORS_SERVICE'];
 
-  constructor(
-    private equipementService: EquipementService,
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+  get isFormValid(): boolean {
+    return !!(this.form.nom && this.form.numeroSerie && this.form.parc && this.form.statut);
+  }
+
+  isInvalid(field: any): boolean { return this.submitted && !field; }
+
+  constructor(private equipementService: EquipementService, private http: HttpClient,
+    private route: ActivatedRoute, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    // Charger les parcs existants
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
-      next: (data) => {
-        this.parcs = [...new Set(data.map((e: any) => e.parc).filter((p: any) => p))];
-        this.cdr.detectChanges();
-      }
+      next: (data) => { this.parcs = [...new Set(data.map((e: any) => e.parc).filter((p: any) => p))]; this.cdr.detectChanges(); }
     });
-
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
-      this.isEditMode = true;
-      this.equipementId = +id;
-      this.isLoading = true;
+      this.isEditMode = true; this.equipementId = +id; this.isLoading = true;
       this.equipementService.getById(+id).subscribe({
         next: (data) => {
-          this.form = {
-            nom: data.nom || '',
-            numeroSerie: data.numeroSerie || '',
-            numInventaire: data.numInventaire || '',
-            service: data.service || '',
-            parc: data.parc || '',
-            dateInstallation: data.dateInstallation?.substring(0, 10) || '',
-            statut: data.statut || ''
-          };
-          this.isLoading = false;
-          this.cdr.detectChanges();
+          this.form = { nom: data.nom || '', numeroSerie: data.numeroSerie || '', numInventaire: data.numInventaire || '',
+            service: data.service || '', parc: data.parc || '', dateInstallation: data.dateInstallation?.substring(0, 10) || '', statut: data.statut || '' };
+          this.isLoading = false; this.cdr.detectChanges();
         },
         error: () => { this.errorMessage = 'Erreur chargement.'; this.isLoading = false; }
       });
@@ -87,23 +61,19 @@ export class EquipementForm implements OnInit {
   }
 
   save(): void {
+    this.submitted = true;
+    if (!this.isFormValid) return;
     this.isSaving = true;
-    this.errorMessage = '';
     const req$ = this.isEditMode && this.equipementId
       ? this.equipementService.update(this.equipementId, this.form)
       : this.equipementService.create(this.form);
     req$.subscribe({
-      next: (data) => {
-        this.isSaving = false;
-        this.router.navigate(['/equipements', data.id || this.equipementId]);
-      },
+      next: (data) => { this.isSaving = false; this.router.navigate(['/equipements', data.id || this.equipementId]); },
       error: () => { this.errorMessage = 'Erreur sauvegarde.'; this.isSaving = false; }
     });
   }
 
   cancel(): void {
-    this.isEditMode && this.equipementId
-      ? this.router.navigate(['/equipements', this.equipementId])
-      : this.router.navigate(['/equipements']);
+    this.isEditMode && this.equipementId ? this.router.navigate(['/equipements', this.equipementId]) : this.router.navigate(['/equipements']);
   }
 }

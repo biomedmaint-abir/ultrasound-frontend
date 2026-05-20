@@ -28,6 +28,7 @@ export class PlanningForm implements OnInit {
   equipements: any[] = [];
   parcsList: string[] = [];
   isLoading = true;
+  submitted = false;
 
   planning: any = {
     annee: new Date().getFullYear().toString(),
@@ -85,7 +86,12 @@ export class PlanningForm implements OnInit {
     return n === 1 ? '1ere' : n + 'eme';
   }
 
+  get isFormValid(): boolean { return !!(this.planning.client && this.planning.ville && this.planning.appareil && this.planning.annee); }
+  isInvalid(field: any): boolean { return this.submitted && !field; }
+
   genererPDF(): void {
+    this.submitted = true;
+    if (!this.isFormValid) return;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const W = 210;
     const navy = [26, 35, 126];
