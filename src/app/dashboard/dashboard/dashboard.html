@@ -25,84 +25,101 @@
     <div class="kpi-grid">
       <div class="kpi-card blue">
         <div class="kpi-icon">🔧</div>
-        <div class="kpi-info">
-          <h2>{{ totalInterventions }}</h2>
-          <p>Interventions</p>
-        </div>
+        <div class="kpi-info"><h2>{{ totalInterventions }}</h2><p>Interventions</p></div>
       </div>
       <div class="kpi-card green">
         <div class="kpi-icon">🔬</div>
-        <div class="kpi-info">
-          <h2>{{ totalEquipements }}</h2>
-          <p>Équipements</p>
-        </div>
+        <div class="kpi-info"><h2>{{ totalEquipements }}</h2><p>Équipements</p></div>
       </div>
       <div class="kpi-card orange">
         <div class="kpi-icon">⏱️</div>
-        <div class="kpi-info">
-          <h2>{{ (mttr ?? 0) | number:'1.0-1' }}h</h2>
-          <p>MTTR moyen</p>
-        </div>
+        <div class="kpi-info"><h2>{{ (mttr ?? 0) | number:'1.0-1' }}h</h2><p>MTTR moyen</p></div>
       </div>
       <div class="kpi-card purple">
         <div class="kpi-icon">📄</div>
-        <div class="kpi-info">
-          <h2>{{ totalContrats }}</h2>
-          <p>Contrats actifs</p>
-        </div>
+        <div class="kpi-info"><h2>{{ totalContrats }}</h2><p>Contrats actifs</p></div>
       </div>
       <div class="kpi-card teal">
         <div class="kpi-icon">✅</div>
-        <div class="kpi-info">
-          <h2>{{ disponibilite }}%</h2>
-          <p>Disponibilité</p>
-        </div>
+        <div class="kpi-info"><h2>{{ disponibilite }}%</h2><p>Disponibilité</p></div>
       </div>
     </div>
 
-    <!-- Navigation rapide -->
-    <div class="section-title">Accès rapide</div>
-    <div class="nav-grid">
-      <div class="nav-card" (click)="navigateTo('/interventions')">
-        <span class="nav-icon">🔧</span>
-        <h3>Interventions</h3>
-        <p>Gérer les interventions</p>
+    <!-- 3 TABLEAUX -->
+    <div class="tables-grid">
+
+      <!-- Planning du mois -->
+      <div class="table-card">
+        <div class="table-header blue-header">
+          <span>📅 Planning du mois</span>
+          <span class="badge">{{ planningDuMois.length }}</span>
+        </div>
+        <div class="table-body">
+          <table *ngIf="planningDuMois.length > 0">
+            <thead>
+              <tr><th>Date</th><th>Type</th><th>Équipement</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i of planningDuMois" (click)="navigateTo('/interventions/' + i.id)" class="clickable">
+                <td>{{ i.dateIntervention | date:'dd/MM' }}</td>
+                <td>{{ i.type }}</td>
+                <td>{{ i.equipement?.nom || '—' }}</td>
+                <td><span [class]="'badge-statut ' + getStatutClass(i.statut)">{{ i.statut }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="planningDuMois.length === 0" class="empty-state">Aucune intervention ce mois-ci</div>
+        </div>
       </div>
-      <div class="nav-card" (click)="navigateTo('/equipements')">
-        <span class="nav-icon">🔬</span>
-        <h3>Équipements</h3>
-        <p>Parc d'équipements</p>
+
+      <!-- Interventions non terminées -->
+      <div class="table-card">
+        <div class="table-header orange-header">
+          <span>⚠️ Interventions non terminées</span>
+          <span class="badge">{{ interventionsNonTerminees.length }}</span>
+        </div>
+        <div class="table-body">
+          <table *ngIf="interventionsNonTerminees.length > 0">
+            <thead>
+              <tr><th>Date</th><th>Type</th><th>Équipement</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i of interventionsNonTerminees" (click)="navigateTo('/interventions/' + i.id)" class="clickable">
+                <td>{{ i.dateIntervention | date:'dd/MM' }}</td>
+                <td>{{ i.type }}</td>
+                <td>{{ i.equipement?.nom || '—' }}</td>
+                <td><span [class]="'badge-statut ' + getStatutClass(i.statut)">{{ i.statut }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="interventionsNonTerminees.length === 0" class="empty-state">✅ Toutes les interventions sont terminées</div>
+        </div>
       </div>
-      <div class="nav-card" (click)="navigateTo('/pieces')">
-        <span class="nav-icon">🔩</span>
-        <h3>Pièces de rechange</h3>
-        <p>Stock et commandes</p>
+
+      <!-- Interventions urgentes (7 jours) -->
+      <div class="table-card">
+        <div class="table-header red-header">
+          <span>🔴 Interventions dans 7 jours</span>
+          <span class="badge">{{ interventionsUrgentes.length }}</span>
+        </div>
+        <div class="table-body">
+          <table *ngIf="interventionsUrgentes.length > 0">
+            <thead>
+              <tr><th>Date</th><th>Type</th><th>Équipement</th><th>FSE</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i of interventionsUrgentes" (click)="navigateTo('/interventions/' + i.id)" class="clickable urgent">
+                <td>{{ i.dateIntervention | date:'dd/MM' }}</td>
+                <td>{{ i.type }}</td>
+                <td>{{ i.equipement?.nom || '—' }}</td>
+                <td>{{ i.nomFse || '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="interventionsUrgentes.length === 0" class="empty-state">Aucune intervention urgente</div>
+        </div>
       </div>
-      <div class="nav-card" (click)="navigateTo('/contrats')">
-        <span class="nav-icon">📄</span>
-        <h3>Contrats</h3>
-        <p>Suivi des contrats</p>
-      </div>
-      <div class="nav-card" (click)="navigateTo('/planning')">
-        <span class="nav-icon">📅</span>
-        <h3>Planning</h3>
-        <p>Calendrier interventions</p>
-      </div>
-      <div class="nav-card" (click)="navigateTo('/rapports')">
-        <span class="nav-icon">📈</span>
-        <h3>Rapports</h3>
-        <p>Export et analyse</p>
-      </div>
-      <div class="nav-card" (click)="navigateTo('/optimisation')">
-        <span class="nav-icon">💹</span>
-        <h3>Optimisation</h3>
-        <p>Analyse économique</p>
-      </div>
-      <div class="nav-card highlight" (click)="navigateTo('/assistant-ia')">
-        <span class="nav-icon">🤖</span>
-        <h3>Assistant IA</h3>
-        <p>Diagnostic intelligent</p>
-      </div>
+
     </div>
 
   </ng-container>

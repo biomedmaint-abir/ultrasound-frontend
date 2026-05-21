@@ -40,6 +40,39 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   equipChart: any;
   monthChart: any;
 
+  // 3 nouveaux tableaux
+  get planningDuMois(): any[] {
+    const now = new Date();
+    const debut = new Date(now.getFullYear(), now.getMonth(), 1);
+    const fin = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return this.interventionsData
+      .filter(i => {
+        if (!i.dateIntervention) return false;
+        const d = new Date(i.dateIntervention);
+        return d >= debut && d <= fin;
+      })
+      .sort((a, b) => new Date(a.dateIntervention).getTime() - new Date(b.dateIntervention).getTime());
+  }
+
+  get interventionsNonTerminees(): any[] {
+    return this.interventionsData
+      .filter(i => i.statut && i.statut !== 'TERMINEE')
+      .sort((a, b) => new Date(b.dateIntervention || 0).getTime() - new Date(a.dateIntervention || 0).getTime());
+  }
+
+  get interventionsUrgentes(): any[] {
+    const now = new Date();
+    const dans7jours = new Date();
+    dans7jours.setDate(now.getDate() + 7);
+    return this.interventionsData
+      .filter(i => {
+        if (!i.dateIntervention || i.statut === 'TERMINEE') return false;
+        const d = new Date(i.dateIntervention);
+        return d >= now && d <= dans7jours;
+      })
+      .sort((a, b) => new Date(a.dateIntervention).getTime() - new Date(b.dateIntervention).getTime());
+  }
+
   constructor(
     private interventionService: InterventionService,
     private equipementService: EquipementService,
@@ -85,13 +118,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.http.get<any[]>(`${environment.apiUrl}/contrats`).subscribe({
       next: (data) => {
         this.allContrats = data;
-        if (this.selectedParc) {
-          this.totalContrats = data.filter((c: any) =>
-            c.parc && c.parc.trim() === this.selectedParc.trim() && c.statut === 'ACTIF'
-          ).length;
-        } else {
-          this.totalContrats = data.filter((c: any) => c.statut === 'ACTIF').length;
-        }
+        this.totalContrats = data.filter((c: any) => c.statut === 'ACTIF').length;
         this.cdr.detectChanges();
       },
       error: () => {}
@@ -100,42 +127,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   filterByParc(): void {
     const parc = this.selectedParc ? this.selectedParc.trim() : '';
-
     if (parc) {
-      this.equipementsData = this.allEquipements.filter((e: any) =>
-        e.parc && e.parc.trim() === parc
-      );
+      this.equipementsData = this.allEquipements.filter((e: any) => e.parc && e.parc.trim() === parc);
       const equipIds = this.equipementsData.map((e: any) => e.id);
-      this.interventionsData = this.allInterventions.filter((i: any) =>
-        i.equipement && equipIds.includes(i.equipement.id)
-      );
+      this.interventionsData = this.allInterventions.filter((i: any) => i.equipement && equipIds.includes(i.equipement.id));
     } else {
       this.equipementsData = [...this.allEquipements];
       this.interventionsData = [...this.allInterventions];
     }
-
     this.calculateEquipStats(this.equipementsData);
     this.totalInterventions = this.interventionsData.length;
-
     const durees = this.interventionsData.filter((i: any) => i.dureeHeures).map((i: any) => i.dureeHeures);
     this.mttr = durees.length > 0 ? durees.reduce((a: number, b: number) => a + b, 0) / durees.length : 0;
-
-    // Recharger les contrats avec token frais
     this.http.get<any[]>(`${environment.apiUrl}/contrats`).subscribe({
       next: (data) => {
-        this.allContrats = data;
-        if (parc) {
-          this.totalContrats = data.filter((c: any) =>
-            c.parc && c.parc.trim() === parc && c.statut === 'ACTIF'
-          ).length;
-        } else {
-          this.totalContrats = data.filter((c: any) => c.statut === 'ACTIF').length;
-        }
+        this.totalContrats = parc
+          ? data.filter((c: any) => c.parc && c.parc.trim() === parc && c.statut === 'ACTIF').length
+          : data.filter((c: any) => c.statut === 'ACTIF').length;
         this.cdr.detectChanges();
-      },
-      error: () => {}
+      }
     });
-
     this.cdr.detectChanges();
     this.rebuildCharts();
   }
@@ -168,10 +179,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const maj = this.interventionsData.filter(i => i.type === 'MISE_A_JOUR').length;
     this.typeChart = new Chart(canvas, {
       type: 'doughnut',
-      data: {
-        labels: ['Préventif', 'Correctif', 'Mise à jour'],
-        datasets: [{ data: [preventif, correctif, maj], backgroundColor: ['#66bb6a', '#ef5350', '#42a5f5'], borderWidth: 0 }]
-      },
+      data: { labels: ['Préventif', 'Correctif', 'Mise à jour'], datasets: [{ data: [preventif, correctif, maj], backgroundColor: ['#66bb6a', '#ef5350', '#42a5f5'], borderWidth: 0 }] },
       options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
   }
@@ -185,10 +193,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const horsService = this.equipementsData.filter((e: any) => e.statut === 'HORS_SERVICE').length;
     this.equipChart = new Chart(canvas, {
       type: 'pie',
-      data: {
-        labels: ['En service', 'Maintenance', 'En panne', 'Hors service'],
-        datasets: [{ data: [enService, enMaint, enPanne, horsService], backgroundColor: ['#66bb6a', '#ffa726', '#ef5350', '#bdbdbd'], borderWidth: 0 }]
-      },
+      data: { labels: ['En service', 'Maintenance', 'En panne', 'Hors service'], datasets: [{ data: [enService, enMaint, enPanne, horsService], backgroundColor: ['#66bb6a', '#ffa726', '#ef5350', '#bdbdbd'], borderWidth: 0 }] },
       options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
   }
@@ -199,19 +204,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
     const counts = new Array(12).fill(0);
     this.interventionsData.forEach(i => {
-      if (i.dateIntervention) {
-        const month = new Date(i.dateIntervention).getMonth();
-        counts[month]++;
-      }
+      if (i.dateIntervention) counts[new Date(i.dateIntervention).getMonth()]++;
     });
     this.monthChart = new Chart(canvas, {
       type: 'bar',
-      data: {
-        labels: months,
-        datasets: [{ label: 'Interventions', data: counts, backgroundColor: '#1a237e', borderRadius: 8 }]
-      },
+      data: { labels: months, datasets: [{ label: 'Interventions', data: counts, backgroundColor: '#1a237e', borderRadius: 8 }] },
       options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
     });
+  }
+
+  getStatutClass(statut: string): string {
+    switch (statut) {
+      case 'TERMINEE': return 'badge-termine';
+      case 'EN_COURS': return 'badge-encours';
+      case 'EN_ATTENTE': return 'badge-attente';
+      case 'EN_ATTENTE_PIECE': return 'badge-piece';
+      default: return 'badge-default';
+    }
   }
 
   navigateTo(path: string): void { this.router.navigate([path]); }
