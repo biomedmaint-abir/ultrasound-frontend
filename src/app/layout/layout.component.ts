@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ConfirmDialogComponent],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss'
 })
@@ -15,6 +16,7 @@ export class LayoutComponent {
   email = localStorage.getItem('email') || '';
   role = localStorage.getItem('role') || '';
   sidebarOpen = true;
+  showLogoutConfirm = false;
   currentRoute = '';
 
   get navItems() {
@@ -49,7 +51,9 @@ export class LayoutComponent {
 
   isActive(path: string): boolean { return this.currentRoute.startsWith(path); }
 
-  logout(): void {
+  logout(): void { this.showLogoutConfirm = true; }
+
+  confirmLogout(): void {
     this.authService.logout();
     this.router.navigate(['/auth']);
   }

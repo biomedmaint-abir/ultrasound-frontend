@@ -40,3 +40,14 @@
   </main>
 
 </div>
+<app-confirm-dialog
+  [visible]="showLogoutConfirm"
+  title="Déconnexion"
+  message="Êtes-vous sûr de vouloir vous déconnecter ?"
+  confirmLabel="Se déconnecter"
+  cancelLabel="Annuler"
+  icon="🔒"
+  [danger]="false"
+  (confirmed)="confirmLogout()"
+  (cancelled)="showLogoutConfirm = false">
+</app-confirm-dialog>
