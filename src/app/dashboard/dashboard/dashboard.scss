@@ -203,3 +203,39 @@
 .badge-attente { background: #FEF9C3; color: #CA8A04; }
 .badge-piece   { background: #FFE4E6; color: #BE123C; }
 .badge-default { background: #F3F4F6; color: #6B7280; }
+
+.parc-select {
+  padding: 10px 40px 10px 16px !important;
+  border: 2px solid #1C2B5A !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  color: #1C2B5A !important;
+  font-weight: 600 !important;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C2B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 14px center !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  cursor: pointer !important;
+  font-family: Calibri, sans-serif !important;
+  transition: all 0.2s !important;
+  min-width: 200px !important;
+
+  &:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(28,43,90,0.15) !important;
+    border-color: #2563EB !important;
+  }
+
+  &:hover {
+    border-color: #2563EB !important;
+    background-color: #F8F9FF !important;
+  }
+
+  option {
+    font-family: Calibri, sans-serif !important;
+    font-size: 14px !important;
+    color: #1C2B5A !important;
+    font-weight: 500 !important;
+    padding: 10px !important;
+    background: white !important;
+  }
+}
