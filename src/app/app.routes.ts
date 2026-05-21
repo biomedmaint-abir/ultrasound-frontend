@@ -56,6 +56,10 @@ export const routes: Routes = [
         path: 'assistant-ia',
         loadChildren: () => import('./assistant-ia/assistant-ia-module').then(m => m.AssistantIaModule)
       },
+      {
+        path: 'profil',
+        loadComponent: () => import('./profil/profil.component').then(m => m.ProfilComponent)
+      },
     ]
   },
   { path: '**', component: NotFoundComponent }
