@@ -154,7 +154,7 @@ export class PieceList implements OnInit {
         this.fermerSuivi();
         this.load();
       },
-      error: () => { alert('Erreur lors de la sauvegarde'); }
+      error: () => {}
     });
   }
 
