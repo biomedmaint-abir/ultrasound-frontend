@@ -15,6 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { StatutFilterPipe } from '../../shared/statut-filter.pipe';
 import { PieceService } from '../../services/piece';
 import { environment } from '../../../environments/environment';
+// confirm dialog handled inline
 
 @Component({
   selector: 'app-piece-list',
@@ -31,6 +32,11 @@ import { environment } from '../../../environments/environment';
   styleUrl: './piece-list.scss'
 })
 export class PieceList implements OnInit {
+  showConfirm = false;
+  pendingDeleteId: number | null = null;
+  confirmTitle = 'Supprimer la pièce';
+  confirmMessage = 'Cette action est irréversible. La pièce sera définitivement supprimée.';
+
   pieces: any[] = [];
   filtered: any[] = [];
   search = '';
@@ -171,8 +177,17 @@ export class PieceList implements OnInit {
 
   delete(id: number, e: Event): void {
     e.stopPropagation();
-    if (confirm('Supprimer cette pièce ?')) {
-      this.pieceService.delete(id).subscribe({ next: () => this.load() });
+    this.pendingDeleteId = id;
+    this.showConfirm = true;
+  }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId) {
+      this.pieceService.delete(this.pendingDeleteId).subscribe({
+        next: () => { this.showConfirm = false; this.pendingDeleteId = null; this.load(); }
+      });
     }
   }
+
+  cancelDelete(): void { this.showConfirm = false; this.pendingDeleteId = null; }
 }

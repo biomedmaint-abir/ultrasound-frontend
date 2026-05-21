@@ -104,11 +104,9 @@ export class PieceForm implements OnInit {
     req$.subscribe({
       next: (data) => {
         this.isSaving = false;
-  submitted = false;
         this.router.navigate(['/pieces', data.id || this.pieceId]);
       },
-      error: () => { this.errorMessage = 'Erreur sauvegarde.'; this.isSaving = false;
-  submitted = false; }
+      error: () => { this.errorMessage = 'Erreur sauvegarde.'; this.isSaving = false; }
     });
   }
 

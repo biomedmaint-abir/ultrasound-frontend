@@ -73,3 +73,15 @@
     </table>
   </div>
 </div>
+
+<app-confirm-dialog
+  [visible]="showConfirm"
+  [title]="confirmTitle"
+  [message]="confirmMessage"
+  confirmLabel="Supprimer"
+  cancelLabel="Annuler"
+  icon="🗑️"
+  [danger]="true"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()">
+</app-confirm-dialog>

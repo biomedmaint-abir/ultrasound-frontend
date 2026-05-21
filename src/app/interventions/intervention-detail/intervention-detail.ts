@@ -9,19 +9,21 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { InterventionService } from '../../services/intervention';
 import { environment } from '../../../environments/environment';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-intervention-detail',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule, MatButtonModule, MatIconModule,
-    MatDividerModule, MatProgressSpinnerModule
-  ],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule,
+    MatDividerModule, MatProgressSpinnerModule, ConfirmDialogComponent],
   templateUrl: './intervention-detail.html',
   styleUrl: './intervention-detail.scss'
 })
 export class InterventionDetail implements OnInit {
+  showConfirm = false;
+  pendingDeleteId: number | null = null;
+  confirmTitle = 'Supprimer cette intervention';
+  confirmMessage = 'Cette action est irreversible.';
   intervention: any = null;
   pieces: any[] = [];
   isLoading = true;
@@ -49,11 +51,7 @@ export class InterventionDetail implements OnInit {
         this.cdr.detectChanges();
         this.loadPieces(id);
       },
-      error: () => {
-        this.hasError = true;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
+      error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
 
@@ -67,16 +65,22 @@ export class InterventionDetail implements OnInit {
     });
   }
 
-  goBack(): void { this.router.navigate(['/interventions']); }
-  goToEdit(): void { this.router.navigate(['/interventions', this.intervention.id, 'edit']); }
-
   delete(): void {
-    if (confirm('Supprimer cette intervention ?')) {
-      this.interventionService.delete(this.intervention.id).subscribe({
-        next: () => this.router.navigate(['/interventions'])
+    this.pendingDeleteId = this.intervention.id;
+    this.showConfirm = true;
+  }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId) {
+      this.interventionService.delete(this.pendingDeleteId).subscribe({
+        next: () => { this.showConfirm = false; this.router.navigate(['/interventions']); }
       });
     }
   }
+
+  cancelDelete(): void { this.showConfirm = false; this.pendingDeleteId = null; }
+  goBack(): void { this.router.navigate(['/interventions']); }
+  goToEdit(): void { this.router.navigate(['/interventions', this.intervention.id, 'edit']); }
 
   getStatutClass(statut: string): string {
     switch (statut) {

@@ -7,25 +7,27 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PieceService } from '../../services/piece';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-piece-detail',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatDividerModule, MatProgressSpinnerModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule,
+    MatDividerModule, MatProgressSpinnerModule, ConfirmDialogComponent],
   templateUrl: './piece-detail.html',
   styleUrl: './piece-detail.scss'
 })
 export class PieceDetail implements OnInit {
+  showConfirm = false;
+  pendingDeleteId: number | null = null;
+  confirmTitle = 'Supprimer la piece';
+  confirmMessage = 'Cette action est irreversible. La piece sera definitivement supprimee.';
   piece: any = null;
   isLoading = true;
   hasError = false;
 
-  constructor(
-    private pieceService: PieceService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private pieceService: PieceService, private route: ActivatedRoute,
+    private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -39,11 +41,17 @@ export class PieceDetail implements OnInit {
     });
   }
 
-  goBack(): void { this.router.navigate(['/pieces']); }
-  goToEdit(): void { this.router.navigate(['/pieces', this.piece.id, 'edit']); }
-  delete(): void {
-    if (confirm('Supprimer cette pièce ?')) {
-      this.pieceService.delete(this.piece.id).subscribe({ next: () => this.router.navigate(['/pieces']) });
+  delete(): void { this.pendingDeleteId = this.piece.id; this.showConfirm = true; }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId) {
+      this.pieceService.delete(this.pendingDeleteId).subscribe({
+        next: () => { this.showConfirm = false; this.router.navigate(['/pieces']); }
+      });
     }
   }
+
+  cancelDelete(): void { this.showConfirm = false; this.pendingDeleteId = null; }
+  goBack(): void { this.router.navigate(['/pieces']); }
+  goToEdit(): void { this.router.navigate(['/pieces', this.piece.id, 'edit']); }
 }

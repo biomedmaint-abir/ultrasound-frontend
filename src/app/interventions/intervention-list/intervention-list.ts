@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { InterventionService } from '../../services/intervention';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-intervention-list',
@@ -18,12 +19,18 @@ import { InterventionService } from '../../services/intervention';
     CommonModule, FormsModule,
     MatTableModule, MatButtonModule, MatIconModule,
     MatInputModule, MatFormFieldModule,
-    MatTooltipModule, MatProgressSpinnerModule
+    MatTooltipModule, MatProgressSpinnerModule,
+    ConfirmDialogComponent
   ],
   templateUrl: './intervention-list.html',
   styleUrl: './intervention-list.scss'
 })
 export class InterventionList implements OnInit {
+  showConfirm = false;
+  pendingDeleteId: number | null = null;
+  confirmTitle = 'Supprimer l\'intervention';
+  confirmMessage = 'Cette action est irréversible. L\'intervention sera définitivement supprimée.';
+
   interventions: any[] = [];
   filtered: any[] = [];
   search = '';
@@ -46,25 +53,15 @@ export class InterventionList implements OnInit {
       next: (data) => {
         this.isLoading = false;
         this.interventions = data.map((i: any) => ({
-          id: i.id,
-          date: i.dateIntervention,
-          type: i.type,
-          technicien: i.nomFse || '-',
-          statut: i.statut,
-          description: i.descriptionPanne,
-          observations: i.actionsEffectuees,
-          duree: i.dureeHeures,
-          equipement: i.equipement
+          id: i.id, date: i.dateIntervention, type: i.type,
+          technicien: i.nomFse || '-', statut: i.statut,
+          description: i.descriptionPanne, observations: i.actionsEffectuees,
+          duree: i.dureeHeures, equipement: i.equipement
         }));
         this.filtered = [...this.interventions];
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.log('ERREUR', err.status);
-        this.hasError = true;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
+      error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
 
@@ -78,17 +75,29 @@ export class InterventionList implements OnInit {
     );
   }
 
+  delete(id: number, e: Event): void {
+    e.stopPropagation();
+    this.pendingDeleteId = id;
+    this.showConfirm = true;
+  }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId) {
+      this.interventionService.delete(this.pendingDeleteId).subscribe({
+        next: () => { this.showConfirm = false; this.pendingDeleteId = null; this.load(); }
+      });
+    }
+  }
+
+  cancelDelete(): void {
+    this.showConfirm = false;
+    this.pendingDeleteId = null;
+  }
+
   goToDetail(id: number): void { this.router.navigate(['/interventions', id]); }
   goToEdit(id: number, e: Event): void { e.stopPropagation(); this.router.navigate(['/interventions', id, 'edit']); }
   goToNew(): void { this.router.navigate(['/interventions/new']); }
   goBack(): void { this.router.navigate(['/dashboard']); }
-
-  delete(id: number, e: Event): void {
-    e.stopPropagation();
-    if (confirm('Supprimer cette intervention ?')) {
-      this.interventionService.delete(id).subscribe({ next: () => this.load() });
-    }
-  }
 
   getStatutClass(statut: string): string {
     switch (statut) {

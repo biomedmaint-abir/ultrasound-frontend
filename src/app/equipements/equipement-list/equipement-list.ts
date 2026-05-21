@@ -10,20 +10,22 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EquipementService } from '../../services/equipement';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-equipement-list',
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    MatTableModule, MatButtonModule, MatIconModule,
-    MatInputModule, MatFormFieldModule,
-    MatTooltipModule, MatProgressSpinnerModule
-  ],
+  imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule,
+    MatInputModule, MatFormFieldModule, MatTooltipModule, MatProgressSpinnerModule, ConfirmDialogComponent],
   templateUrl: './equipement-list.html',
   styleUrl: './equipement-list.scss'
 })
 export class EquipementList implements OnInit {
+  showConfirm = false;
+  pendingDeleteId: number | null = null;
+  confirmTitle = 'Supprimer cet equipement';
+  confirmMessage = 'Cette action est irreversible. L\'equipement sera definitivement supprime.';
+
   equipements: any[] = [];
   filtered: any[] = [];
   search = '';
@@ -31,11 +33,7 @@ export class EquipementList implements OnInit {
   hasError = false;
   displayedColumns = ['id', 'nom', 'numeroSerie', 'numInventaire', 'service', 'parc', 'dateInstallation', 'statut', 'actions'];
 
-  constructor(
-    private equipementService: EquipementService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private equipementService: EquipementService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -46,57 +44,51 @@ export class EquipementList implements OnInit {
       next: (data) => {
         this.isLoading = false;
         this.equipements = data.map((e: any) => ({
-          id: e.id,
-          nom: e.nom,
-          numeroSerie: e.numeroSerie,
-          numInventaire: e.numInventaire,
-          service: e.service,
-          parc: e.parc,
-          dateInstallation: e.dateInstallation,
-          statut: e.statut,
-          modele: e.modele,
-          fournisseur: e.fournisseur
+          id: e.id, nom: e.nom, numeroSerie: e.numeroSerie, numInventaire: e.numInventaire,
+          service: e.service, parc: e.parc, dateInstallation: e.dateInstallation, statut: e.statut
         }));
         this.filtered = [...this.equipements];
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.hasError = true;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
+      error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
 
   applyFilter(): void {
     const q = this.search.toLowerCase();
     this.filtered = this.equipements.filter(e =>
-      (e.nom?.toLowerCase().includes(q)) ||
-      (e.numeroSerie?.toLowerCase().includes(q)) ||
-      (e.service?.toLowerCase().includes(q)) ||
-      (e.parc?.toLowerCase().includes(q)) ||
+      (e.nom?.toLowerCase().includes(q)) || (e.numeroSerie?.toLowerCase().includes(q)) ||
+      (e.service?.toLowerCase().includes(q)) || (e.parc?.toLowerCase().includes(q)) ||
       (e.statut?.toLowerCase().includes(q))
     );
   }
+
+  delete(id: number, ev: Event): void {
+    ev.stopPropagation();
+    this.pendingDeleteId = id;
+    this.showConfirm = true;
+  }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId) {
+      this.equipementService.delete(this.pendingDeleteId).subscribe({
+        next: () => { this.showConfirm = false; this.pendingDeleteId = null; this.load(); }
+      });
+    }
+  }
+
+  cancelDelete(): void { this.showConfirm = false; this.pendingDeleteId = null; }
 
   goToDetail(id: number): void { this.router.navigate(['/equipements', id]); }
   goToEdit(id: number, ev: Event): void { ev.stopPropagation(); this.router.navigate(['/equipements', id, 'edit']); }
   goToNew(): void { this.router.navigate(['/equipements/new']); }
   goBack(): void { this.router.navigate(['/dashboard']); }
 
-  delete(id: number, ev: Event): void {
-    ev.stopPropagation();
-    if (confirm('Supprimer cet équipement ?')) {
-      this.equipementService.delete(id).subscribe({ next: () => this.load() });
-    }
-  }
-
   getStatutClass(statut: string): string {
     switch (statut) {
       case 'EN_SERVICE': return 'statut-termine';
       case 'EN_MAINTENANCE': return 'statut-en-cours';
       case 'EN_PANNE': return 'statut-planifie';
-      case 'HORS_SERVICE': return 'statut-default';
       default: return 'statut-default';
     }
   }

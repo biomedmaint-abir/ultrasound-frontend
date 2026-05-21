@@ -3,15 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-utilisateurs',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent],
   templateUrl: './utilisateurs.component.html',
   styleUrl: './utilisateurs.component.scss'
 })
 export class UtilisateursComponent implements OnInit {
+  showConfirm = false;
+  pendingDeleteId: number | null = null;
+  confirmTitle = 'Supprimer cet utilisateur';
+  confirmMessage = 'Cette action est irreversible.';
   utilisateurs: any[] = [];
   isLoading = true;
   showForm = false;
@@ -28,7 +33,7 @@ export class UtilisateursComponent implements OnInit {
 
   roles = [
     { id: 1, nom: 'ADMIN', label: 'Administrateur' },
-    { id: 2, nom: 'INGENIEUR', label: 'Ingénieur' },
+    { id: 2, nom: 'INGENIEUR', label: 'Ingenieur' },
     { id: 3, nom: 'TECHNICIEN', label: 'FSE' },
   ];
 
@@ -44,18 +49,16 @@ export class UtilisateursComponent implements OnInit {
   }
 
   getRoleLabel(user: any): string {
-    const roleNom = user.role?.nom || '';
-    switch (roleNom) {
+    switch (user.role?.nom) {
       case 'ADMIN': return 'Administrateur';
-      case 'INGENIEUR': return 'Ingénieur';
+      case 'INGENIEUR': return 'Ingenieur';
       case 'TECHNICIEN': return 'FSE';
-      default: return roleNom || 'Admin';
+      default: return user.role?.nom || 'Admin';
     }
   }
 
   getRoleClass(user: any): string {
-    const roleNom = user.role?.nom || '';
-    switch (roleNom) {
+    switch (user.role?.nom) {
       case 'ADMIN': return 'role-admin';
       case 'INGENIEUR': return 'role-ingenieur';
       case 'TECHNICIEN': return 'role-technicien';
@@ -77,7 +80,7 @@ export class UtilisateursComponent implements OnInit {
     };
     this.http.post(`${environment.apiUrl}/utilisateurs`, payload).subscribe({
       next: () => {
-        this.successMessage = 'Utilisateur ajouté avec succès !';
+        this.successMessage = 'Utilisateur ajoute avec succes !';
         this.showForm = false;
         this.form = { nom: '', prenom: '', email: '', motDePasse: '', role: { id: 1 } };
         this.loadData();
@@ -88,10 +91,18 @@ export class UtilisateursComponent implements OnInit {
   }
 
   supprimerUtilisateur(id: number): void {
-    if (!confirm('Confirmer la suppression ?')) return;
-    this.http.delete(`${environment.apiUrl}/utilisateurs/${id}`).subscribe({
-      next: () => { this.loadData(); },
-      error: () => {}
-    });
+    this.pendingDeleteId = id;
+    this.showConfirm = true;
   }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId) {
+      this.http.delete(`${environment.apiUrl}/utilisateurs/${this.pendingDeleteId}`).subscribe({
+        next: () => { this.showConfirm = false; this.pendingDeleteId = null; this.loadData(); },
+        error: () => {}
+      });
+    }
+  }
+
+  cancelDelete(): void { this.showConfirm = false; this.pendingDeleteId = null; }
 }

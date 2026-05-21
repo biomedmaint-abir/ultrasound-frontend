@@ -11,20 +11,21 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-contrat-list',
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    MatTableModule, MatButtonModule, MatIconModule,
-    MatInputModule, MatFormFieldModule,
-    MatTooltipModule, MatProgressSpinnerModule
-  ],
+  imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule,
+    MatInputModule, MatFormFieldModule, MatTooltipModule, MatProgressSpinnerModule, ConfirmDialogComponent],
   templateUrl: './contrat-list.html',
   styleUrl: './contrat-list.scss'
 })
 export class ContratList implements OnInit {
+  showConfirm = false;
+  pendingDeleteId: number | null = null;
+  confirmTitle = 'Supprimer le contrat';
+  confirmMessage = 'Cette action est irreversible. Le contrat sera definitivement supprime.';
   contrats: any[] = [];
   filtered: any[] = [];
   search = '';
@@ -39,12 +40,7 @@ export class ContratList implements OnInit {
   load(): void {
     this.isLoading = true;
     this.http.get<any[]>(`${environment.apiUrl}/contrats`).subscribe({
-      next: (data) => {
-        this.isLoading = false;
-        this.contrats = data;
-        this.filtered = [...data];
-        this.cdr.detectChanges();
-      },
+      next: (data) => { this.isLoading = false; this.contrats = data; this.filtered = [...data]; this.cdr.detectChanges(); },
       error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
@@ -56,17 +52,21 @@ export class ContratList implements OnInit {
     );
   }
 
+  delete(id: number, e: Event): void { e.stopPropagation(); this.pendingDeleteId = id; this.showConfirm = true; }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId) {
+      this.http.delete(`${environment.apiUrl}/contrats/${this.pendingDeleteId}`).subscribe({
+        next: () => { this.showConfirm = false; this.pendingDeleteId = null; this.load(); }
+      });
+    }
+  }
+
+  cancelDelete(): void { this.showConfirm = false; this.pendingDeleteId = null; }
   goToDetail(id: number): void { this.router.navigate(['/contrats', id]); }
   goToEdit(id: number, e: Event): void { e.stopPropagation(); this.router.navigate(['/contrats', id, 'edit']); }
   goToNew(): void { this.router.navigate(['/contrats/new']); }
   goBack(): void { this.router.navigate(['/dashboard']); }
-
-  delete(id: number, e: Event): void {
-    e.stopPropagation();
-    if (confirm('Supprimer ce contrat ?')) {
-      this.http.delete(`${environment.apiUrl}/contrats/${id}`).subscribe({ next: () => this.load() });
-    }
-  }
 
   getStatutClass(statut: string): string {
     switch (statut) {
