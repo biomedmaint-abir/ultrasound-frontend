@@ -7,13 +7,15 @@ import { EquipementService } from '../../services/equipement';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Chart, registerables } from 'chart.js';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule],
+  imports: [CommonModule, DatePipe, FormsModule, MatSelectModule, MatFormFieldModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
