@@ -61,3 +61,31 @@ table { width: 100%;
 .clickable-row { cursor: pointer; }
 .center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; color: #666; }
 .empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
+
+.filter-card {
+  background: #1C2B5A !important;
+
+  mat-card-content { padding: 16px !important; }
+
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  mat-form-field {
+    flex: 1;
+    min-width: 160px;
+
+    .mat-mdc-text-field-wrapper { background: white !important; border-radius: 10px !important; }
+    .mat-mdc-form-field-outline { color: white !important; }
+    .mat-mdc-floating-label { color: rgba(255,255,255,0.8) !important; }
+    input, .mat-mdc-select-value-text { color: #1C2B5A !important; font-weight: 500; }
+    .mat-mdc-select-arrow { color: #1C2B5A !important; }
+    --mdc-outlined-text-field-outline-color: rgba(255,255,255,0.3);
+    --mdc-outlined-text-field-hover-outline-color: white;
+    --mdc-outlined-text-field-focus-outline-color: white;
+    --mat-form-field-focus-select-arrow-color: #1C2B5A;
+  }
+}
