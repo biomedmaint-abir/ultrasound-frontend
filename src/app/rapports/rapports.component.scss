@@ -1,54 +1,28 @@
 .page-container { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
 .page-header {
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
-  .header-left { display: flex; align-items: center; gap: 12px;
-    h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1C2B5A; }
-    p  { margin: 0; font-size: 13px; color: #6C757D; }
-  }
+  h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1C2B5A; }
+  p  { margin: 0; font-size: 13px; color: #6C757D; }
+  .header-actions { display: flex; gap: 8px; }
 }
-.rapport-card {
-  background: white; border-radius: 16px; padding: 24px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07); margin-bottom: 16px; cursor: pointer;
-  border-left: 4px solid #1C2B5A; transition: all 0.2s;
-  &:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
-  h3 { margin: 0 0 8px; color: #1C2B5A; font-size: 16px; font-weight: 700; }
-  p  { margin: 0; color: #6C757D; font-size: 13px; }
-}
-.table-wrapper { background: white; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); overflow: hidden; }
-table { width: 100%;
-  .mat-mdc-header-row { background: #1C2B5A; }
-  .mat-mdc-header-cell { color: white !important; font-weight: 600; font-size: 13px; padding: 14px 16px; border: none; }
-  .mat-mdc-row { border-bottom: 1px solid #F1F3F5; transition: background 0.15s;
-    &:hover { background: #F8F9FF; } &:last-child { border-bottom: none; }
-  }
-  .mat-mdc-cell { padding: 13px 16px; font-size: 13.5px; color: #333; border: none; }
-}
-.empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 24px;
-
   @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
 }
 
 .stat-card {
-  background: white;
-  border-radius: 14px;
-  padding: 16px 20px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-
+  background: white; border-radius: 14px; padding: 16px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 14px;
   .stat-icon { font-size: 28px; }
   .stat-info {
     h2 { margin: 0; font-size: 22px; font-weight: 700; color: #1C2B5A; }
     p  { margin: 0; font-size: 12px; color: #6C757D; }
   }
-
   &.blue   { border-top: 3px solid #2563EB; }
   &.green  { border-top: 3px solid #16A34A; }
   &.orange { border-top: 3px solid #D97706; }
@@ -56,58 +30,52 @@ table { width: 100%;
   &.navy   { border-top: 3px solid #1C2B5A; }
 }
 
-.filter-card { border-radius: 14px !important; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.07) !important; }
-
-.clickable-row { cursor: pointer; }
-.center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; color: #666; }
-.empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
-
-.filter-card {
-  background: #1C2B5A !important;
-
-  mat-card-content { padding: 16px !important; }
-
-  .filter-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  mat-form-field {
-    flex: 1;
-    min-width: 160px;
-
-    .mat-mdc-text-field-wrapper { background: white !important; border-radius: 10px !important; }
-    .mat-mdc-form-field-outline { color: white !important; }
-    .mat-mdc-floating-label { color: rgba(255,255,255,0.8) !important; }
-    input, .mat-mdc-select-value-text { color: #1C2B5A !important; font-weight: 500; }
-    .mat-mdc-select-arrow { color: #1C2B5A !important; }
-    --mdc-outlined-text-field-outline-color: rgba(255,255,255,0.3);
-    --mdc-outlined-text-field-hover-outline-color: white;
-    --mdc-outlined-text-field-focus-outline-color: white;
-    --mat-form-field-focus-select-arrow-color: #1C2B5A;
-  }
-}
-
 .filter-card {
   background: #1C2B5A !important;
   border-radius: 14px !important;
-
-  mat-form-field {
-    .mat-mdc-text-field-wrapper {
-      background: #F0F4FF !important;
-      border-radius: 10px !important;
-    }
-    .mat-mdc-floating-label { color: #1C2B5A !important; font-weight: 600; }
-    .mat-mdc-select-value-text { color: #1C2B5A !important; font-weight: 500; }
-    .mat-mdc-select-arrow { color: #1C2B5A !important; }
-    input { color: #1C2B5A !important; font-weight: 500; }
-    --mdc-outlined-text-field-outline-color: #1C2B5A;
-    --mdc-outlined-text-field-hover-outline-color: #2563EB;
-    --mdc-outlined-text-field-focus-outline-color: #2563EB;
-    --mat-form-field-focus-select-arrow-color: #2563EB;
-  }
-
-  mat-label { color: #1C2B5A !important; font-weight: 600; }
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07) !important;
 }
+
+.filter-row {
+  display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 4px 0;
+}
+
+.filter-row mat-form-field {
+  flex: 1;
+  min-width: 150px;
+  --mdc-outlined-text-field-container-color: #F0F4FF;
+  --mdc-outlined-text-field-outline-color: #C7D2FE;
+  --mdc-outlined-text-field-hover-outline-color: #2563EB;
+  --mdc-outlined-text-field-focus-outline-color: #2563EB;
+  --mdc-outlined-text-field-label-text-color: #1C2B5A;
+  --mdc-outlined-text-field-input-text-color: #1C2B5A;
+  --mat-select-enabled-arrow-color: #1C2B5A;
+}
+
+.table-wrapper {
+  background: white; border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07); overflow: hidden;
+}
+
+table {
+  width: 100%;
+  .mat-mdc-header-row { background: #1C2B5A; }
+  .mat-mdc-header-cell { color: white !important; font-weight: 600; font-size: 13px; padding: 14px 16px; border: none; }
+  .mat-mdc-row { border-bottom: 1px solid #F1F3F5; transition: background 0.15s;
+    &:hover { background: #F8F9FF; } &:last-child { border-bottom: none; }
+  }
+  .mat-mdc-cell { padding: 13px 16px; font-size: 13.5px; color: #333; border: none; }
+}
+
+.clickable-row { cursor: pointer; }
+
+.statut-badge { padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+  &.statut-termine  { background: #DCFCE7; color: #16A34A; }
+  &.statut-en-cours { background: #DBEAFE; color: #1D4ED8; }
+  &.statut-planifie { background: #FEF9C3; color: #CA8A04; }
+  &.statut-default  { background: #F3F4F6; color: #6B7280; }
+}
+
+.center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; color: #666; }
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
