@@ -1,5 +1,5 @@
-
 .page-container { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
 .page-header {
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
   .header-left { display: flex; align-items: center; gap: 12px;
@@ -7,9 +7,28 @@
     p  { margin: 0; font-size: 13px; color: #6C757D; }
   }
 }
+
 .search-field { width: 100%; max-width: 420px; margin-bottom: 20px; }
-.table-wrapper { background: white; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); overflow: hidden; }
-table { width: 100%;
+
+.stats-row {
+  display: flex; gap: 16px; margin-bottom: 24px;
+  .stat-card {
+    flex: 1; background: white; border-radius: 14px; padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 14px;
+    .stat-icon { font-size: 28px; }
+    .stat-info { h3 { margin: 0; font-size: 22px; font-weight: 700; color: #1C2B5A; }
+      p { margin: 0; font-size: 12px; color: #6C757D; }
+    }
+  }
+}
+
+.table-wrapper {
+  background: white; border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07); overflow: hidden;
+}
+
+table {
+  width: 100%;
   .mat-mdc-header-row { background: #1C2B5A; }
   .mat-mdc-header-cell { color: white !important; font-weight: 600; font-size: 13px; padding: 14px 16px; border: none; }
   .mat-mdc-row { border-bottom: 1px solid #F1F3F5; transition: background 0.15s;
@@ -17,12 +36,14 @@ table { width: 100%;
   }
   .mat-mdc-cell { padding: 13px 16px; font-size: 13.5px; color: #333; border: none; }
 }
+
 .clickable-row { cursor: pointer; }
-.center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; color: #666; }
-.empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
 
 .statut-badge { padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
   &.statut-termine  { background: #DCFCE7; color: #16A34A; }
   &.statut-planifie { background: #FEE2E2; color: #DC2626; }
   &.statut-default  { background: #F3F4F6; color: #6B7280; }
 }
+
+.center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; color: #666; }
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
