@@ -36,43 +36,42 @@
   </div>
 
   <!-- Filtres -->
-  <mat-card class="filter-card">
-    <mat-card-content>
+  <div class="filter-card">
       <div class="filter-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Statut</mat-label>
-          <mat-select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()">
-            <mat-option value="">Tous</mat-option>
-            <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Type</mat-label>
-          <mat-select [(ngModel)]="filterType" (ngModelChange)="applyFilter()">
-            <mat-option value="">Tous</mat-option>
-            <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Parc</mat-label>
-          <mat-select [(ngModel)]="filterParc" (ngModelChange)="applyFilter()">
-            <mat-option value="">Tous</mat-option>
-            <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date début</mat-label>
-          <input matInput type="date" [(ngModel)]="filterDateDebut" (ngModelChange)="applyFilter()">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date fin</mat-label>
-          <input matInput type="date" [(ngModel)]="filterDateFin" (ngModelChange)="applyFilter()">
-        </mat-form-field>
-        <button mat-stroked-button (click)="resetFilter()">
+        <div class="filter-item">
+          <label class="filter-label">Statut</label>
+          <select class="filter-select" [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()">
+            <option value="">Tous</option>
+            <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label class="filter-label">Type</label>
+          <select class="filter-select" [(ngModel)]="filterType" (ngModelChange)="applyFilter()">
+            <option value="">Tous</option>
+            <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label class="filter-label">Parc</label>
+          <select class="filter-select" [(ngModel)]="filterParc" (ngModelChange)="applyFilter()">
+            <option value="">Tous</option>
+            <option *ngFor="let p of parcsList" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label class="filter-label">Date début</label>
+          <input class="filter-input" type="date" [(ngModel)]="filterDateDebut" (ngModelChange)="applyFilter()">
+        </div>
+        <div class="filter-item">
+          <label class="filter-label">Date fin</label>
+          <input class="filter-input" type="date" [(ngModel)]="filterDateFin" (ngModelChange)="applyFilter()">
+        </div>
+        <button mat-stroked-button (click)="resetFilter()" style="color:white;border-color:white;margin-top:20px">
           <mat-icon>refresh</mat-icon> Réinitialiser
         </button>
       </div>
-    </mat-card-content>
+  </div>
   </mat-card>
 
   <!-- Tableau -->

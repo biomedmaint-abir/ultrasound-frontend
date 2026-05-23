@@ -81,3 +81,59 @@ table {
 
 .center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; color: #666; }
 .empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
+
+.filter-card {
+  background: #1C2B5A;
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.filter-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 140px;
+}
+
+.filter-label {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.filter-select, .filter-input {
+  padding: 10px 14px;
+  border: 2px solid #C7D2FE;
+  border-radius: 10px;
+  background: #F0F4FF;
+  color: #1C2B5A;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  font-family: Calibri, sans-serif;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C2B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+
+  &:focus { border-color: #2563EB; }
+}
+
+.filter-input {
+  background-image: none;
+  padding-right: 14px;
+}
