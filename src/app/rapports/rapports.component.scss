@@ -89,3 +89,25 @@ table { width: 100%;
     --mat-form-field-focus-select-arrow-color: #1C2B5A;
   }
 }
+
+.filter-card {
+  background: #1C2B5A !important;
+  border-radius: 14px !important;
+
+  mat-form-field {
+    .mat-mdc-text-field-wrapper {
+      background: #F0F4FF !important;
+      border-radius: 10px !important;
+    }
+    .mat-mdc-floating-label { color: #1C2B5A !important; font-weight: 600; }
+    .mat-mdc-select-value-text { color: #1C2B5A !important; font-weight: 500; }
+    .mat-mdc-select-arrow { color: #1C2B5A !important; }
+    input { color: #1C2B5A !important; font-weight: 500; }
+    --mdc-outlined-text-field-outline-color: #1C2B5A;
+    --mdc-outlined-text-field-hover-outline-color: #2563EB;
+    --mdc-outlined-text-field-focus-outline-color: #2563EB;
+    --mat-form-field-focus-select-arrow-color: #2563EB;
+  }
+
+  mat-label { color: #1C2B5A !important; font-weight: 600; }
+}
