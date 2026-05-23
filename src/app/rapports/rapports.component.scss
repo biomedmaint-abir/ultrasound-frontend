@@ -42,16 +42,18 @@
 }
 
 .filter-row mat-form-field {
-  flex: 1;
-  min-width: 150px;
-  --mdc-outlined-text-field-container-color: #F0F4FF;
-  --mdc-outlined-text-field-outline-color: #C7D2FE;
-  --mdc-outlined-text-field-hover-outline-color: #2563EB;
-  --mdc-outlined-text-field-focus-outline-color: #2563EB;
-  --mdc-outlined-text-field-label-text-color: #1C2B5A;
-  --mdc-outlined-text-field-input-text-color: #1C2B5A;
-  --mat-select-enabled-arrow-color: #1C2B5A;
+  flex: 1; min-width: 150px;
 }
+
+::ng-deep .filter-card .mat-mdc-card-content { padding: 16px !important; }
+::ng-deep .filter-row .mat-mdc-text-field-wrapper { background: #F0F4FF !important; border-radius: 10px !important; }
+::ng-deep .filter-row .mdc-notched-outline__leading,
+::ng-deep .filter-row .mdc-notched-outline__notch,
+::ng-deep .filter-row .mdc-notched-outline__trailing { border-color: #C7D2FE !important; }
+::ng-deep .filter-row .mat-mdc-floating-label { color: #1C2B5A !important; font-weight: 600 !important; }
+::ng-deep .filter-row .mat-mdc-select-value-text { color: #1C2B5A !important; font-weight: 500 !important; }
+::ng-deep .filter-row .mat-mdc-select-arrow { color: #1C2B5A !important; }
+::ng-deep .filter-row input.mat-mdc-input-element { color: #1C2B5A !important; }
 
 .table-wrapper {
   background: white; border-radius: 16px;
