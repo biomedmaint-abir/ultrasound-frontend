@@ -25,13 +25,17 @@
         </mat-form-field>
         <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.client)">
           <mat-label>Client / Établissement <span *ngIf="isInvalid(planning.client)" style="color:#DC2626">*</span></mat-label>
-          <input matInput [(ngModel)]="planning.client" placeholder="Ex: Hôpital Militaire Avicenne">
-          <mat-icon matSuffix>business</mat-icon>
+          <mat-select [(ngModel)]="planning.client" (ngModelChange)="onClientChange()">
+            <mat-option value="">-- Sélectionner un client --</mat-option>
+            <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.ville)">
           <mat-label>Ville <span *ngIf="isInvalid(planning.ville)" style="color:#DC2626">*</span></mat-label>
-          <input matInput [(ngModel)]="planning.ville" placeholder="Ex: Marrakech">
-          <mat-icon matSuffix>location_city</mat-icon>
+          <mat-select [(ngModel)]="planning.ville">
+            <mat-option value="">-- Sélectionner une ville --</mat-option>
+            <mat-option *ngFor="let v of villesList" [value]="v">{{ v }}</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.appareil)">
           <mat-label>Appareil <span *ngIf="isInvalid(planning.appareil)" style="color:#DC2626">*</span></mat-label>

@@ -27,6 +27,7 @@ export class PlanningForm implements OnInit {
 
   equipements: any[] = [];
   parcsList: string[] = [];
+  villesList: string[] = [];
   isLoading = true;
   submitted = false;
 
@@ -59,12 +60,26 @@ export class PlanningForm implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
       next: (data) => {
         this.equipements = data;
-        this.parcsList = [...new Set(data.map((e: any) => e.parc).filter((p: any) => p))];
+        this.parcsList = [...new Set(data.map((e: any) => e.parc).filter((p: any) => p))] as string[];
+        this.villesList = [...new Set(this.parcsList.map(p => p.split(' ').slice(-1)[0]).filter((v: string) => v))];
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: () => { this.isLoading = false; }
     });
+  }
+
+  onClientChange(): void {
+    const mapping: {[key: string]: string} = {
+      'CHU Tanger': 'Tanger',
+      'HCZ Rabat': 'Rabat',
+      'CHU Mohamed VI Oujda': 'Oujda',
+      'Clinique Tarik Ibn Ziyad': 'Tanger',
+      'HCK Casablanca': 'Casablanca',
+      'Clinique Slaoui Rabat': 'Rabat',
+      'Hopital Militaire Avicenne Marrakech': 'Marrakech',
+    };
+    this.planning.ville = mapping[this.planning.client] || '';
   }
 
   onEquipementChange(): void {
