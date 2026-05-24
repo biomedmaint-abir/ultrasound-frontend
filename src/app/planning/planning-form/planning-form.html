@@ -40,18 +40,18 @@
             <mat-option *ngFor="let e of equipements" [value]="e.nom">{{ e.nom }} — {{ e.parc }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Marque</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.marque)">
+          <mat-label>Marque <span *ngIf="isInvalid(planning.marque)" style="color:#DC2626">*</span></mat-label>
           <input matInput [(ngModel)]="planning.marque">
           <mat-icon matSuffix>label</mat-icon>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Numéro de série</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.numeroSerie)">
+          <mat-label>Numéro de série <span *ngIf="isInvalid(planning.numeroSerie)" style="color:#DC2626">*</span></mat-label>
           <input matInput [(ngModel)]="planning.numeroSerie" placeholder="Ex: 82734">
           <mat-icon matSuffix>tag</mat-icon>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Fréquence des visites</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.frequence)">
+          <mat-label>Fréquence des visites <span *ngIf="isInvalid(planning.frequence)" style="color:#DC2626">*</span></mat-label>
           <mat-select [(ngModel)]="planning.frequence">
             <mat-option value="trimestrielles">Trimestrielles</mat-option>
             <mat-option value="semestrielles">Semestrielles</mat-option>

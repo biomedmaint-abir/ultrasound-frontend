@@ -86,7 +86,7 @@ export class PlanningForm implements OnInit {
     return n === 1 ? '1ere' : n + 'eme';
   }
 
-  get isFormValid(): boolean { return !!(this.planning.client && this.planning.ville && this.planning.appareil && this.planning.annee); }
+  get isFormValid(): boolean { return !!(this.planning.client && this.planning.ville && this.planning.appareil && this.planning.annee && this.planning.marque && this.planning.numeroSerie && this.planning.responsable && this.planning.frequence); }
   isInvalid(field: any): boolean { return this.submitted && !field; }
 
   genererPDF(): void {
