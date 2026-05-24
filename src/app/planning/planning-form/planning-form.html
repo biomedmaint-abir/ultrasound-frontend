@@ -18,23 +18,23 @@
     <mat-card-header><mat-card-title>🏥 Informations client et équipement</mat-card-title></mat-card-header>
     <mat-card-content>
       <div class="rapport-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Année</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.annee)">
+          <mat-label>Année <span *ngIf="isInvalid(planning.annee)" style="color:#DC2626">*</span></mat-label>
           <input matInput [(ngModel)]="planning.annee" placeholder="2026">
           <mat-icon matSuffix>calendar_today</mat-icon>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Client / Établissement</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.client)">
+          <mat-label>Client / Établissement <span *ngIf="isInvalid(planning.client)" style="color:#DC2626">*</span></mat-label>
           <input matInput [(ngModel)]="planning.client" placeholder="Ex: Hôpital Militaire Avicenne">
           <mat-icon matSuffix>business</mat-icon>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Ville</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.ville)">
+          <mat-label>Ville <span *ngIf="isInvalid(planning.ville)" style="color:#DC2626">*</span></mat-label>
           <input matInput [(ngModel)]="planning.ville" placeholder="Ex: Marrakech">
           <mat-icon matSuffix>location_city</mat-icon>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Appareil</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.appareil)">
+          <mat-label>Appareil <span *ngIf="isInvalid(planning.appareil)" style="color:#DC2626">*</span></mat-label>
           <mat-select [(ngModel)]="planning.appareil" (ngModelChange)="onEquipementChange()">
             <mat-option value="">-- Sélectionner --</mat-option>
             <mat-option *ngFor="let e of equipements" [value]="e.nom">{{ e.nom }} — {{ e.parc }}</mat-option>
