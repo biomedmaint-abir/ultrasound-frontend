@@ -7,7 +7,6 @@
     </div>
   </div>
 
-  <div *ngIf="submitted && !isFormValid" class="validation-banner" style="margin:8px 0;background:#FEF2F2;color:#DC2626;padding:12px 16px;border-radius:10px;font-size:13px;border-left:4px solid #DC2626;">⚠️ Veuillez remplir les champs obligatoires (Client, Équipement, Date).</div>
   <div class="scrim-header-card">
     <div class="scrim-logo"><span class="logo-text">SCRIM</span></div>
     <div class="biomedmaint-badge">Rapport d'Intervention</div>
@@ -23,12 +22,12 @@
           <input matInput [(ngModel)]="rapport.numeroRapport" placeholder="Ex: 022832">
           <mat-icon matSuffix>tag</mat-icon>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date d'intervention</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(rapport.dateRapport)">
+          <mat-label>Date d'intervention <span *ngIf="isInvalid(rapport.dateRapport)" style="color:#DC2626">*</span></mat-label>
           <input matInput type="date" [(ngModel)]="rapport.dateRapport">
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Équipement concerné</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(rapport.equipementId)">
+          <mat-label>Équipement concerné <span *ngIf="isInvalid(rapport.equipementId)" style="color:#DC2626">*</span></mat-label>
           <mat-select [(ngModel)]="rapport.equipementId" (ngModelChange)="onEquipementChange()">
             <mat-option value="">-- Sélectionner --</mat-option>
             <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }} — {{ e.parc }}</mat-option>
@@ -38,8 +37,8 @@
           <mat-label>N° de série</mat-label>
           <input matInput [(ngModel)]="rapport.numeroSerie" placeholder="Ex: SG82000056">
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Client / Établissement</mat-label>
+        <mat-form-field appearance="outline" [class.field-error]="isInvalid(rapport.client)">
+          <mat-label>Client / Établissement <span *ngIf="isInvalid(rapport.client)" style="color:#DC2626">*</span></mat-label>
           <mat-select [(ngModel)]="rapport.client">
             <mat-option value="">-- Sélectionner --</mat-option>
             <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>

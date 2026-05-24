@@ -65,3 +65,11 @@
   display: flex; gap: 12px; justify-content: flex-end;
   margin-top: 8px; margin-bottom: 32px;
 }
+
+::ng-deep .field-error .mdc-notched-outline__leading,
+::ng-deep .field-error .mdc-notched-outline__notch,
+::ng-deep .field-error .mdc-notched-outline__trailing {
+  border-color: #DC2626 !important;
+  border-width: 2px !important;
+}
+::ng-deep .field-error .mat-mdc-floating-label { color: #DC2626 !important; }
