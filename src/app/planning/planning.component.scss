@@ -9,7 +9,7 @@
 
 .planning-layout {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 320px;
   gap: 20px;
   @media (max-width: 900px) { grid-template-columns: 1fr; }
 }
@@ -29,7 +29,7 @@
 }
 
 .calendar-cell {
-  min-height: 90px; padding: 8px; border: 1px solid #F1F3F5;
+  min-height: 60px; padding: 5px; border: 1px solid #F1F3F5;
   transition: background 0.15s;
   &.today { background: #EFF6FF; border-color: #2563EB; }
   &.has-events { background: #F8F9FF; }
