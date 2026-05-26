@@ -37,3 +37,18 @@ body {
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+
+.mat-mdc-select-panel {
+  background: #F0F4FF !important;
+}
+
+.mat-mdc-option {
+  background: #F0F4FF !important;
+  color: #1C2B5A !important;
+  font-weight: 500 !important;
+}
+
+.mat-mdc-option:hover,
+.mat-mdc-option.mat-mdc-option-active {
+  background: #DBEAFE !important;
+}
