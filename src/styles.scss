@@ -38,17 +38,30 @@ body {
 }
 /* You can add global styles to this file, and also import other style files */
 
-.mat-mdc-select-panel {
+.mat-mdc-select-panel,
+.mdc-menu-surface,
+.mat-mdc-autocomplete-panel {
   background: #F0F4FF !important;
+  border-radius: 12px !important;
 }
 
 .mat-mdc-option {
-  background: #F0F4FF !important;
+  background-color: #F0F4FF !important;
   color: #1C2B5A !important;
   font-weight: 500 !important;
 }
 
+.mat-mdc-option .mdc-list-item__primary-text {
+  color: #1C2B5A !important;
+}
+
+.mat-mdc-option:hover .mdc-list-item__primary-text,
+.mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
+  color: #1C2B5A !important;
+}
+
 .mat-mdc-option:hover,
-.mat-mdc-option.mat-mdc-option-active {
-  background: #DBEAFE !important;
+.mat-mdc-option.mat-mdc-option-active,
+.mat-mdc-option.mdc-list-item--selected {
+  background-color: #DBEAFE !important;
 }
