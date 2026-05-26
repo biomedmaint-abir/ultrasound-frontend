@@ -65,3 +65,12 @@ body {
 .mat-mdc-option.mdc-list-item--selected {
   background-color: #DBEAFE !important;
 }
+
+:root {
+  --mat-select-panel-background-color: #F0F4FF;
+  --mat-option-background-color: #F0F4FF;
+  --mat-option-selected-state-background-color: #DBEAFE;
+  --mat-option-focus-state-background-color: #DBEAFE;
+  --mat-option-label-text-color: #1C2B5A;
+  --mat-option-selected-state-label-text-color: #1C2B5A;
+}
