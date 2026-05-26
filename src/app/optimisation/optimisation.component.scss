@@ -139,3 +139,17 @@
 }
 
 .empty-state { text-align: center; padding: 32px; color: #999; }
+.filter-field {
+  min-width: 180px;
+  --mdc-outlined-text-field-container-color: #F0F4FF;
+}
+
+::ng-deep .filter-field .mat-mdc-text-field-wrapper { background: #F0F4FF !important; border-radius: 10px !important; }
+::ng-deep .filter-field .mdc-notched-outline__leading,
+::ng-deep .filter-field .mdc-notched-outline__notch,
+::ng-deep .filter-field .mdc-notched-outline__trailing { border-color: #1C2B5A !important; }
+::ng-deep .filter-field .mat-mdc-floating-label { color: #1C2B5A !important; font-weight: 600 !important; }
+::ng-deep .filter-field .mat-mdc-select-value-text { color: #1C2B5A !important; font-weight: 600 !important; }
+::ng-deep .filter-field .mat-mdc-select-arrow { color: #1C2B5A !important; }
+::ng-deep .mat-mdc-select-panel { background: #F0F4FF !important; border-radius: 12px !important; }
+::ng-deep .mat-mdc-option { color: #1C2B5A !important; font-weight: 500 !important; }

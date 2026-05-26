@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { environment } from '../../environments/environment';
 import { Chart, registerables } from 'chart.js';
 
@@ -10,7 +12,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-optimisation',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule],
   templateUrl: './optimisation.component.html',
   styleUrl: './optimisation.component.scss'
 })
