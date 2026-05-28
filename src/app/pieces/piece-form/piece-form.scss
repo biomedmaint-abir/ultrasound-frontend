@@ -1,6 +1,6 @@
 .page-container { background: #F0F4FF; min-height: 100vh; max-width: 800px; margin: 0 auto; padding: 24px; }
 .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
-  h1 { margin: 0; font-size: 24px; font-weight: 600; color: #1a237e; }
+  h1 { margin: 0; font-size: 24px; font-weight: 600; color: #1C2B5A; }
 }
 .form-card { border-radius: 16px !important;
   mat-card-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 16px; }
@@ -15,3 +15,7 @@
   .error-msg { font-size: 11px; color: #DC2626; margin-top: -8px; margin-bottom: 4px; }
 }
 .full-width { grid-column: span 2; }
+
+::ng-deep .form-card .mat-mdc-card-header { background: #1C2B5A !important; border-radius: 16px 16px 0 0 !important; }
+::ng-deep .form-card .mat-mdc-card-title { color: white !important; font-size: 15px !important; font-weight: 700 !important; }
+::ng-deep .form-card { border-radius: 16px !important; box-shadow: 0 2px 16px rgba(0,0,0,0.07) !important; }
