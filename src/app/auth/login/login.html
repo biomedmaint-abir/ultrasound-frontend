@@ -28,6 +28,10 @@
       </div>
     </div>
 
+    <div *ngIf="sessionMessage" class="session-banner">
+      ⏱️ {{ sessionMessage }}
+    </div>
+
     <div *ngIf="errorMessage" class="error-banner">
       ⚠️ {{ errorMessage }}
     </div>
