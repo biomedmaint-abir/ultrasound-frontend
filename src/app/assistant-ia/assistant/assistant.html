@@ -14,9 +14,9 @@
         <span class="stat-num">{{ allCodes.length }}</span>
         <span class="stat-label">Codes erreur</span>
       </div>
-      <div class="stat">
-        <span class="stat-num">57</span>
-        <span class="stat-label">Équipements</span>
+      <div class="header-actions" *ngIf="isAdmin">
+        <button class="btn-add-code" (click)="showAddCode = true">➕ Ajouter un code</button>
+        <button class="btn-view-codes" (click)="showCodesPanel = !showCodesPanel">📋 Voir les codes</button>
       </div>
     </div>
   </div>
@@ -173,4 +173,61 @@
     </div>
   </div>
 
+</div>
+<!-- Modal Ajouter code erreur -->
+<div class="modal-overlay" *ngIf="showAddCode" (click)="showAddCode = false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>➕ Ajouter un code erreur</h3>
+      <button class="modal-close" (click)="showAddCode = false">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label>Code erreur <span class="req">*</span></label>
+        <input [(ngModel)]="newCode.code" placeholder="Ex: ERR-042" class="modal-input">
+      </div>
+      <div class="field-group">
+        <label>Symptômes <span class="req">*</span></label>
+        <textarea [(ngModel)]="newCode.symptomes" rows="2" class="modal-input" placeholder="Décrire les symptômes..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>Causes probables</label>
+        <textarea [(ngModel)]="newCode.causesProbables" rows="2" class="modal-input" placeholder="Causes identifiées..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>Actions correctives</label>
+        <textarea [(ngModel)]="newCode.actionsCorrectives" rows="2" class="modal-input" placeholder="Actions à effectuer..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>Pièces concernées</label>
+        <input [(ngModel)]="newCode.piecesConcernees" class="modal-input" placeholder="Ex: EBOX, IMB2...">
+      </div>
+      <div class="field-group">
+        <label>Temps de résolution moyen (h)</label>
+        <input type="number" [(ngModel)]="newCode.tempsResolutionMoyen" class="modal-input" placeholder="Ex: 2">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showAddCode = false">Annuler</button>
+      <button class="btn-save" (click)="saveNewCode()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel voir tous les codes -->
+<div class="codes-panel" *ngIf="showCodesPanel">
+  <div class="codes-panel-header">
+    <h3>📋 Codes erreurs enregistrés ({{ allCodes.length }})</h3>
+    <button (click)="showCodesPanel = false">✕</button>
+  </div>
+  <div class="codes-panel-body">
+    <div *ngFor="let c of allCodes" class="code-row">
+      <div class="code-badge">{{ c.code }}</div>
+      <div class="code-info">
+        <div class="code-symptome">{{ c.symptomes | slice:0:80 }}...</div>
+      </div>
+      <button class="btn-delete-code" (click)="deleteCode(c.id)">🗑️</button>
+    </div>
+    <div *ngIf="allCodes.length === 0" class="empty-codes">Aucun code erreur enregistré</div>
+  </div>
 </div>

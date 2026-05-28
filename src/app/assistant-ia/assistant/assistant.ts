@@ -28,6 +28,14 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   searchCode = '';
+  isAdmin = localStorage.getItem('role') === 'ADMIN';
+  showAddCode = false;
+  showCodesPanel = false;
+  newCode = {
+    code: '', symptomes: '', causesProbables: '',
+    actionsCorrectives: '', piecesConcernees: '',
+    tempsResolutionMoyen: null as number | null
+  };
   messages: Message[] = [];
   allCodes: any[] = [];
   documentsPhilips: any[] = [];
@@ -367,4 +375,25 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
   }
 
   goBack(): void { this.router.navigate(['/dashboard']); }
+
+  saveNewCode(): void {
+    if (!this.newCode.code || !this.newCode.symptomes) return;
+    this.assistantService.create(this.newCode).subscribe({
+      next: (data: any) => {
+        this.allCodes.push(data);
+        this.showAddCode = false;
+        this.newCode = { code: '', symptomes: '', causesProbables: '', actionsCorrectives: '', piecesConcernees: '', tempsResolutionMoyen: null };
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  deleteCode(id: number): void {
+    this.assistantService.delete(id).subscribe({
+      next: () => {
+        this.allCodes = this.allCodes.filter((c: any) => c.id !== id);
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }

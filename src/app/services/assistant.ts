@@ -82,4 +82,8 @@ export class AssistantService {
   apprendreNouveauCas(cas: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/codes-erreur`, cas);
   }
+
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/codes-erreurs/${id}`);
+  }
 }
