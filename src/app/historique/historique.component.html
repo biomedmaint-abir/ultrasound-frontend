@@ -8,19 +8,25 @@
 
   <!-- Filtres -->
   <div class="filter-bar">
-    <input
-      [(ngModel)]="searchText"
-      (ngModelChange)="applyFilter()"
-      placeholder="🔍 Rechercher par description ou équipement..."
-      class="search-input">
-    <select [(ngModel)]="filterType" (ngModelChange)="applyFilter()" class="select-filter">
-      <option value="">Tous les types</option>
-      <option *ngFor="let t of types" [value]="t">{{ t }}</option>
-    </select>
-    <select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()" class="select-filter">
-      <option value="">Tous les statuts</option>
-      <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
-    </select>
+    <div class="filter-item">
+      <label class="filter-label">Recherche</label>
+      <input [(ngModel)]="searchText" (ngModelChange)="applyFilter()"
+        placeholder="Description ou équipement..." class="filter-input">
+    </div>
+    <div class="filter-item">
+      <label class="filter-label">Type</label>
+      <select [(ngModel)]="filterType" (ngModelChange)="applyFilter()" class="filter-select">
+        <option value="">Tous les types</option>
+        <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+      </select>
+    </div>
+    <div class="filter-item">
+      <label class="filter-label">Statut</label>
+      <select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()" class="filter-select">
+        <option value="">Tous les statuts</option>
+        <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+      </select>
+    </div>
     <button class="btn-reset" (click)="reset()">↺ Réinitialiser</button>
   </div>
 
