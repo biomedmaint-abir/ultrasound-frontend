@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { CommonModule } from '@angular/common';
@@ -11,14 +11,22 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   errorMessage = '';
+  sessionMessage = '';
   loading = false;
   showPassword = false;
 
   constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    if (localStorage.getItem('session_expired') === 'true') {
+      this.sessionMessage = 'Vous avez depasse 15 minutes d inactivite. Vous avez ete deconnecte automatiquement.';
+      localStorage.removeItem('session_expired');
+    }
+  }
 
   login(): void {
     if (!this.email || !this.password) {
@@ -27,6 +35,7 @@ export class LoginComponent {
     }
     this.loading = true;
     this.errorMessage = '';
+    this.sessionMessage = '';
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
         this.authService.saveToken(response.token, response.email, response.role);
