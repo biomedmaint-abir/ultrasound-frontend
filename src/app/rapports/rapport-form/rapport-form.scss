@@ -1,4 +1,4 @@
-.page-container { max-width: 900px; margin: 0 auto; padding: 24px; }
+.page-container { background: #F0F4FF; min-height: 100vh; max-width: 900px; margin: 0 auto; padding: 24px; }
 
 .page-header {
   display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
@@ -34,7 +34,7 @@
 
 .ingenieur-grid {
   display: flex; gap: 12px; align-items: center; margin-bottom: 12px;
-  padding: 10px; background: #f5f7fa; border-radius: 8px;
+  padding: 10px; background: #F0F4FF; border-radius: 8px;
   .ing-label { min-width: 90px; font-weight: 700; color: #1a237e; font-size: 13px; }
   mat-form-field { flex: 1; }
 }
@@ -56,7 +56,7 @@
 .type-item {
   display: flex; align-items: center; gap: 8px;
   font-size: 14px; color: #333; cursor: pointer;
-  padding: 8px 12px; border-radius: 8px; background: #f5f7fa;
+  padding: 8px 12px; border-radius: 8px; background: #F0F4FF;
   input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
   &:hover { background: #e3f2fd; }
 }
