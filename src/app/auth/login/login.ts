@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit {
   sessionMessage = '';
   loading = false;
   showPassword = false;
+  rememberMe = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 

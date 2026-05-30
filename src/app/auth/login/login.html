@@ -1,48 +1,89 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <div class="scrim-logo">
-        <span class="scrim-text">SCRIM</span>
-      </div>
-      <h2>MaintManager</h2>
-      <p class="by-scrim">by SCRIM</p>
-      <p class="subtitle">Connectez-vous à votre espace de gestion</p>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<div class="dots">
+  <div class="dot" *ngFor="let d of [].constructor(36)"></div>
+</div>
+
+<div class="card">
+  <div class="logo-area">
+    <div class="logo-row">
+      <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 4 C6 4 19 2 32 10 C32 28 19 36 6 34 Z" fill="#1a2eff"/>
+        <path d="M6 4 C6 4 14 3 20 8 C20 22 13 30 6 34 Z" fill="#0d1bb5"/>
+      </svg>
+      <span class="logo-name">SCRIM</span>
     </div>
+    <div class="app-title">MaintManager</div>
+    <div class="app-subtitle">Plateforme de gestion de la maintenance</div>
+    <div class="divider-line"></div>
+    <p class="connect-hint">Connectez-vous à votre espace de gestion</p>
+  </div>
 
-    <div class="form-group">
-      <label>Email</label>
-      <div class="input-wrapper">
-        <span class="input-icon">📧</span>
-        <input type="email" [(ngModel)]="email" placeholder="email@scrim.ma" (keyup.enter)="login()">
-      </div>
-    </div>
+  <div *ngIf="sessionMessage" class="session-banner">⏱️ {{ sessionMessage }}</div>
+  <div *ngIf="errorMessage" class="error-banner">⚠️ {{ errorMessage }}</div>
 
-    <div class="form-group">
-      <label>Mot de passe</label>
-      <div class="input-wrapper">
-        <span class="input-icon">🔒</span>
-        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="••••••••" (keyup.enter)="login()">
-        <span class="toggle-pass" (click)="showPassword = !showPassword">
-          {{ showPassword ? '👁️' : '👁️‍🗨️' }}
-        </span>
-      </div>
-    </div>
-
-    <div *ngIf="sessionMessage" class="session-banner">
-      ⏱️ {{ sessionMessage }}
-    </div>
-
-    <div *ngIf="errorMessage" class="error-banner">
-      ⚠️ {{ errorMessage }}
-    </div>
-
-    <button class="login-btn" (click)="login()" [disabled]="loading">
-      <span *ngIf="!loading">Se connecter</span>
-      <span *ngIf="loading">Connexion en cours...</span>
-    </button>
-
-    <div class="login-footer">
-      <p>MaintManager v1.0 — SCRIM © 2026</p>
+  <div class="field-group">
+    <label for="email">Email</label>
+    <div class="input-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a2eff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="3"/>
+        <path d="M2 7l10 7 10-7"/>
+      </svg>
+      <input type="email" id="email" [(ngModel)]="email" placeholder="votre@email.com">
     </div>
   </div>
+
+  <div class="field-group">
+    <label for="password">Mot de passe</label>
+    <div class="input-wrap">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a2eff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <input [type]="showPassword ? 'text' : 'password'" id="password" [(ngModel)]="password" placeholder="••••••••">
+      <button class="eye-btn" (click)="showPassword = !showPassword" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <ng-container *ngIf="!showPassword">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </ng-container>
+          <ng-container *ngIf="showPassword">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </ng-container>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="field-options">
+    <label class="checkbox-label">
+      <input type="checkbox" [(ngModel)]="rememberMe">
+      <span class="custom-check">
+        <svg *ngIf="rememberMe" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="2,6 5,9 10,3"/>
+        </svg>
+      </span>
+      Se souvenir de moi
+    </label>
+  </div>
+
+  <button class="btn-login" (click)="login()" [disabled]="loading">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+      <polyline points="10 17 15 12 10 7"/>
+      <line x1="15" y1="12" x2="3" y2="12"/>
+    </svg>
+    {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+  </button>
+
+  <div class="or-row">
+    <div class="or-line"></div>
+    <span class="or-text">ou</span>
+    <div class="or-line"></div>
+  </div>
+
+  <p class="footer-text">MaintManager v1.0 — <strong>SCRIM</strong> © 2026</p>
 </div>
