@@ -58,7 +58,7 @@
 }
 
 .logo-row { display: flex; align-items: center; gap: 10px; }
-.logo-icon { width: 80px; height: 80px; object-fit: contain; }
+.logo-icon { width: 200px; height: 60px; object-fit: contain; mix-blend-mode: multiply; }
 .logo-name { font-size: 28px; font-weight: 800; color: #0d1340; letter-spacing: -0.5px; }
 .app-title { font-size: 26px; font-weight: 800; color: #0d1340; letter-spacing: -0.5px; }
 .app-subtitle { font-size: 14px; font-weight: 500; color: #1a2eff; }
