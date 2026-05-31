@@ -6,7 +6,7 @@
       <p>Bienvenue, <strong>{{ email }}</strong> — {{ today | date:'EEEE dd MMMM yyyy' }}</p>
     </div>
     <div class="parc-filter">
-      <label>🏥 Filtrer par parc :</label>
+      
       <mat-select [(ngModel)]="selectedParc" (ngModelChange)="filterByParc()" class="parc-select">
         <mat-option value="">Tous les parcs</mat-option>
         <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
