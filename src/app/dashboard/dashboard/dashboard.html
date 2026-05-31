@@ -6,8 +6,7 @@
       <p>Bienvenue, <strong>{{ email }}</strong> — {{ today | date:'EEEE dd MMMM yyyy' }}</p>
     </div>
     <div class="parc-filter">
-      
-      <mat-select [(ngModel)]="selectedParc" (ngModelChange)="filterByParc()" class="parc-select">
+      <mat-select [(ngModel)]="selectedParc" (ngModelChange)="filterByParc()" class="parc-select" placeholder="Filtrer par parc">
         <mat-option value="">Tous les parcs</mat-option>
         <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
       </mat-select>
@@ -21,7 +20,6 @@
       <span> — {{ totalEquipements }} équipement(s)</span>
     </div>
 
-    <!-- KPIs -->
     <div class="kpi-grid">
       <div class="kpi-card blue">
         <div class="kpi-icon">🔧</div>
@@ -45,20 +43,21 @@
       </div>
     </div>
 
-    <!-- 3 TABLEAUX -->
     <div class="tables-grid">
 
-      <!-- Planning du mois -->
       <div class="table-card">
         <div class="table-header blue-header">
-          <span>📅 Planning du mois</span>
-          <span class="badge">{{ planningDuMois.length }}</span>
+          <div class="header-left">
+            <span>📅 Planning du mois</span>
+            <span class="badge">{{ planningDuMois.length }}</span>
+          </div>
+          <div class="header-right">
+            <a class="voir-tout" (click)="navigateTo('/planning')">Voir tout →</a>
+          </div>
         </div>
         <div class="table-body">
           <table *ngIf="planningDuMois.length > 0">
-            <thead>
-              <tr><th>Date</th><th>Type</th><th>Équipement</th><th>Statut</th></tr>
-            </thead>
+            <thead><tr><th>Date</th><th>Type</th><th>Équipement</th><th>Statut</th></tr></thead>
             <tbody>
               <tr *ngFor="let i of planningDuMois" (click)="navigateTo('/interventions/' + i.id)" class="clickable">
                 <td>{{ i.dateIntervention | date:'dd/MM' }}</td>
@@ -68,21 +67,27 @@
               </tr>
             </tbody>
           </table>
-          <div *ngIf="planningDuMois.length === 0" class="empty-state">Aucune intervention ce mois-ci</div>
+          <div *ngIf="planningDuMois.length === 0" class="empty-state">
+            <span class="empty-icon">📅</span>
+            <div class="empty-title">Restez organisé,</div>
+            <div class="empty-desc">consultez tout votre planning.</div>
+          </div>
         </div>
       </div>
 
-      <!-- Interventions non terminées -->
       <div class="table-card">
         <div class="table-header orange-header">
-          <span>⚠️ Interventions non terminées</span>
-          <span class="badge">{{ interventionsNonTerminees.length }}</span>
+          <div class="header-left">
+            <span>⚠️ Interventions non terminées</span>
+            <span class="badge">{{ interventionsNonTerminees.length }}</span>
+          </div>
+          <div class="header-right">
+            <a class="voir-tout" (click)="navigateTo('/interventions')">Voir tout →</a>
+          </div>
         </div>
         <div class="table-body">
           <table *ngIf="interventionsNonTerminees.length > 0">
-            <thead>
-              <tr><th>Date</th><th>Type</th><th>Équipement</th><th>Statut</th></tr>
-            </thead>
+            <thead><tr><th>Date</th><th>Type</th><th>Équipement</th><th>Statut</th></tr></thead>
             <tbody>
               <tr *ngFor="let i of interventionsNonTerminees" (click)="navigateTo('/interventions/' + i.id)" class="clickable">
                 <td>{{ i.dateIntervention | date:'dd/MM' }}</td>
@@ -92,21 +97,26 @@
               </tr>
             </tbody>
           </table>
-          <div *ngIf="interventionsNonTerminees.length === 0" class="empty-state">✅ Toutes les interventions sont terminées</div>
+          <div *ngIf="interventionsNonTerminees.length === 0" class="empty-state">
+            <span class="empty-icon">✅</span>
+            <div class="empty-title">Toutes les interventions sont terminées</div>
+          </div>
         </div>
       </div>
 
-      <!-- Interventions urgentes (7 jours) -->
       <div class="table-card">
         <div class="table-header red-header">
-          <span>🔴 Interventions dans 7 jours</span>
-          <span class="badge">{{ interventionsUrgentes.length }}</span>
+          <div class="header-left">
+            <span>🔴 Interventions dans 7 jours</span>
+            <span class="badge">{{ interventionsUrgentes.length }}</span>
+          </div>
+          <div class="header-right">
+            <a class="voir-tout" (click)="navigateTo('/interventions')">Voir tout →</a>
+          </div>
         </div>
         <div class="table-body">
           <table *ngIf="interventionsUrgentes.length > 0">
-            <thead>
-              <tr><th>Date</th><th>Type</th><th>Équipement</th><th>FSE</th></tr>
-            </thead>
+            <thead><tr><th>Date</th><th>Type</th><th>Équipement</th><th>FSE</th></tr></thead>
             <tbody>
               <tr *ngFor="let i of interventionsUrgentes" (click)="navigateTo('/interventions/' + i.id)" class="clickable urgent">
                 <td>{{ i.dateIntervention | date:'dd/MM' }}</td>
@@ -116,10 +126,19 @@
               </tr>
             </tbody>
           </table>
-          <div *ngIf="interventionsUrgentes.length === 0" class="empty-state">Aucune intervention urgente</div>
+          <div *ngIf="interventionsUrgentes.length === 0" class="empty-state">
+            <span class="empty-icon">🔔</span>
+            <div class="empty-title">Aucune intervention urgente</div>
+            <div class="empty-desc">Aucune intervention planifiée dans les 7 prochains jours.</div>
+          </div>
         </div>
       </div>
 
+    </div>
+
+    <div class="dashboard-footer">
+      <span>MaintManager v1.0 — SCRIM © 2026</span>
+      <span>🔒 Système sécurisé</span>
     </div>
 
   </ng-container>
