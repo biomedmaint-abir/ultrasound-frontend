@@ -13,7 +13,6 @@
   <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
 
   <div class="form-card">
-
     <div class="form-grid">
 
       <div class="field-wrapper" [class.invalid]="isInvalid(form.nom)">
@@ -21,7 +20,10 @@
           <span class="field-icon">🖥️</span>
           <label>Modèle <span class="required-star">*</span></label>
         </div>
-        <input type="text" [(ngModel)]="form.nom" name="nom" class="form-input" placeholder="Ex : Affiniti 50G">
+        <select [(ngModel)]="form.nom" name="nom" class="form-select">
+          <option value="">-- Sélectionner un modèle --</option>
+          <option *ngFor="let m of modeles" [value]="m">{{ m }}</option>
+        </select>
         <span class="error-msg" *ngIf="isInvalid(form.nom)">Ce champ est obligatoire</span>
       </div>
 
@@ -47,7 +49,10 @@
           <span class="field-icon">🏥</span>
           <label>Service <span class="required-star">*</span></label>
         </div>
-        <input type="text" [(ngModel)]="form.service" name="service" class="form-input" placeholder="Ex : Cardiologie">
+        <select [(ngModel)]="form.service" name="service" class="form-select">
+          <option value="">-- Sélectionner un service --</option>
+          <option *ngFor="let s of services" [value]="s">{{ s }}</option>
+        </select>
       </div>
 
       <div class="field-wrapper" [class.invalid]="isInvalid(form.parc)">
@@ -90,6 +95,5 @@
         💾 {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
       </button>
     </div>
-
   </div>
 </div>

@@ -2,13 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { EquipementService } from '../../services/equipement';
 import { environment } from '../../../environments/environment';
@@ -16,8 +9,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-equipement-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './equipement-form.html',
   styleUrl: './equipement-form.scss'
 })
@@ -28,9 +20,21 @@ export class EquipementForm implements OnInit {
   isSaving = false;
   errorMessage = '';
   submitted = false;
-  parcs: string[] = [];
 
-  form = { nom: '', numeroSerie: '', numInventaire: '', service: '', parc: '', dateInstallation: '', statut: '' };
+  parcs: string[] = [];
+  services: string[] = [];
+  modeles: string[] = [
+    'Affiniti 50G', 'Affiniti 70G', 'Affiniti 70C', 'Affiniti 30',
+    'Affiniti CVx', 'EPIQ 7', 'EPIQ 5', 'CX50', 'CX30',
+    'Mindray DC-70', 'GE Logiq E10', 'Siemens ACUSON NX3',
+    'Toshiba Aplio i800', 'Samsung HS40', 'CV550'
+  ];
+
+  form = {
+    nom: '', numeroSerie: '', numInventaire: '',
+    service: '', parc: '', dateInstallation: '', statut: ''
+  };
+
   statuts = ['EN_SERVICE', 'EN_MAINTENANCE', 'EN_PANNE', 'HORS_SERVICE'];
 
   get isFormValid(): boolean {
@@ -39,21 +43,41 @@ export class EquipementForm implements OnInit {
 
   isInvalid(field: any): boolean { return this.submitted && !field; }
 
-  constructor(private equipementService: EquipementService, private http: HttpClient,
-    private route: ActivatedRoute, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private equipementService: EquipementService,
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
-      next: (data) => { this.parcs = [...new Set(data.map((e: any) => e.parc).filter((p: any) => p))]; this.cdr.detectChanges(); }
+      next: (data) => {
+        this.parcs = [...new Set(data.map((e: any) => e.parc).filter(Boolean))] as string[];
+        this.services = [...new Set(data.map((e: any) => e.service).filter(Boolean))] as string[];
+        const dbModeles = [...new Set(data.map((e: any) => e.nom).filter(Boolean))] as string[];
+        dbModeles.forEach(m => { if (!this.modeles.includes(m)) this.modeles.push(m); });
+        this.modeles.sort();
+        this.cdr.detectChanges();
+      }
     });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
-      this.isEditMode = true; this.equipementId = +id; this.isLoading = true;
+      this.isEditMode = true;
+      this.equipementId = +id;
+      this.isLoading = true;
       this.equipementService.getById(+id).subscribe({
         next: (data) => {
-          this.form = { nom: data.nom || '', numeroSerie: data.numeroSerie || '', numInventaire: data.numInventaire || '',
-            service: data.service || '', parc: data.parc || '', dateInstallation: data.dateInstallation?.substring(0, 10) || '', statut: data.statut || '' };
-          this.isLoading = false; this.cdr.detectChanges();
+          this.form = {
+            nom: data.nom || '', numeroSerie: data.numeroSerie || '',
+            numInventaire: data.numInventaire || '', service: data.service || '',
+            parc: data.parc || '', dateInstallation: data.dateInstallation?.substring(0, 10) || '',
+            statut: data.statut || ''
+          };
+          this.isLoading = false;
+          this.cdr.detectChanges();
         },
         error: () => { this.errorMessage = 'Erreur chargement.'; this.isLoading = false; }
       });
@@ -74,6 +98,8 @@ export class EquipementForm implements OnInit {
   }
 
   cancel(): void {
-    this.isEditMode && this.equipementId ? this.router.navigate(['/equipements', this.equipementId]) : this.router.navigate(['/equipements']);
+    this.isEditMode && this.equipementId
+      ? this.router.navigate(['/equipements', this.equipementId])
+      : this.router.navigate(['/equipements']);
   }
 }
