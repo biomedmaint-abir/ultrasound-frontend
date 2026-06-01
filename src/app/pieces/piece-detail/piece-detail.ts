@@ -1,33 +1,31 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PieceService } from '../../services/piece';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-piece-detail',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule,
-    MatDividerModule, MatProgressSpinnerModule, ConfirmDialogComponent],
+  imports: [CommonModule, ConfirmDialogComponent],
   templateUrl: './piece-detail.html',
   styleUrl: './piece-detail.scss'
 })
 export class PieceDetail implements OnInit {
   showConfirm = false;
   pendingDeleteId: number | null = null;
-  confirmTitle = 'Supprimer la piece';
-  confirmMessage = 'Cette action est irreversible. La piece sera definitivement supprimee.';
+  confirmTitle = 'Supprimer la pièce';
+  confirmMessage = 'Cette action est irréversible. La pièce sera définitivement supprimée.';
   piece: any = null;
   isLoading = true;
   hasError = false;
 
-  constructor(private pieceService: PieceService, private route: ActivatedRoute,
-    private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private pieceService: PieceService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -39,6 +37,26 @@ export class PieceDetail implements OnInit {
       next: (data) => { this.piece = data; this.isLoading = false; this.cdr.detectChanges(); },
       error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
     });
+  }
+
+  getStatutClass(statut: string): string {
+    switch(statut) {
+      case 'EN_STOCK': return 'statut-ok';
+      case 'DEFECTUEUSE': return 'statut-danger';
+      case 'EN_ATTENTE_RETOUR': return 'statut-warning';
+      case 'RETOURNEE': return 'statut-info';
+      default: return 'statut-ok';
+    }
+  }
+
+  getStatutLabel(statut: string): string {
+    switch(statut) {
+      case 'EN_STOCK': return 'En stock';
+      case 'DEFECTUEUSE': return 'Défectueuse';
+      case 'EN_ATTENTE_RETOUR': return 'Attente retour';
+      case 'RETOURNEE': return 'Retournée';
+      default: return 'En stock';
+    }
   }
 
   delete(): void { this.pendingDeleteId = this.piece.id; this.showConfirm = true; }
