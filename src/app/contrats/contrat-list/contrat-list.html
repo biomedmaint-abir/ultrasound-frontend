@@ -1,70 +1,70 @@
 <div class="page-container">
   <div class="page-header">
     <div class="header-left">
-      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <button class="back-btn" (click)="goBack()">←</button>
       <div>
         <h1>Contrats</h1>
-        <p>{{ filtered.length }} contrat(s)</p>
+        <p>{{ total }} contrat(s) enregistré(s)</p>
       </div>
     </div>
-    <button mat-raised-button color="primary" (click)="goToNew()">
-      <mat-icon>add</mat-icon> Nouveau contrat
-    </button>
+    <button class="btn-new" (click)="goToNew()">+ Nouveau contrat</button>
   </div>
-
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-label>Rechercher...</mat-label>
-    <input matInput [(ngModel)]="search" (input)="applyFilter()">
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
-
-  <div *ngIf="isLoading" class="center-state">
-    <mat-spinner diameter="48"></mat-spinner><p>Chargement...</p>
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher..." [(ngModel)]="search" (input)="applyFilter()" />
+    </div>
+    <select [(ngModel)]="filterStatut" (change)="applyFilter()" class="filter-select">
+      <option value="">Statut ↓</option>
+      <option value="ACTIF">Actif</option>
+      <option value="EXPIRE">Expiré</option>
+      <option value="RESILIE">Résilié</option>
+    </select>
+    <select [(ngModel)]="filterType" (change)="applyFilter()" class="filter-select">
+      <option value="">Type ↓</option>
+      <option value="MAINTENANCE">Maintenance</option>
+      <option value="GARANTIE">Garantie</option>
+      <option value="LOCATION">Location</option>
+    </select>
   </div>
-
+  <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
   <div *ngIf="!isLoading && !hasError">
     <div *ngIf="filtered.length === 0" class="empty-state"><p>Aucun contrat trouvé.</p></div>
-    <table *ngIf="filtered.length > 0" mat-table [dataSource]="filtered" class="mat-elevation-z2">
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>#</th>
-        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
-      </ng-container>
-      <ng-container matColumnDef="reference">
-        <th mat-header-cell *matHeaderCellDef>Référence</th>
-        <td mat-cell *matCellDef="let row">{{ row.reference }}</td>
-      </ng-container>
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef>Type</th>
-        <td mat-cell *matCellDef="let row">{{ row.type }}</td>
-      </ng-container>
-      <ng-container matColumnDef="dateDebut">
-        <th mat-header-cell *matHeaderCellDef>Début</th>
-        <td mat-cell *matCellDef="let row">{{ row.dateDebut | date:'dd/MM/yyyy' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="dateFin">
-        <th mat-header-cell *matHeaderCellDef>Fin</th>
-        <td mat-cell *matCellDef="let row">{{ row.dateFin | date:'dd/MM/yyyy' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="montant">
-        <th mat-header-cell *matHeaderCellDef>Montant</th>
-        <td mat-cell *matCellDef="let row">{{ row.montant | number:'1.2-2' }} DH</td>
-      </ng-container>
-      <ng-container matColumnDef="statut">
-        <th mat-header-cell *matHeaderCellDef>Statut</th>
-        <td mat-cell *matCellDef="let row">
-          <span class="statut-badge" [ngClass]="getStatutClass(row.statut)">{{ row.statut }}</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let row">
-          <button mat-icon-button (click)="goToDetail(row.id)"><mat-icon>visibility</mat-icon></button>
-          <button mat-icon-button color="primary" (click)="goToEdit(row.id, $event)"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button color="warn" (click)="delete(row.id, $event)"><mat-icon>delete</mat-icon></button>
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="goToDetail(row.id)"></tr>
-    </table>
+    <div class="table-wrapper" *ngIf="filtered.length > 0">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Référence</th><th>Type</th><th>Début</th><th>Fin</th><th>Montant</th><th>Statut</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of pagedData" (click)="goToDetail(row.id)" class="clickable-row">
+            <td>{{ row.id }}</td>
+            <td><strong>{{ row.reference }}</strong></td>
+            <td>{{ row.type }}</td>
+            <td>{{ row.dateDebut | date:'dd/MM/yyyy' }}</td>
+            <td>{{ row.dateFin | date:'dd/MM/yyyy' }}</td>
+            <td>{{ row.montant | number:'1.0-0' }} DH</td>
+            <td><span class="statut-badge" [ngClass]="getStatutClass(row.statut)"><span class="statut-dot"></span>{{ row.statut }}</span></td>
+            <td class="actions-cell" (click)="$event.stopPropagation()">
+              <button class="btn-view" (click)="goToDetail(row.id)">👁️</button>
+              <button class="btn-edit" (click)="goToEdit(row.id, $event)">✏️</button>
+              <button class="btn-delete" (click)="delete(row.id, $event)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination-bar" *ngIf="filtered.length > 0">
+      <span class="pagination-info">Affichage {{ (currentPage-1)*pageSize+1 }} à {{ min(currentPage*pageSize, filtered.length) }} sur {{ filtered.length }} contrats</span>
+      <div class="pagination-right">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="page-size-select">
+          <option [value]="10">10 / page</option>
+          <option [value]="25">25 / page</option>
+        </select>
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">‹</button>
+        <button class="page-btn active">{{ currentPage }}</button>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">›</button>
+      </div>
+    </div>
   </div>
-</div><app-confirm-dialog [visible]="showConfirm" [title]="confirmTitle" [message]="confirmMessage" confirmLabel="Supprimer" cancelLabel="Annuler" icon="🗑️" [danger]="true" (confirmed)="confirmDelete()" (cancelled)="cancelDelete()"></app-confirm-dialog>
+</div>
+<app-confirm-dialog [visible]="showConfirm" [title]="confirmTitle" [message]="confirmMessage" confirmLabel="Supprimer" cancelLabel="Annuler" icon="🗑️" [danger]="true" (confirmed)="confirmDelete()" (cancelled)="cancelDelete()"></app-confirm-dialog>
