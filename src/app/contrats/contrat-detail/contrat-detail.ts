@@ -13,8 +13,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 @Component({
   selector: 'app-contrat-detail',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule,
-    MatDividerModule, MatProgressSpinnerModule, ConfirmDialogComponent],
+  imports: [CommonModule, ConfirmDialogComponent],
   templateUrl: './contrat-detail.html',
   styleUrl: './contrat-detail.scss'
 })

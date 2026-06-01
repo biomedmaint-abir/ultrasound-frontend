@@ -15,7 +15,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-contrat-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './contrat-form.html',
   styleUrl: './contrat-form.scss'
 })
