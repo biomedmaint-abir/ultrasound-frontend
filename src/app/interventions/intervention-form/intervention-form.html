@@ -1,127 +1,202 @@
 <div class="page-container">
+
   <div class="page-header">
-    <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
-    <div>
-      <h1>{{ isEditMode ? 'Modifier l\'intervention' : 'Nouvelle intervention' }}</h1>
-      <p>Les champs marqués <span class="required-star">*</span> sont obligatoires</p>
+    <div class="header-left">
+      <button class="back-btn" (click)="cancel()">←</button>
+      <div>
+        <h1>{{ isEditMode ? 'Modifier l\'intervention' : 'Nouvelle intervention' }}</h1>
+        <p>Les champs marqués <span class="required-star">*</span> sont obligatoires</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-cancel" (click)="cancel()" [disabled]="isSaving">Annuler</button>
+      <button class="btn-save" (click)="save()" [disabled]="isSaving">
+        💾 {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
     </div>
   </div>
 
-  <mat-card class="form-card">
-    <mat-card-content>
-      <div *ngIf="errorMessage" class="error-banner"><mat-icon>error_outline</mat-icon> {{ errorMessage }}</div>
-      <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
+  <div *ngIf="errorMessage" class="error-banner">⚠️ {{ errorMessage }}</div>
+  <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
 
-      <div class="form-grid">
+  <div class="form-layout">
 
-        <div class="field-wrapper" [class.invalid]="isInvalid(form.date)">
-          <label>Date <span class="required-star" *ngIf="isInvalid(form.date)">*</span></label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput type="date" [(ngModel)]="form.date" name="date">
-          </mat-form-field>
-          <span class="error-msg" *ngIf="isInvalid(form.date)">Ce champ est obligatoire</span>
+    <div class="form-main">
+
+      <!-- Informations générales -->
+      <div class="form-section">
+        <div class="section-header">
+          <span class="section-icon">ℹ️</span>
+          <h2>Informations générales</h2>
         </div>
+        <div class="form-grid">
 
-        <div class="field-wrapper" [class.invalid]="isInvalid(form.type)">
-          <label>Type <span class="required-star" *ngIf="isInvalid(form.type)">*</span></label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <mat-select [(ngModel)]="form.type" name="type">
-              <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <span class="error-msg" *ngIf="isInvalid(form.type)">Ce champ est obligatoire</span>
+          <div class="field-wrapper" [class.invalid]="isInvalid(form.date)">
+            <label>Date <span class="required-star">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">📅</span>
+              <input type="date" [(ngModel)]="form.date" name="date" class="form-input" (ngModelChange)="updateResume()">
+            </div>
+            <span class="error-msg" *ngIf="isInvalid(form.date)">Ce champ est obligatoire</span>
+          </div>
+
+          <div class="field-wrapper" [class.invalid]="isInvalid(form.type)">
+            <label>Type <span class="required-star">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🔧</span>
+              <select [(ngModel)]="form.type" name="type" class="form-select" (ngModelChange)="updateResume()">
+                <option value="">Sélectionner...</option>
+                <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+              </select>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid(form.type)">Ce champ est obligatoire</span>
+          </div>
+
+          <div class="field-wrapper" [class.invalid]="isInvalid(form.equipementId)">
+            <label>Équipement <span class="required-star">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🔬</span>
+              <select [(ngModel)]="form.equipementId" name="equipementId" class="form-select" (ngModelChange)="updateResume()">
+                <option value="">Sélectionner...</option>
+                <option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }} — {{ e.parc }}</option>
+              </select>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid(form.equipementId)">Ce champ est obligatoire</span>
+          </div>
+
+          <div class="field-wrapper">
+            <label>FSE</label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" [(ngModel)]="form.fse" name="fse" placeholder="Nom du FSE" class="form-input" (ngModelChange)="updateResume()">
+            </div>
+          </div>
+
+          <div class="field-wrapper" [class.invalid]="isInvalid(form.statut)">
+            <label>Statut <span class="required-star">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🏳️</span>
+              <select [(ngModel)]="form.statut" name="statut" class="form-select" (ngModelChange)="updateResume()">
+                <option value="">Sélectionner...</option>
+                <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid(form.statut)">Ce champ est obligatoire</span>
+          </div>
+
+          <div class="field-wrapper">
+            <label>Durée (heures) <span class="required-star">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">⏱️</span>
+              <input type="number" [(ngModel)]="form.duree" name="duree" class="form-input" (ngModelChange)="updateResume()">
+            </div>
+          </div>
+
+          <div class="field-wrapper full-width">
+            <label>💰 Coût total (DH) <span class="required-star">*</span></label>
+            <input type="number" [(ngModel)]="form.coutTotal" name="coutTotal" class="form-input-full" (ngModelChange)="updateResume()">
+          </div>
+
         </div>
-
-        <div class="field-wrapper" [class.invalid]="isInvalid(form.equipementId)">
-          <label>Équipement <span class="required-star" *ngIf="isInvalid(form.equipementId)">*</span></label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <mat-select [(ngModel)]="form.equipementId" name="equipementId">
-              <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }} — {{ e.parc }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <span class="error-msg" *ngIf="isInvalid(form.equipementId)">Ce champ est obligatoire</span>
-        </div>
-
-        <div class="field-wrapper" [class.invalid]="isInvalid(form.fse)">
-          <label>FSE <span class="required-star" *ngIf="isInvalid(form.fse)">*</span></label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput [(ngModel)]="form.fse" name="fse" placeholder="Nom du FSE">
-          </mat-form-field>
-          <span class="error-msg" *ngIf="isInvalid(form.fse)">Ce champ est obligatoire</span>
-        </div>
-
-        <div class="field-wrapper" [class.invalid]="isInvalid(form.statut)">
-          <label>Statut <span class="required-star" *ngIf="isInvalid(form.statut)">*</span></label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <mat-select [(ngModel)]="form.statut" name="statut">
-              <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <span class="error-msg" *ngIf="isInvalid(form.statut)">Ce champ est obligatoire</span>
-        </div>
-
-        <div class="field-wrapper">
-          <label>Durée (heures)</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput type="number" [(ngModel)]="form.duree" name="duree">
-          </mat-form-field>
-        </div>
-
-        <div class="field-wrapper">
-          <label>💰 Coût total (DH)</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput type="number" [(ngModel)]="form.coutTotal" name="coutTotal">
-          </mat-form-field>
-        </div>
-
-        <div class="field-wrapper full-width">
-          <label>Description de la panne</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <textarea matInput [(ngModel)]="form.description" name="description" rows="3"></textarea>
-          </mat-form-field>
-        </div>
-
-        <div class="field-wrapper full-width">
-          <label>Actions effectuées</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <textarea matInput [(ngModel)]="form.observations" name="observations" rows="3"></textarea>
-          </mat-form-field>
-        </div>
-
       </div>
 
-      <div class="pieces-section">
-        <div class="pieces-header">
-          <h3>🔩 Pièces de rechange utilisées</h3>
-          <button mat-stroked-button color="primary" type="button" (click)="ajouterPiece()">
-            <mat-icon>add</mat-icon> Ajouter une pièce
-          </button>
+      <!-- Détails -->
+      <div class="form-section">
+        <div class="section-header">
+          <span class="section-icon">💬</span>
+          <h2>Détails de l'intervention</h2>
         </div>
+        <div class="form-grid">
+          <div class="field-wrapper">
+            <label>Description de la panne <span class="required-star">*</span></label>
+            <textarea [(ngModel)]="form.description" name="description" class="form-textarea" rows="4" placeholder="Décrivez la panne..."></textarea>
+          </div>
+          <div class="field-wrapper">
+            <label>Actions effectuées</label>
+            <textarea [(ngModel)]="form.observations" name="observations" class="form-textarea" rows="4" placeholder="Actions réalisées..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pièces -->
+      <div class="form-section">
+        <div class="section-header">
+          <span class="section-icon">📦</span>
+          <h2>Pièces de rechange utilisées</h2>
+        </div>
+        <button class="btn-add-piece" type="button" (click)="ajouterPiece()">+ Ajouter une pièce</button>
+
         <div *ngIf="piecesUtilisees.length === 0" class="empty-pieces">
+          <div class="empty-pieces-icon">📦</div>
           <p>Aucune pièce ajoutée</p>
+          <small>Ajoutez une pièce pour lister les pièces de rechange utilisées.</small>
         </div>
-        <div *ngFor="let p of piecesUtilisees; let i = index" class="piece-row">
-          <mat-form-field appearance="outline" class="piece-select">
-            <mat-label>Pièce</mat-label>
-            <mat-select [(ngModel)]="p.pieceId" (ngModelChange)="onPieceChange(i)" [name]="'piece_' + i">
-              <mat-option *ngFor="let pd of piecesDisponibles" [value]="pd.id">{{ pd.nom }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="piece-quantite">
-            <mat-label>Quantité</mat-label>
-            <input matInput type="number" [(ngModel)]="p.quantite" [name]="'quantite_' + i" min="1">
-          </mat-form-field>
-          <button mat-icon-button color="warn" (click)="supprimerPiece(i)"><mat-icon>delete</mat-icon></button>
+
+        <table class="pieces-table" *ngIf="piecesUtilisees.length > 0">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Désignation</th>
+              <th>Quantité</th>
+              <th>Prix unitaire (DH)</th>
+              <th>Total (DH)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of piecesUtilisees; let i = index">
+              <td>{{ getPieceRef(p.pieceId) }}</td>
+              <td>
+                <select [(ngModel)]="p.pieceId" (ngModelChange)="onPieceChange(i)" [name]="'piece_' + i" class="form-select">
+                  <option value="">Sélectionner...</option>
+                  <option *ngFor="let pd of piecesDisponibles" [value]="pd.id">{{ pd.nom }}</option>
+                </select>
+              </td>
+              <td><input type="number" [(ngModel)]="p.quantite" [name]="'quantite_' + i" min="1" class="form-input qty-input"></td>
+              <td>{{ getPiecePrix(p.pieceId) | number:'1.0-0' }}</td>
+              <td>{{ (getPiecePrix(p.pieceId) * p.quantite) | number:'1.0-0' }}</td>
+              <td><button class="btn-delete-piece" (click)="supprimerPiece(i)">🗑️</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Résumé -->
+    <div class="form-sidebar">
+      <div class="resume-card">
+        <div class="section-header">
+          <span class="section-icon">📋</span>
+          <h2>Résumé</h2>
+        </div>
+        <div class="resume-row">
+          <span class="resume-label">Type</span>
+          <span class="type-badge" [class.type-preventif]="form.type === 'PREVENTIF'" [class.type-correctif]="form.type === 'CORRECTIF'" [class.type-maj]="form.type === 'MISE_A_JOUR'">{{ form.type || '—' }}</span>
+        </div>
+        <div class="resume-row">
+          <span class="resume-label">Statut</span>
+          <span class="statut-badge" [class.statut-termine]="form.statut === 'TERMINEE'" [class.statut-en-cours]="form.statut === 'EN_COURS'">{{ form.statut || '—' }}</span>
+        </div>
+        <div class="resume-row">
+          <span class="resume-label">Équipement</span>
+          <span class="resume-value">{{ getEquipementNom() }}</span>
+        </div>
+        <div class="resume-row">
+          <span class="resume-label">FSE</span>
+          <span class="resume-value">{{ form.fse || '—' }}</span>
+        </div>
+        <div class="resume-row">
+          <span class="resume-label">Durée</span>
+          <span class="resume-value">{{ form.duree ? form.duree + ' heures' : '—' }}</span>
+        </div>
+        <div class="resume-divider"></div>
+        <div class="resume-row total-row">
+          <span class="resume-label">Coût total (DH)</span>
+          <span class="resume-total">{{ form.coutTotal || 0 }}</span>
         </div>
       </div>
-    </mat-card-content>
+    </div>
 
-    <mat-card-actions>
-      <button mat-button (click)="cancel()" [disabled]="isSaving">Annuler</button>
-      <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaving">
-        <mat-icon *ngIf="!isSaving">save</mat-icon>
-        {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
+  </div>
 </div>

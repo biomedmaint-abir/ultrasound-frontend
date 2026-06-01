@@ -2,13 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { InterventionService } from '../../services/intervention';
 import { EquipementService } from '../../services/equipement';
@@ -17,8 +10,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-intervention-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './intervention-form.html',
   styleUrl: './intervention-form.scss'
 })
@@ -46,12 +38,32 @@ export class InterventionForm implements OnInit {
     return !!(this.form.date && this.form.type && this.form.equipementId && this.form.fse && this.form.statut);
   }
 
-  isInvalid(field: any): boolean {
-    return this.submitted && !field;
+  isInvalid(field: any): boolean { return this.submitted && !field; }
+
+  updateResume(): void {}
+
+  getEquipementNom(): string {
+    const e = this.equipements.find(eq => eq.id === this.form.equipementId);
+    return e ? `${e.nom} — ${e.parc}` : '—';
   }
 
-  constructor(private interventionService: InterventionService, private equipementService: EquipementService,
-    private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
+  getPieceRef(pieceId: number | null): string {
+    const p = this.piecesDisponibles.find(pd => pd.id === pieceId);
+    return p?.reference || '—';
+  }
+
+  getPiecePrix(pieceId: number | null): number {
+    const p = this.piecesDisponibles.find(pd => pd.id === pieceId);
+    return p?.prixUnitaire || 0;
+  }
+
+  constructor(
+    private interventionService: InterventionService,
+    private equipementService: EquipementService,
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.equipementService.getAll().subscribe({ next: (data) => this.equipements = data });
