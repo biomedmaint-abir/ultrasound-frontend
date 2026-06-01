@@ -63,9 +63,9 @@ export class EquipementDetail implements OnInit {
 
   getStatutClass(statut: string): string {
     switch (statut) {
-      case 'EN_SERVICE': return 'statut-termine';
-      case 'EN_MAINTENANCE': return 'statut-en-cours';
-      case 'EN_PANNE': return 'statut-planifie';
+      case 'EN_SERVICE': return 'statut-service';
+      case 'EN_MAINTENANCE': return 'statut-maintenance';
+      case 'EN_PANNE': return 'statut-hors';
       default: return 'statut-default';
     }
   }

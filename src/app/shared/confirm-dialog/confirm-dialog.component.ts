@@ -8,9 +8,12 @@ import { CommonModule } from '@angular/common';
   template: `
 <div class="overlay" *ngIf="visible" (click)="onCancel()">
   <div class="dialog" (click)="$event.stopPropagation()">
-    <div class="dialog-icon">{{ icon }}</div>
+    <div class="dialog-icon-wrap">
+      <div class="dialog-icon">🗑️</div>
+    </div>
     <h3 class="dialog-title">{{ title }}</h3>
     <p class="dialog-message">{{ message }}</p>
+    <div class="dialog-divider"></div>
     <div class="dialog-actions">
       <button class="btn-cancel" (click)="onCancel()">{{ cancelLabel }}</button>
       <button class="btn-confirm" [class.danger]="danger" (click)="onConfirm()">{{ confirmLabel }}</button>
@@ -20,29 +23,47 @@ import { CommonModule } from '@angular/common';
   `,
   styles: [`
 .overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  position: fixed; inset: 0; background: rgba(13,19,64,0.5);
   display: flex; align-items: center; justify-content: center;
   z-index: 9999; animation: fadeIn 0.15s ease;
 }
 .dialog {
-  background: white; border-radius: 20px; padding: 36px 32px;
-  width: 420px; max-width: 90vw; text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  background: white; border-radius: 24px; padding: 40px 36px 32px;
+  width: 460px; max-width: 90vw; text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15);
   animation: slideUp 0.2s ease;
 }
-.dialog-icon { font-size: 48px; margin-bottom: 12px; }
-.dialog-title { margin: 0 0 10px; font-size: 20px; font-weight: 700; color: #1C2B5A; }
-.dialog-message { margin: 0 0 28px; font-size: 14px; color: #666; line-height: 1.6; }
-.dialog-actions { display: flex; gap: 12px; justify-content: center; }
+.dialog-icon-wrap {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: #FEF2F2; display: flex; align-items: center;
+  justify-content: center; margin: 0 auto 20px;
+}
+.dialog-icon { font-size: 32px; }
+.dialog-title {
+  margin: 0 0 12px; font-size: 22px; font-weight: 800;
+  color: #0d1340;
+}
+.dialog-message {
+  margin: 0 0 24px; font-size: 14px; color: #6b7280;
+  line-height: 1.7;
+}
+.dialog-divider {
+  height: 1px; background: #f1f3f5; margin: 0 -36px 24px;
+}
+.dialog-actions {
+  display: flex; gap: 12px; justify-content: center;
+}
 .btn-cancel {
-  padding: 11px 28px; border: 2px solid #E9ECEF; background: white;
-  border-radius: 12px; font-size: 14px; font-weight: 600; color: #666;
+  flex: 1; padding: 13px 24px; border: 1.5px solid #e2e6f0;
+  background: white; border-radius: 12px;
+  font-size: 15px; font-weight: 700; color: #0d1340;
   cursor: pointer; transition: all 0.2s;
-  &:hover { border-color: #ccc; background: #f5f5f5; }
+  &:hover { background: #f8f9fc; }
 }
 .btn-confirm {
-  padding: 11px 28px; border: none; background: #1C2B5A;
-  border-radius: 12px; font-size: 14px; font-weight: 600; color: white;
+  flex: 1; padding: 13px 24px; border: none;
+  background: #1a2eff; border-radius: 12px;
+  font-size: 15px; font-weight: 700; color: white;
   cursor: pointer; transition: all 0.2s;
   &:hover { opacity: 0.9; transform: translateY(-1px); }
   &.danger { background: #DC2626; }
@@ -57,7 +78,7 @@ export class ConfirmDialogComponent {
   @Input() message = 'Êtes-vous sûr ?';
   @Input() confirmLabel = 'Confirmer';
   @Input() cancelLabel = 'Annuler';
-  @Input() icon = '⚠️';
+  @Input() icon = '🗑️';
   @Input() danger = true;
   @Output() confirmed = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
