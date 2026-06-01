@@ -2,26 +2,13 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { InterventionService } from '../../services/intervention';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-intervention-list',
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    MatTableModule, MatButtonModule, MatIconModule,
-    MatInputModule, MatFormFieldModule,
-    MatTooltipModule, MatProgressSpinnerModule,
-    ConfirmDialogComponent
-  ],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent],
   templateUrl: './intervention-list.html',
   styleUrl: './intervention-list.scss'
 })
@@ -33,10 +20,22 @@ export class InterventionList implements OnInit {
 
   interventions: any[] = [];
   filtered: any[] = [];
+  pagedData: any[] = [];
+  equipements: string[] = [];
+
   search = '';
+  filterType = '';
+  filterStatut = '';
+  filterEquipement = '';
+  dateFrom = '';
+  dateTo = '';
+
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+
   isLoading = true;
   hasError = false;
-  displayedColumns = ['id', 'date', 'type', 'equipement', 'FSE', 'statut', 'actions'];
 
   constructor(
     private interventionService: InterventionService,
@@ -58,7 +57,11 @@ export class InterventionList implements OnInit {
           description: i.descriptionPanne, observations: i.actionsEffectuees,
           duree: i.dureeHeures, equipement: i.equipement
         }));
+        this.equipements = [...new Set(this.interventions
+          .map(i => i.equipement?.nom)
+          .filter(Boolean))] as string[];
         this.filtered = [...this.interventions];
+        this.updatePagination();
         this.cdr.detectChanges();
       },
       error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
@@ -67,13 +70,44 @@ export class InterventionList implements OnInit {
 
   applyFilter(): void {
     const q = this.search.toLowerCase();
-    this.filtered = this.interventions.filter(i =>
-      (i.type?.toLowerCase().includes(q)) ||
-      (i.technicien?.toLowerCase().includes(q)) ||
-      (i.statut?.toLowerCase().includes(q)) ||
-      (i.equipement?.nom?.toLowerCase().includes(q))
-    );
+    this.filtered = this.interventions.filter(i => {
+      const matchSearch = !q ||
+        i.type?.toLowerCase().includes(q) ||
+        i.technicien?.toLowerCase().includes(q) ||
+        i.statut?.toLowerCase().includes(q) ||
+        i.equipement?.nom?.toLowerCase().includes(q);
+      const matchType = !this.filterType || i.type === this.filterType;
+      const matchStatut = !this.filterStatut || i.statut === this.filterStatut;
+      const matchEquipement = !this.filterEquipement || i.equipement?.nom === this.filterEquipement;
+      const matchDateFrom = !this.dateFrom || new Date(i.date) >= new Date(this.dateFrom);
+      const matchDateTo = !this.dateTo || new Date(i.date) <= new Date(this.dateTo);
+      return matchSearch && matchType && matchStatut && matchEquipement && matchDateFrom && matchDateTo;
+    });
+    this.currentPage = 1;
+    this.updatePagination();
   }
+
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.filtered.length / this.pageSize) || 1;
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.pagedData = this.filtered.slice(start, start + this.pageSize);
+    this.cdr.detectChanges();
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) { this.currentPage--; this.updatePagination(); }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) { this.currentPage++; this.updatePagination(); }
+  }
+
+  min(a: number, b: number): number { return Math.min(a, b); }
 
   delete(id: number, e: Event): void {
     e.stopPropagation();
