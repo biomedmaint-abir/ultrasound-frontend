@@ -1,150 +1,122 @@
 <div class="page-container">
   <div class="page-header">
     <div class="header-left">
-      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <button class="back-btn" (click)="goBack()">←</button>
       <div>
-        <h1>🔩 Pièces de rechange</h1>
-        <p>{{ filtered.length }} pièce(s)</p>
+        <h1>Pièces de rechange</h1>
+        <p>{{ total }} pièces enregistrées</p>
       </div>
     </div>
-    <button mat-raised-button color="primary" (click)="goToNew()">
-      <mat-icon>add</mat-icon> Nouvelle pièce
-    </button>
+    <button class="btn-new" (click)="goToNew()">+ Nouvelle pièce</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card stat-stock">
+      <span class="stat-num">{{ countByStatut('EN_STOCK') }}</span>
+      <span class="stat-lbl">En stock</span>
+    </div>
+    <div class="stat-card stat-defect">
+      <span class="stat-num">{{ countByStatut('DEFECTUEUSE') }}</span>
+      <span class="stat-lbl">Défectueuses</span>
+    </div>
+    <div class="stat-card stat-attente">
+      <span class="stat-num">{{ countByStatut('EN_ATTENTE_RETOUR') }}</span>
+      <span class="stat-lbl">Attente retour</span>
+    </div>
+    <div class="stat-card stat-retour">
+      <span class="stat-num">{{ countByStatut('RETOURNEE') }}</span>
+      <span class="stat-lbl">Retournées</span>
+    </div>
   </div>
 
   <!-- Filtres -->
-  <div class="filters-row">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Rechercher...</mat-label>
-      <input matInput [(ngModel)]="search" (input)="applyFilter()">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="statut-filter">
-      <mat-label>Statut</mat-label>
-      <mat-select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()">
-        <mat-option value="">Tous</mat-option>
-        <mat-option value="EN_STOCK">✅ En stock</mat-option>
-        <mat-option value="DEFECTUEUSE">❌ Défectueuse</mat-option>
-        <mat-option value="EN_ATTENTE_RETOUR">⏳ Attente retour fournisseur</mat-option>
-        <mat-option value="RETOURNEE">🔄 Retournée au fournisseur</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher une pièce..." [(ngModel)]="search" (input)="applyFilter()" />
+    </div>
+    <select [(ngModel)]="filterStatut" (change)="applyFilter()" class="filter-select">
+      <option value="">Statut ↓</option>
+      <option value="EN_STOCK">En stock</option>
+      <option value="DEFECTUEUSE">Défectueuse</option>
+      <option value="EN_ATTENTE_RETOUR">Attente retour</option>
+      <option value="RETOURNEE">Retournée</option>
+    </select>
   </div>
 
-  <!-- Stats rapides -->
-  <div class="stats-row">
-    <div class="stat-badge stock">
-      <span class="num">{{ countByStatut('EN_STOCK') }}</span>
-      <span class="lbl">✅ En stock</span>
-    </div>
-    <div class="stat-badge defect">
-      <span class="num">{{ countByStatut('DEFECTUEUSE') }}</span>
-      <span class="lbl">❌ Défectueuses</span>
-    </div>
-    <div class="stat-badge attente">
-      <span class="num">{{ countByStatut('EN_ATTENTE_RETOUR') }}</span>
-      <span class="lbl">⏳ Attente retour</span>
-    </div>
-    <div class="stat-badge retour">
-      <span class="num">{{ countByStatut('RETOURNEE') }}</span>
-      <span class="lbl">🔄 Retournées</span>
-    </div>
-  </div>
-
-  <div *ngIf="isLoading" class="center-state">
-    <mat-spinner diameter="48"></mat-spinner><p>Chargement...</p>
-  </div>
+  <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
 
   <div *ngIf="!isLoading && !hasError">
     <div *ngIf="filtered.length === 0" class="empty-state"><p>Aucune pièce trouvée.</p></div>
-    <table *ngIf="filtered.length > 0" mat-table [dataSource]="filtered" class="mat-elevation-z2">
 
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>#</th>
-        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
-      </ng-container>
+    <div class="table-wrapper" *ngIf="filtered.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nom pièce</th>
+            <th>Référence</th>
+            <th>Client (Stock)</th>
+            <th>Prix</th>
+            <th>Statut</th>
+            <th>Échangée avec</th>
+            <th>Retour fournisseur</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of pagedData" (click)="goToDetail(row.id)" class="clickable-row"
+            [class.row-defect]="row.statut === 'DEFECTUEUSE'"
+            [class.row-attente]="row.statut === 'EN_ATTENTE_RETOUR'">
+            <td>{{ row.id }}</td>
+            <td><strong>{{ row.nom }}</strong></td>
+            <td>{{ row.reference }}</td>
+            <td>{{ row.client || '—' }}</td>
+            <td>{{ row.prixUnitaire | number:'1.0-0' }} DH</td>
+            <td>
+              <span class="statut-badge" [ngClass]="getStatutClass(row.statut)">
+                <span class="statut-dot"></span>
+                {{ getStatutLabel(row.statut || 'EN_STOCK') }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="row.clientEchange">🏥 {{ row.clientEchange }}</span>
+              <span *ngIf="!row.clientEchange" class="text-muted">—</span>
+            </td>
+            <td>
+              <span *ngIf="row.retourFournisseur" class="retour-oui">✅ Oui</span>
+              <span *ngIf="!row.retourFournisseur && row.statut === 'DEFECTUEUSE'" class="retour-non">❌ Non</span>
+              <span *ngIf="!row.retourFournisseur && row.statut !== 'DEFECTUEUSE'" class="text-muted">—</span>
+            </td>
+            <td class="actions-cell" (click)="$event.stopPropagation()">
+              <button class="btn-action" (click)="ouvrirSuivi(row, $event)" title="Suivi">🔧</button>
+              <button class="btn-action btn-warn" (click)="changerStatutRapide(row, 'DEFECTUEUSE', $event)"
+                *ngIf="row.statut === 'EN_STOCK' || !row.statut" title="Marquer défectueuse">❌</button>
+              <button class="btn-action btn-success" (click)="changerStatutRapide(row, 'EN_STOCK', $event)"
+                *ngIf="row.statut && row.statut !== 'EN_STOCK'" title="Retour en stock">✅</button>
+              <button class="btn-view" (click)="goToDetail(row.id)">👁️</button>
+              <button class="btn-edit" (click)="goToEdit(row.id, $event)">✏️</button>
+              <button class="btn-delete" (click)="delete(row.id, $event)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-      <ng-container matColumnDef="nom">
-        <th mat-header-cell *matHeaderCellDef>Nom pièce</th>
-        <td mat-cell *matCellDef="let row"><strong>{{ row.nom }}</strong></td>
-      </ng-container>
-
-      <ng-container matColumnDef="reference">
-        <th mat-header-cell *matHeaderCellDef>Référence</th>
-        <td mat-cell *matCellDef="let row">{{ row.reference }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="client">
-        <th mat-header-cell *matHeaderCellDef>Client (Stock)</th>
-        <td mat-cell *matCellDef="let row">{{ row.client || '—' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="prixUnitaire">
-        <th mat-header-cell *matHeaderCellDef>Prix</th>
-        <td mat-cell *matCellDef="let row">{{ row.prixUnitaire | number:'1.0-0' }} DH</td>
-      </ng-container>
-
-      <ng-container matColumnDef="statut">
-        <th mat-header-cell *matHeaderCellDef>Statut</th>
-        <td mat-cell *matCellDef="let row">
-          <span class="statut-badge" [ngClass]="getStatutClass(row.statut)">
-            {{ getStatutLabel(row.statut || 'EN_STOCK') }}
-          </span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="clientEchange">
-        <th mat-header-cell *matHeaderCellDef>Échangée avec</th>
-        <td mat-cell *matCellDef="let row">
-          <span *ngIf="row.clientEchange">🏥 {{ row.clientEchange }}</span>
-          <span *ngIf="!row.clientEchange" class="text-muted">—</span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="retourFournisseur">
-        <th mat-header-cell *matHeaderCellDef>Retour fournisseur</th>
-        <td mat-cell *matCellDef="let row">
-          <span *ngIf="row.retourFournisseur" class="retour-oui">✅ Oui</span>
-          <span *ngIf="!row.retourFournisseur && row.statut === 'DEFECTUEUSE'" class="retour-non">❌ Non</span>
-          <span *ngIf="!row.retourFournisseur && row.statut !== 'DEFECTUEUSE'" class="text-muted">—</span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let row">
-          <button mat-icon-button
-                  [style.color]="row.statut === 'DEFECTUEUSE' ? '#b71c1c' : '#666'"
-                  matTooltip="Suivi défectueuse"
-                  (click)="ouvrirSuivi(row, $event)">
-            <mat-icon>build_circle</mat-icon>
-          </button>
-          <button mat-icon-button color="warn"
-                  matTooltip="Marquer défectueuse"
-                  *ngIf="row.statut === 'EN_STOCK' || !row.statut"
-                  (click)="changerStatutRapide(row, 'DEFECTUEUSE', $event)">
-            <mat-icon>cancel</mat-icon>
-          </button>
-          <button mat-icon-button
-                  [style.color]="'#1b5e20'"
-                  matTooltip="Retour en stock"
-                  *ngIf="row.statut && row.statut !== 'EN_STOCK'"
-                  (click)="changerStatutRapide(row, 'EN_STOCK', $event)">
-            <mat-icon>check_circle</mat-icon>
-          </button>
-          <button mat-icon-button (click)="goToDetail(row.id)"><mat-icon>visibility</mat-icon></button>
-          <button mat-icon-button color="primary" (click)="goToEdit(row.id, $event)"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button color="warn" (click)="delete(row.id, $event)"><mat-icon>delete</mat-icon></button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-          class="clickable-row"
-          [class.row-defect]="row.statut === 'DEFECTUEUSE'"
-          [class.row-attente]="row.statut === 'EN_ATTENTE_RETOUR'"
-          (click)="goToDetail(row.id)"></tr>
-    </table>
+    <div class="pagination-bar" *ngIf="filtered.length > 0">
+      <span class="pagination-info">Affichage {{ (currentPage-1)*pageSize+1 }} à {{ min(currentPage*pageSize, filtered.length) }} sur {{ filtered.length }} pièces</span>
+      <div class="pagination-right">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="page-size-select">
+          <option [value]="10">10 / page</option>
+          <option [value]="25">25 / page</option>
+          <option [value]="50">50 / page</option>
+        </select>
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">‹</button>
+        <button class="page-btn active">{{ currentPage }}</button>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">›</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -153,54 +125,52 @@
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>🔧 Suivi pièce défectueuse</h2>
-      <button mat-icon-button (click)="fermerSuivi()"><mat-icon>close</mat-icon></button>
+      <button class="modal-close" (click)="fermerSuivi()">✕</button>
     </div>
     <div class="modal-body">
       <div class="piece-info">
         <strong>{{ selectedPiece?.nom }}</strong>
         <span class="ref">Réf: {{ selectedPiece?.reference }}</span>
       </div>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Statut de la pièce</mat-label>
-        <mat-select [(ngModel)]="suiviForm.statut">
-          <mat-option value="EN_STOCK">✅ En stock — Disponible</mat-option>
-          <mat-option value="DEFECTUEUSE">❌ Défectueuse — À retourner</mat-option>
-          <mat-option value="EN_ATTENTE_RETOUR">⏳ En attente retour fournisseur</mat-option>
-          <mat-option value="RETOURNEE">🔄 Retournée au fournisseur</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Client avec qui la pièce a été échangée</mat-label>
-        <mat-select [(ngModel)]="suiviForm.clientEchange">
-          <mat-option value="">— Non échangée —</mat-option>
-          <mat-option *ngFor="let p of parcs" [value]="p">🏥 {{ p }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Date de l'échange</mat-label>
-        <input matInput type="date" [(ngModel)]="suiviForm.dateEchange">
-      </mat-form-field>
+      <div class="field-wrapper">
+        <label>Statut de la pièce</label>
+        <select [(ngModel)]="suiviForm.statut" class="form-select">
+          <option value="EN_STOCK">✅ En stock — Disponible</option>
+          <option value="DEFECTUEUSE">❌ Défectueuse — À retourner</option>
+          <option value="EN_ATTENTE_RETOUR">⏳ En attente retour fournisseur</option>
+          <option value="RETOURNEE">🔄 Retournée au fournisseur</option>
+        </select>
+      </div>
+      <div class="field-wrapper">
+        <label>Client avec qui la pièce a été échangée</label>
+        <select [(ngModel)]="suiviForm.clientEchange" class="form-select">
+          <option value="">— Non échangée —</option>
+          <option *ngFor="let p of parcs" [value]="p">🏥 {{ p }}</option>
+        </select>
+      </div>
+      <div class="field-wrapper">
+        <label>Date de l'échange</label>
+        <input type="date" [(ngModel)]="suiviForm.dateEchange" class="form-input">
+      </div>
       <div class="retour-toggle">
         <label class="toggle-label">
           <input type="checkbox" [(ngModel)]="suiviForm.retourFournisseur">
           <span>Pièce retournée au fournisseur</span>
         </label>
       </div>
-      <mat-form-field appearance="outline" class="full-width" *ngIf="!suiviForm.retourFournisseur">
-        <mat-label>Date de retour prévue du fournisseur</mat-label>
-        <input matInput type="date" [(ngModel)]="suiviForm.dateRetourPrevu">
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Notes de suivi</mat-label>
-        <textarea matInput [(ngModel)]="suiviForm.notesSuivi" rows="3"
+      <div class="field-wrapper" *ngIf="!suiviForm.retourFournisseur">
+        <label>Date de retour prévue du fournisseur</label>
+        <input type="date" [(ngModel)]="suiviForm.dateRetourPrevu" class="form-input">
+      </div>
+      <div class="field-wrapper">
+        <label>Notes de suivi</label>
+        <textarea [(ngModel)]="suiviForm.notesSuivi" rows="3" class="form-textarea"
           placeholder="Numéro bon de retour, contact fournisseur..."></textarea>
-      </mat-form-field>
+      </div>
     </div>
     <div class="modal-actions">
-      <button mat-button (click)="fermerSuivi()">Annuler</button>
-      <button mat-raised-button color="primary" (click)="sauvegarderSuivi()">
-        <mat-icon>save</mat-icon> Sauvegarder
-      </button>
+      <button class="btn-cancel" (click)="fermerSuivi()">Annuler</button>
+      <button class="btn-save" (click)="sauvegarderSuivi()">💾 Sauvegarder</button>
     </div>
   </div>
 </div>

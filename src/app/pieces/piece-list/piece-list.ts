@@ -2,32 +2,14 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import { StatutFilterPipe } from '../../shared/statut-filter.pipe';
 import { PieceService } from '../../services/piece';
 import { environment } from '../../../environments/environment';
-// confirm dialog handled inline
 
 @Component({
   selector: 'app-piece-list',
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    MatTableModule, MatButtonModule, MatIconModule,
-    MatInputModule, MatFormFieldModule,
-    MatTooltipModule, MatProgressSpinnerModule,
-    MatSelectModule, MatDialogModule,
-    StatutFilterPipe
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './piece-list.html',
   styleUrl: './piece-list.scss'
 })
@@ -39,23 +21,24 @@ export class PieceList implements OnInit {
 
   pieces: any[] = [];
   filtered: any[] = [];
+  pagedData: any[] = [];
+  total = 0;
+
   search = '';
   filterStatut = '';
+
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+
   isLoading = true;
   hasError = false;
 
-  displayedColumns = ['id', 'nom', 'reference', 'client', 'prixUnitaire', 'statut', 'clientEchange', 'retourFournisseur', 'actions'];
-
-  // Modale suivi
   showSuiviModal = false;
   selectedPiece: any = null;
   suiviForm: any = {
-    statut: '',
-    clientEchange: '',
-    dateEchange: '',
-    retourFournisseur: false,
-    dateRetourPrevu: '',
-    notesSuivi: ''
+    statut: '', clientEchange: '', dateEchange: '',
+    retourFournisseur: false, dateRetourPrevu: '', notesSuivi: ''
   };
 
   parcs = [
@@ -81,7 +64,9 @@ export class PieceList implements OnInit {
       next: (data) => {
         this.isLoading = false;
         this.pieces = data;
+        this.total = data.length;
         this.filtered = [...data];
+        this.updatePagination();
         this.cdr.detectChanges();
       },
       error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
@@ -95,26 +80,44 @@ export class PieceList implements OnInit {
       const matchStatut = !this.filterStatut || p.statut === this.filterStatut;
       return matchSearch && matchStatut;
     });
+    this.currentPage = 1;
+    this.updatePagination();
   }
+
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.filtered.length / this.pageSize) || 1;
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.pagedData = this.filtered.slice(start, start + this.pageSize);
+    this.cdr.detectChanges();
+  }
+
+  onPageSizeChange(): void { this.currentPage = 1; this.updatePagination(); }
+  prevPage(): void { if (this.currentPage > 1) { this.currentPage--; this.updatePagination(); } }
+  nextPage(): void { if (this.currentPage < this.totalPages) { this.currentPage++; this.updatePagination(); } }
+  min(a: number, b: number): number { return Math.min(a, b); }
 
   getStatutClass(statut: string): string {
     switch(statut) {
-      case 'EN_STOCK': return 'statut-stock';
-      case 'DEFECTUEUSE': return 'statut-defect';
-      case 'EN_ATTENTE_RETOUR': return 'statut-attente';
-      case 'RETOURNEE': return 'statut-retour';
-      default: return 'statut-stock';
+      case 'EN_STOCK': return 'statut-ok';
+      case 'DEFECTUEUSE': return 'statut-danger';
+      case 'EN_ATTENTE_RETOUR': return 'statut-warning';
+      case 'RETOURNEE': return 'statut-info';
+      default: return 'statut-ok';
     }
   }
 
   getStatutLabel(statut: string): string {
     switch(statut) {
-      case 'EN_STOCK': return '✅ En stock';
-      case 'DEFECTUEUSE': return '❌ Défectueuse';
-      case 'EN_ATTENTE_RETOUR': return '⏳ Attente retour';
-      case 'RETOURNEE': return '🔄 Retournée';
-      default: return '✅ En stock';
+      case 'EN_STOCK': return 'En stock';
+      case 'DEFECTUEUSE': return 'Défectueuse';
+      case 'EN_ATTENTE_RETOUR': return 'Attente retour';
+      case 'RETOURNEE': return 'Retournée';
+      default: return 'En stock';
     }
+  }
+
+  countByStatut(statut: string): number {
+    return this.pieces.filter(p => (p.statut || 'EN_STOCK') === statut).length;
   }
 
   ouvrirSuivi(piece: any, event: Event): void {
@@ -150,10 +153,7 @@ export class PieceList implements OnInit {
       notesSuivi: this.suiviForm.notesSuivi
     };
     this.http.put(`${environment.apiUrl}/pieces/${this.selectedPiece.id}`, payload).subscribe({
-      next: () => {
-        this.fermerSuivi();
-        this.load();
-      },
+      next: () => { this.fermerSuivi(); this.load(); },
       error: () => {}
     });
   }
@@ -164,10 +164,6 @@ export class PieceList implements OnInit {
     this.http.put(`${environment.apiUrl}/pieces/${piece.id}`, payload).subscribe({
       next: () => this.load()
     });
-  }
-
-  countByStatut(statut: string): number {
-    return this.pieces.filter(p => (p.statut || "EN_STOCK") === statut).length;
   }
 
   goToDetail(id: number): void { this.router.navigate(['/pieces', id]); }
