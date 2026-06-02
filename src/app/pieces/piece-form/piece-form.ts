@@ -2,13 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { PieceService } from '../../services/piece';
 import { environment } from '../../../environments/environment';
@@ -16,8 +9,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-piece-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './piece-form.html',
   styleUrl: './piece-form.scss'
 })

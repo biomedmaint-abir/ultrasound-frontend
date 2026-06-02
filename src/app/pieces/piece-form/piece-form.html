@@ -1,112 +1,85 @@
 <div class="page-container">
   <div class="page-header">
-    <button mat-icon-button (click)="cancel()"><mat-icon>arrow_back</mat-icon></button>
-    <div>
-      <h1>{{ isEditMode ? 'Modifier la pièce' : 'Nouvelle pièce' }}</h1>
-      <p>Les champs marqués <span class="required-star">*</span> sont obligatoires</p>
+    <div class="header-left">
+      <button class="back-btn" (click)="cancel()">←</button>
+      <div>
+        <h1>{{ isEditMode ? 'Modifier la pièce' : 'Nouvelle pièce' }}</h1>
+        <p>Les champs marqués <span class="required-star">*</span> sont obligatoires</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-cancel" (click)="cancel()">Annuler</button>
+      <button class="btn-save" (click)="save()" [disabled]="isSaving">💾 {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}</button>
     </div>
   </div>
-  <mat-card class="form-card">
-    <mat-card-content>
-      <div *ngIf="errorMessage" class="error-banner"><mat-icon>error_outline</mat-icon> {{ errorMessage }}</div>
-      <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
-
-      <div class="section-title">📦 Informations de base</div>
+  <div *ngIf="errorMessage" class="error-banner">⚠️ {{ errorMessage }}</div>
+  <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
+  <div class="form-sections">
+    <div class="form-section">
+      <div class="section-header"><span class="section-icon">📦</span><h2>Informations de base</h2></div>
       <div class="form-grid">
-
         <div class="field-wrapper" [class.invalid]="isInvalid(form.nom)">
-          <label>Nom <span class="required-star" *ngIf="isInvalid(form.nom)">*</span></label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput [(ngModel)]="form.nom" name="nom">
-          </mat-form-field>
+          <label>Nom <span class="required-star">*</span></label>
+          <input type="text" [(ngModel)]="form.nom" name="nom" class="form-input" placeholder="Nom de la pièce">
           <span class="error-msg" *ngIf="isInvalid(form.nom)">Ce champ est obligatoire</span>
         </div>
-
         <div class="field-wrapper" [class.invalid]="isInvalid(form.reference)">
-          <label>Référence <span class="required-star" *ngIf="isInvalid(form.reference)">*</span></label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput [(ngModel)]="form.reference" name="reference">
-          </mat-form-field>
+          <label>Référence <span class="required-star">*</span></label>
+          <input type="text" [(ngModel)]="form.reference" name="reference" class="form-input" placeholder="Référence pièce">
           <span class="error-msg" *ngIf="isInvalid(form.reference)">Ce champ est obligatoire</span>
         </div>
-
         <div class="field-wrapper">
           <label>Client (Parc stock)</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <mat-select [(ngModel)]="form.client" name="client">
-              <mat-option value="">-- Sélectionner un parc --</mat-option>
-              <mat-option *ngFor="let p of parcs" [value]="p">{{ p }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <select [(ngModel)]="form.client" name="client" class="form-select">
+            <option value="">-- Sélectionner un parc --</option>
+            <option *ngFor="let p of parcs" [value]="p">{{ p }}</option>
+          </select>
         </div>
-
         <div class="field-wrapper">
           <label>Prix unitaire (DH)</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput type="number" [(ngModel)]="form.prixUnitaire" name="prixUnitaire">
-          </mat-form-field>
+          <input type="number" [(ngModel)]="form.prixUnitaire" name="prixUnitaire" class="form-input" placeholder="0">
         </div>
-
       </div>
-
-      <div class="section-title">🔧 Suivi pièce défectueuse</div>
+    </div>
+    <div class="form-section">
+      <div class="section-header"><span class="section-icon">🔧</span><h2>Suivi pièce défectueuse</h2></div>
       <div class="form-grid">
         <div class="field-wrapper">
           <label>Statut de la pièce</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <mat-select [(ngModel)]="form.statut" name="statut">
-              <mat-option value="EN_STOCK">✅ En stock — Disponible</mat-option>
-              <mat-option value="DEFECTUEUSE">❌ Défectueuse — À retourner</mat-option>
-              <mat-option value="EN_ATTENTE_RETOUR">⏳ En attente retour fournisseur</mat-option>
-              <mat-option value="RETOURNEE">🔄 Retournée au fournisseur</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <select [(ngModel)]="form.statut" name="statut" class="form-select">
+            <option value="EN_STOCK">✅ En stock</option>
+            <option value="DEFECTUEUSE">❌ Défectueuse</option>
+            <option value="EN_ATTENTE_RETOUR">⏳ En attente retour</option>
+            <option value="RETOURNEE">🔄 Retournée</option>
+          </select>
         </div>
         <div class="field-wrapper">
           <label>Échangée avec (client)</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <mat-select [(ngModel)]="form.clientEchange" name="clientEchange">
-              <mat-option value="">— Non échangée —</mat-option>
-              <mat-option *ngFor="let p of parcs" [value]="p">🏥 {{ p }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <select [(ngModel)]="form.clientEchange" name="clientEchange" class="form-select">
+            <option value="">— Non échangée —</option>
+            <option *ngFor="let p of parcs" [value]="p">🏥 {{ p }}</option>
+          </select>
         </div>
         <div class="field-wrapper">
           <label>Date de l'échange</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput type="date" [(ngModel)]="form.dateEchange" name="dateEchange">
-          </mat-form-field>
+          <input type="date" [(ngModel)]="form.dateEchange" name="dateEchange" class="form-input">
         </div>
         <div class="field-wrapper">
           <label>Retour fournisseur</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <mat-select [(ngModel)]="form.retourFournisseur" name="retourFournisseur">
-              <mat-option [value]="false">❌ Non — Pas encore retournée</mat-option>
-              <mat-option [value]="true">✅ Oui — Retournée au fournisseur</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <select [(ngModel)]="form.retourFournisseur" name="retourFournisseur" class="form-select">
+            <option [ngValue]="false">❌ Non</option>
+            <option [ngValue]="true">✅ Oui</option>
+          </select>
         </div>
         <div class="field-wrapper" *ngIf="!form.retourFournisseur">
           <label>Date de retour prévue</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <input matInput type="date" [(ngModel)]="form.dateRetourPrevu" name="dateRetourPrevu">
-          </mat-form-field>
+          <input type="date" [(ngModel)]="form.dateRetourPrevu" name="dateRetourPrevu" class="form-input">
         </div>
         <div class="field-wrapper full-width">
           <label>Notes de suivi</label>
-          <mat-form-field appearance="outline" class="full-mat">
-            <textarea matInput [(ngModel)]="form.notesSuivi" name="notesSuivi" rows="3"
-              placeholder="N° bon de retour, contact fournisseur..."></textarea>
-          </mat-form-field>
+          <textarea [(ngModel)]="form.notesSuivi" name="notesSuivi" rows="3" class="form-textarea" placeholder="N° bon de retour..."></textarea>
         </div>
       </div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button (click)="cancel()">Annuler</button>
-      <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaving">
-        <mat-icon *ngIf="!isSaving">save</mat-icon>
-        {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
+    </div>
+  </div>
 </div>
