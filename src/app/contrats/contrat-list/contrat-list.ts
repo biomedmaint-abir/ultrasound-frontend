@@ -2,13 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
@@ -16,8 +9,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 @Component({
   selector: 'app-contrat-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatInputModule, MatFormFieldModule, MatTooltipModule, MatProgressSpinnerModule, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent],
   templateUrl: './contrat-list.html',
   styleUrl: './contrat-list.scss'
 })
@@ -25,31 +17,78 @@ export class ContratList implements OnInit {
   showConfirm = false;
   pendingDeleteId: number | null = null;
   confirmTitle = 'Supprimer le contrat';
-  confirmMessage = 'Cette action est irreversible. Le contrat sera definitivement supprime.';
+  confirmMessage = 'Cette action est irréversible. Le contrat sera définitivement supprimé.';
+
   contrats: any[] = [];
   filtered: any[] = [];
+  pagedData: any[] = [];
+  total = 0;
+
   search = '';
+  filterStatut = '';
+  filterType = '';
+
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+
   isLoading = true;
   hasError = false;
-  displayedColumns = ['id', 'reference', 'type', 'dateDebut', 'dateFin', 'montant', 'statut', 'actions'];
 
-  constructor(private http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void { this.load(); }
 
   load(): void {
     this.isLoading = true;
     this.http.get<any[]>(`${environment.apiUrl}/contrats`).subscribe({
-      next: (data) => { this.isLoading = false; this.contrats = data; this.filtered = [...data]; this.cdr.detectChanges(); },
+      next: (data) => {
+        this.isLoading = false;
+        this.contrats = data;
+        this.total = data.length;
+        this.filtered = [...data];
+        this.updatePagination();
+        this.cdr.detectChanges();
+      },
       error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
 
   applyFilter(): void {
     const q = this.search.toLowerCase();
-    this.filtered = this.contrats.filter(c =>
-      c.reference?.toLowerCase().includes(q) || c.type?.toLowerCase().includes(q) || c.statut?.toLowerCase().includes(q)
-    );
+    this.filtered = this.contrats.filter(c => {
+      const matchSearch = !q || c.reference?.toLowerCase().includes(q) || c.type?.toLowerCase().includes(q);
+      const matchStatut = !this.filterStatut || c.statut === this.filterStatut;
+      const matchType = !this.filterType || c.type === this.filterType;
+      return matchSearch && matchStatut && matchType;
+    });
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.filtered.length / this.pageSize) || 1;
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.pagedData = this.filtered.slice(start, start + this.pageSize);
+    this.cdr.detectChanges();
+  }
+
+  onPageSizeChange(): void { this.currentPage = 1; this.updatePagination(); }
+  prevPage(): void { if (this.currentPage > 1) { this.currentPage--; this.updatePagination(); } }
+  nextPage(): void { if (this.currentPage < this.totalPages) { this.currentPage++; this.updatePagination(); } }
+  min(a: number, b: number): number { return Math.min(a, b); }
+
+  getStatutClass(statut: string): string {
+    switch (statut) {
+      case 'ACTIF': return 'statut-actif';
+      case 'EXPIRE': return 'statut-expire';
+      case 'RESILIE': return 'statut-resilie';
+      default: return 'statut-default';
+    }
   }
 
   delete(id: number, e: Event): void { e.stopPropagation(); this.pendingDeleteId = id; this.showConfirm = true; }
@@ -67,13 +106,4 @@ export class ContratList implements OnInit {
   goToEdit(id: number, e: Event): void { e.stopPropagation(); this.router.navigate(['/contrats', id, 'edit']); }
   goToNew(): void { this.router.navigate(['/contrats/new']); }
   goBack(): void { this.router.navigate(['/dashboard']); }
-
-  getStatutClass(statut: string): string {
-    switch (statut) {
-      case 'ACTIF': return 'statut-termine';
-      case 'EXPIRE': return 'statut-default';
-      case 'RESILIER': return 'statut-planifie';
-      default: return 'statut-default';
-    }
-  }
 }
