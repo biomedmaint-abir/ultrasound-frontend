@@ -1,103 +1,147 @@
 <div class="page-container">
   <div class="page-header">
-    <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
-    <div>
-      <h1>📅 Nouveau planning de maintenance</h1>
-      <p>Générez un document officiel SCRIM pour accord client</p>
+    <div class="header-left">
+      <button class="back-btn" (click)="goBack()">←</button>
+      <div>
+        <h1>Nouveau planning de maintenance</h1>
+        <p>Générez un document officiel SCRIM pour accord client</p>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="submitted && !isFormValid" class="validation-banner" style="margin:8px 0;background:#FEF2F2;color:#DC2626;padding:12px 16px;border-radius:10px;font-size:13px;border-left:4px solid #DC2626;">⚠️ Veuillez remplir tous les champs obligatoires (Client, Ville, Appareil, Année).</div>
-  <div class="scrim-header-card">
-    <div class="scrim-logo"><span class="logo-text">SCRIM</span></div>
-    <div class="planning-badge">Planning Maintenances Préventives</div>
+  <div *ngIf="submitted && !isFormValid" class="validation-banner">⚠️ Veuillez remplir tous les champs obligatoires.</div>
+
+  <div class="scrim-banner">
+    <div class="scrim-banner-left">
+      <div class="scrim-icon">📋</div>
+      <div>
+        <div class="scrim-title">SCRIM</div>
+        <div class="scrim-subtitle">Planning Maintenances Préventives</div>
+      </div>
+    </div>
+    <div class="scrim-shield">🛡️</div>
   </div>
 
-  <!-- Infos client et équipement -->
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>🏥 Informations client et équipement</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <div class="rapport-grid">
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.annee)">
-          <mat-label>Année <span *ngIf="isInvalid(planning.annee)" style="color:#DC2626">*</span></mat-label>
-          <input matInput [(ngModel)]="planning.annee" placeholder="2026">
-          <mat-icon matSuffix>calendar_today</mat-icon>
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.client)">
-          <mat-label>Client / Établissement <span *ngIf="isInvalid(planning.client)" style="color:#DC2626">*</span></mat-label>
-          <mat-select [(ngModel)]="planning.client" (ngModelChange)="onClientChange()">
-            <mat-option value="">-- Sélectionner un client --</mat-option>
-            <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.ville)">
-          <mat-label>Ville <span *ngIf="isInvalid(planning.ville)" style="color:#DC2626">*</span></mat-label>
-          <mat-select [(ngModel)]="planning.ville">
-            <mat-option value="">-- Sélectionner une ville --</mat-option>
-            <mat-option *ngFor="let v of villesList" [value]="v">{{ v }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.appareil)">
-          <mat-label>Appareil <span *ngIf="isInvalid(planning.appareil)" style="color:#DC2626">*</span></mat-label>
-          <mat-select [(ngModel)]="planning.appareil" (ngModelChange)="onEquipementChange()">
-            <mat-option value="">-- Sélectionner --</mat-option>
-            <mat-option *ngFor="let e of equipements" [value]="e.nom">{{ e.nom }} — {{ e.parc }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.marque)">
-          <mat-label>Marque <span *ngIf="isInvalid(planning.marque)" style="color:#DC2626">*</span></mat-label>
-          <input matInput [(ngModel)]="planning.marque">
-          <mat-icon matSuffix>label</mat-icon>
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.numeroSerie)">
-          <mat-label>Numéro de série <span *ngIf="isInvalid(planning.numeroSerie)" style="color:#DC2626">*</span></mat-label>
-          <input matInput [(ngModel)]="planning.numeroSerie" placeholder="Ex: 82734">
-          <mat-icon matSuffix>tag</mat-icon>
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(planning.frequence)">
-          <mat-label>Fréquence des visites <span *ngIf="isInvalid(planning.frequence)" style="color:#DC2626">*</span></mat-label>
-          <mat-select [(ngModel)]="planning.frequence">
-            <mat-option value="trimestrielles">Trimestrielles</mat-option>
-            <mat-option value="semestrielles">Semestrielles</mat-option>
-            <mat-option value="mensuelles">Mensuelles</mat-option>
-            <mat-option value="annuelles">Annuelles</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date de création</mat-label>
-          <input matInput type="date" [(ngModel)]="planning.dateCreation">
-        </mat-form-field>
-      </div>
-    </mat-card-content>
-  </mat-card>
+  <div class="form-card">
+    <div class="section-header">
+      <div class="section-icon">🏥</div>
+      <h2>Informations client et équipement</h2>
+    </div>
+    <div class="form-grid">
 
-  <!-- Dates des visites -->
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>📅 Dates des visites planifiées</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <div *ngFor="let visite of visites; let i = index" class="visite-row">
-        <div class="visite-label">
-          <span class="visite-num">{{ i + 1 }}{{ i === 0 ? 'ère' : 'ème' }} Visite</span>
+      <div class="field-wrapper" [class.invalid]="isInvalid(planning.annee)">
+        <div class="field-label">
+          <div class="field-icon">📅</div>
+          <label>Année <span class="required-star">*</span></label>
         </div>
-        <mat-form-field appearance="outline" class="visite-field">
-          <mat-label>Date début</mat-label>
-          <input matInput type="date" [(ngModel)]="visite.dateDebut">
-        </mat-form-field>
-        <span class="visite-separator">au</span>
-        <mat-form-field appearance="outline" class="visite-field">
-          <mat-label>Date fin</mat-label>
-          <input matInput type="date" [(ngModel)]="visite.dateFin">
-        </mat-form-field>
+        <input type="text" [(ngModel)]="planning.annee" class="form-input" placeholder="2026">
+        <span class="error-msg" *ngIf="isInvalid(planning.annee)">Obligatoire</span>
       </div>
-    </mat-card-content>
-  </mat-card>
 
-  <!-- Boutons -->
+      <div class="field-wrapper" [class.invalid]="isInvalid(planning.client)">
+        <div class="field-label">
+          <div class="field-icon">👤</div>
+          <label>Client / Établissement <span class="required-star">*</span></label>
+        </div>
+        <select [(ngModel)]="planning.client" (ngModelChange)="onClientChange()" class="form-select">
+          <option value="">-- Sélectionner un client --</option>
+          <option *ngFor="let p of parcsList" [value]="p">{{ p }}</option>
+        </select>
+        <span class="error-msg" *ngIf="isInvalid(planning.client)">Obligatoire</span>
+      </div>
+
+      <div class="field-wrapper" [class.invalid]="isInvalid(planning.ville)">
+        <div class="field-label">
+          <div class="field-icon">📍</div>
+          <label>Ville <span class="required-star">*</span></label>
+        </div>
+        <select [(ngModel)]="planning.ville" class="form-select">
+          <option value="">-- Sélectionner une ville --</option>
+          <option *ngFor="let v of villesList" [value]="v">{{ v }}</option>
+        </select>
+        <span class="error-msg" *ngIf="isInvalid(planning.ville)">Obligatoire</span>
+      </div>
+
+      <div class="field-wrapper" [class.invalid]="isInvalid(planning.appareil)">
+        <div class="field-label">
+          <div class="field-icon">🔬</div>
+          <label>Appareil <span class="required-star">*</span></label>
+        </div>
+        <select [(ngModel)]="planning.appareil" (ngModelChange)="onEquipementChange()" class="form-select">
+          <option value="">-- Sélectionner --</option>
+          <option *ngFor="let e of equipements" [value]="e.nom">{{ e.nom }} — {{ e.parc }}</option>
+        </select>
+        <span class="error-msg" *ngIf="isInvalid(planning.appareil)">Obligatoire</span>
+      </div>
+
+      <div class="field-wrapper" [class.invalid]="isInvalid(planning.marque)">
+        <div class="field-label">
+          <div class="field-icon">🏷️</div>
+          <label>Marque <span class="required-star">*</span></label>
+        </div>
+        <input type="text" [(ngModel)]="planning.marque" class="form-input">
+        <span class="error-msg" *ngIf="isInvalid(planning.marque)">Obligatoire</span>
+      </div>
+
+      <div class="field-wrapper" [class.invalid]="isInvalid(planning.numeroSerie)">
+        <div class="field-label">
+          <div class="field-icon">#️⃣</div>
+          <label>Numéro de série <span class="required-star">*</span></label>
+        </div>
+        <input type="text" [(ngModel)]="planning.numeroSerie" class="form-input" placeholder="Ex: 82734">
+        <span class="error-msg" *ngIf="isInvalid(planning.numeroSerie)">Obligatoire</span>
+      </div>
+
+      <div class="field-wrapper" [class.invalid]="isInvalid(planning.frequence)">
+        <div class="field-label">
+          <div class="field-icon">🔄</div>
+          <label>Fréquence des visites <span class="required-star">*</span></label>
+        </div>
+        <select [(ngModel)]="planning.frequence" class="form-select">
+          <option value="trimestrielles">Trimestrielles</option>
+          <option value="semestrielles">Semestrielles</option>
+          <option value="mensuelles">Mensuelles</option>
+          <option value="annuelles">Annuelles</option>
+        </select>
+      </div>
+
+      <div class="field-wrapper">
+        <div class="field-label">
+          <div class="field-icon">📅</div>
+          <label>Date de création</label>
+        </div>
+        <input type="date" [(ngModel)]="planning.dateCreation" class="form-input">
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="section-header">
+      <div class="section-icon">📅</div>
+      <h2>Dates des visites planifiées</h2>
+    </div>
+    <div class="visites-grid">
+      <div *ngFor="let visite of visites; let i = index" class="visite-card">
+        <div class="visite-num">{{ i + 1 | number:'2.0' }}</div>
+        <div class="visite-title">{{ i + 1 }}{{ i === 0 ? 'ère' : 'ème' }} Visite</div>
+        <div class="field-wrapper">
+          <label>Date début</label>
+          <input type="date" [(ngModel)]="visite.dateDebut" class="form-input">
+        </div>
+        <div class="visite-sep">au</div>
+        <div class="field-wrapper">
+          <label>Date fin</label>
+          <input type="date" [(ngModel)]="visite.dateFin" class="form-input">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="form-actions">
-    <button mat-button (click)="goBack()">Annuler</button>
-    <button mat-raised-button color="primary" (click)="genererPDF()" [disabled]="isLoading">
-      <mat-icon>picture_as_pdf</mat-icon>
-      {{ isLoading ? 'Chargement...' : 'Générer le planning PDF SCRIM' }}
+    <button class="btn-cancel" (click)="goBack()">Annuler</button>
+    <button class="btn-generate" (click)="genererPDF()" [disabled]="isLoading">
+      📄 {{ isLoading ? 'Chargement...' : 'Générer le planning PDF SCRIM' }}
     </button>
   </div>
 </div>
