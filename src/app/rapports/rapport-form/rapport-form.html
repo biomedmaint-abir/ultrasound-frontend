@@ -1,218 +1,207 @@
 <div class="page-container">
   <div class="page-header">
-    <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
-    <div>
-      <h1>📄 Rapport d'intervention SCRIM</h1>
-      <p>Format officiel SCRIM — Fiche 34</p>
+    <div class="header-left">
+      <button class="back-btn" (click)="goBack()">←</button>
+      <div>
+        <h1>Nouveau rapport PDF</h1>
+        <p>Configurez et générez votre rapport SCRIM</p>
+      </div>
+    </div>
+    <button class="btn-generate" *ngIf="rapport.type" (click)="genererPDF()" [disabled]="isLoading">
+      📄 {{ isLoading ? 'Chargement...' : 'Générer rapport PDF SCRIM' }}
+    </button>
+  </div>
+
+  <div class="scrim-banner">
+    <div class="scrim-banner-left">
+      <div class="scrim-icon">📋</div>
+      <div>
+        <div class="scrim-title">SCRIM</div>
+        <div class="scrim-subtitle">Rapport d'Intervention</div>
+      </div>
     </div>
   </div>
 
-  <div class="scrim-header-card">
-    <div class="scrim-logo"><span class="logo-text">SCRIM</span></div>
-    <div class="biomedmaint-badge">Rapport d'Intervention</div>
+  <div class="form-card">
+    <div class="section-header"><div class="section-icon">📝</div><h2>Informations générales</h2></div>
+    <div class="form-grid">
+      <div class="field-wrapper full-width">
+        <label>Type de rapport</label>
+        <select [(ngModel)]="rapport.type" (ngModelChange)="onTypeChange()" class="form-select">
+          <option value="">-- Sélectionner un type --</option>
+          <option value="CORRECTIF">🔧 Maintenance Corrective</option>
+          <option value="PREVENTIF">🗓️ Maintenance Préventive</option>
+          <option value="MISE_A_JOUR">🔄 Mise à jour / FCO Philips</option>
+        </select>
+      </div>
+      <div class="field-wrapper full-width">
+        <label>Titre du rapport</label>
+        <input type="text" [(ngModel)]="rapport.titre" class="form-input">
+      </div>
+      <div class="field-wrapper">
+        <label>Équipement concerné</label>
+        <select [(ngModel)]="rapport.equipementId" (ngModelChange)="onEquipementChange()" class="form-select">
+          <option value="">-- Sélectionner --</option>
+          <option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }} — {{ e.parc }}</option>
+        </select>
+      </div>
+      <div class="field-wrapper">
+        <label>Parc / Établissement</label>
+        <select [(ngModel)]="rapport.parc" class="form-select">
+          <option value="">Tous les parcs</option>
+          <option *ngFor="let p of parcsList" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+      <div class="field-wrapper">
+        <label>Responsable technique / FSE</label>
+        <input type="text" [(ngModel)]="rapport.responsable" class="form-input" placeholder="Nom du responsable">
+      </div>
+      <div class="field-wrapper">
+        <label>Date du rapport</label>
+        <input type="date" [(ngModel)]="rapport.dateRapport" class="form-input">
+      </div>
+      <div class="field-wrapper">
+        <label>Période couverte</label>
+        <input type="text" [(ngModel)]="rapport.periode" class="form-input" placeholder="Ex: Janvier - Mars 2025">
+      </div>
+      <div class="field-wrapper">
+        <label>Durée de l'intervention (heures)</label>
+        <input type="number" [(ngModel)]="rapport.duree" class="form-input">
+      </div>
+    </div>
   </div>
 
-  <!-- Infos générales -->
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>📋 Informations générales</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <div class="rapport-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>N° Rapport</mat-label>
-          <input matInput [(ngModel)]="rapport.numeroRapport" placeholder="Ex: 022832">
-          <mat-icon matSuffix>tag</mat-icon>
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(rapport.dateRapport)">
-          <mat-label>Date d'intervention <span *ngIf="isInvalid(rapport.dateRapport)" style="color:#DC2626">*</span></mat-label>
-          <input matInput type="date" [(ngModel)]="rapport.dateRapport">
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(rapport.equipementId)">
-          <mat-label>Équipement concerné <span *ngIf="isInvalid(rapport.equipementId)" style="color:#DC2626">*</span></mat-label>
-          <mat-select [(ngModel)]="rapport.equipementId" (ngModelChange)="onEquipementChange()">
-            <mat-option value="">-- Sélectionner --</mat-option>
-            <mat-option *ngFor="let e of equipements" [value]="e.id">{{ e.nom }} — {{ e.parc }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>N° de série</mat-label>
-          <input matInput [(ngModel)]="rapport.numeroSerie" placeholder="Ex: SG82000056">
-        </mat-form-field>
-        <mat-form-field appearance="outline" [class.field-error]="isInvalid(rapport.client)">
-          <mat-label>Client / Établissement <span *ngIf="isInvalid(rapport.client)" style="color:#DC2626">*</span></mat-label>
-          <mat-select [(ngModel)]="rapport.client">
-            <mat-option value="">-- Sélectionner --</mat-option>
-            <mat-option *ngFor="let p of parcsList" [value]="p">{{ p }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Ville</mat-label>
-          <input matInput [(ngModel)]="rapport.ville" placeholder="Ex: Tanger">
-          <mat-icon matSuffix>location_city</mat-icon>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Salle</mat-label>
-          <input matInput [(ngModel)]="rapport.salle" placeholder="Ex: Bloc 1 - Madrile 1">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Utilisation conforme ?</mat-label>
-          <mat-select [(ngModel)]="rapport.utilisationConforme">
-            <mat-option [value]="true">Oui</mat-option>
-            <mat-option [value]="false">Non</mat-option>
-          </mat-select>
-        </mat-form-field>
+  <!-- CORRECTIF -->
+  <div class="form-card type-correctif" *ngIf="rapport.type === 'CORRECTIF'">
+    <div class="section-header"><div class="section-icon">🔧</div><h2>Détails — Maintenance Corrective</h2></div>
+    <div class="form-grid">
+      <div class="field-wrapper full-width">
+        <label>Description de la panne</label>
+        <textarea [(ngModel)]="rapport.descriptionPanne" rows="3" class="form-textarea" placeholder="Décrivez la panne observée..."></textarea>
       </div>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Ingénieurs -->
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>👨‍🔧 Ingénieurs intervenants</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <div class="ingenieur-grid">
-        <div class="ing-label">Ingénieur 1</div>
-        <mat-form-field appearance="outline">
-          <mat-label>Nom</mat-label>
-          <input matInput [(ngModel)]="rapport.ingenieur1Nom">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date</mat-label>
-          <input matInput type="date" [(ngModel)]="rapport.ingenieur1Date">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>H. Arrivée</mat-label>
-          <input matInput type="time" [(ngModel)]="rapport.ingenieur1Arrivee">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>H. Départ</mat-label>
-          <input matInput type="time" [(ngModel)]="rapport.ingenieur1Depart">
-        </mat-form-field>
+      <div class="field-wrapper full-width">
+        <label>Causes identifiées</label>
+        <textarea [(ngModel)]="rapport.causes" rows="3" class="form-textarea" placeholder="Causes racines de la défaillance..."></textarea>
       </div>
-      <div class="ingenieur-grid">
-        <div class="ing-label">Ingénieur 2</div>
-        <mat-form-field appearance="outline">
-          <mat-label>Nom</mat-label>
-          <input matInput [(ngModel)]="rapport.ingenieur2Nom">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Date</mat-label>
-          <input matInput type="date" [(ngModel)]="rapport.ingenieur2Date">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>H. Arrivée</mat-label>
-          <input matInput type="time" [(ngModel)]="rapport.ingenieur2Arrivee">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>H. Départ</mat-label>
-          <input matInput type="time" [(ngModel)]="rapport.ingenieur2Depart">
-        </mat-form-field>
+      <div class="field-wrapper full-width">
+        <label>Actions correctives effectuées</label>
+        <textarea [(ngModel)]="rapport.actions" rows="3" class="form-textarea" placeholder="Détaillez les actions correctives..."></textarea>
       </div>
-    </mat-card-content>
-  </mat-card>
+      <div class="field-wrapper">
+        <label>Coût total de l'intervention (DH)</label>
+        <input type="number" [(ngModel)]="rapport.cout" class="form-input">
+      </div>
+      <div class="field-wrapper">
+        <label>Code erreur Philips</label>
+        <input type="text" [(ngModel)]="rapport.codeErreur" class="form-input" placeholder="Ex: ERR-001">
+      </div>
+    </div>
 
-  <!-- Rapport technique -->
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>🔧 Rapport technique</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Description de l'intervention</mat-label>
-        <textarea matInput [(ngModel)]="rapport.rapportTechnique" rows="5"
-          placeholder="Décrivez les opérations effectuées, l'état de l'équipement..."></textarea>
-      </mat-form-field>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Pièces fournies -->
-  <mat-card class="form-card">
-    <mat-card-header>
-      <mat-card-title>🔩 Pièces fournies</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <button mat-stroked-button color="primary" (click)="ajouterPiece()" style="margin-bottom:12px">
-        <mat-icon>add</mat-icon> Ajouter une pièce
-      </button>
+    <div class="pieces-section">
+      <div class="pieces-header">
+        <h3>🔩 Pièces de rechange utilisées</h3>
+        <button class="btn-add-piece" (click)="ajouterPiece()">+ Ajouter une pièce</button>
+      </div>
       <div *ngIf="rapport.pieces.length === 0" class="empty-pieces">Aucune pièce ajoutée</div>
-      <div *ngFor="let p of rapport.pieces; let i = index" class="piece-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Désignation</mat-label>
-          <mat-select [(ngModel)]="p.designation" (ngModelChange)="onPieceSelectChange(p)">
-            <mat-option value="">-- Sélectionner --</mat-option>
-            <mat-option *ngFor="let pd of piecesDisponibles" [value]="pd.nom">{{ pd.nom }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="small">
-          <mat-label>Référence</mat-label>
-          <input matInput [(ngModel)]="p.reference" readonly>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="small">
-          <mat-label>Qté</mat-label>
-          <input matInput type="number" [(ngModel)]="p.quantite">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="small">
-          <mat-label>N° BS</mat-label>
-          <input matInput [(ngModel)]="p.numeroBs">
-        </mat-form-field>
-        <button mat-icon-button color="warn" (click)="supprimerPiece(i)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
+      <table *ngIf="rapport.pieces.length > 0" class="pieces-table">
+        <thead>
+          <tr><th>Référence</th><th>Désignation</th><th>Quantité</th><th>Unité</th><th>Observations</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of rapport.pieces; let i = index">
+            <td><input type="text" [(ngModel)]="p.reference" class="form-input-sm" readonly></td>
+            <td>
+              <select [(ngModel)]="p.nom" (ngModelChange)="onPieceSelectChange(p)" class="form-select-sm">
+                <option value="">-- Sélectionner --</option>
+                <option *ngFor="let pd of piecesDisponibles" [value]="pd.nom">{{ pd.nom }}</option>
+              </select>
+            </td>
+            <td><input type="number" [(ngModel)]="p.quantite" class="form-input-sm"></td>
+            <td><input type="text" [(ngModel)]="p.unite" class="form-input-sm"></td>
+            <td><input type="text" [(ngModel)]="p.observations" class="form-input-sm"></td>
+            <td><button class="btn-delete-piece" (click)="supprimerPiece(i)">🗑️</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <!-- Type d'intervention -->
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>📌 Type d'intervention</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <div class="type-grid">
-        <label class="type-item"><input type="checkbox" [(ngModel)]="rapport.typeInstallation"> Installation / Mise en service</label>
-        <label class="type-item"><input type="checkbox" [(ngModel)]="rapport.typeFormation"> Formation</label>
-        <label class="type-item"><input type="checkbox" [(ngModel)]="rapport.typeGarantie"> Garantie</label>
-        <label class="type-item"><input type="checkbox" [(ngModel)]="rapport.typePreventif"> Maintenance préventive</label>
-        <label class="type-item"><input type="checkbox" [(ngModel)]="rapport.typeCorrectif"> Maintenance corrective</label>
-        <label class="type-item"><input type="checkbox" [(ngModel)]="rapport.typeFacturable"> Intervention facturable</label>
-      </div>
-      <div style="margin-top:16px">
-        <mat-form-field appearance="outline">
-          <mat-label>Intervention achevée ?</mat-label>
-          <mat-select [(ngModel)]="rapport.interventionAchevee">
-            <mat-option [value]="true">Oui</mat-option>
-            <mat-option [value]="false">Non</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </mat-card-content>
-  </mat-card>
+    <div class="field-wrapper full-width" style="margin-top:16px">
+      <label>Observations finales</label>
+      <textarea [(ngModel)]="rapport.observations" rows="3" class="form-textarea" placeholder="Recommandations, état final..."></textarea>
+    </div>
+  </div>
 
-  <!-- Signatures -->
-  <mat-card class="form-card">
-    <mat-card-header><mat-card-title>✍️ Service client</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <div class="rapport-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Nom client</mat-label>
-          <input matInput [(ngModel)]="rapport.nomClient">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Nom service client</mat-label>
-          <input matInput [(ngModel)]="rapport.nomServiceClient">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Fonction</mat-label>
-          <input matInput [(ngModel)]="rapport.fonctionServiceClient" placeholder="Ex: Technicienne Biomédicale">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Établissement</mat-label>
-          <input matInput [(ngModel)]="rapport.etablissementClient" placeholder="Ex: CHU Universitaire - Tanger">
-        </mat-form-field>
+  <!-- PRÉVENTIF -->
+  <div class="form-card type-preventif" *ngIf="rapport.type === 'PREVENTIF'">
+    <div class="section-header"><div class="section-icon">🗓️</div><h2>Détails — Maintenance Préventive</h2></div>
+    <div class="form-grid">
+      <div class="field-wrapper full-width">
+        <label>Opérations préventives effectuées</label>
+        <textarea [(ngModel)]="rapport.operationsEffectuees" rows="4" class="form-textarea" placeholder="Nettoyage sondes, vérification connecteurs..."></textarea>
       </div>
-    </mat-card-content>
-  </mat-card>
+      <div class="field-wrapper">
+        <label>État général de l'équipement</label>
+        <select [(ngModel)]="rapport.etatEquipement" class="form-select">
+          <option value="BON">✅ Bon état — Équipement opérationnel</option>
+          <option value="ACCEPTABLE">⚠️ État acceptable — Surveillance recommandée</option>
+          <option value="DEGRADÉ">❌ État dégradé — Intervention nécessaire</option>
+        </select>
+      </div>
+      <div class="field-wrapper">
+        <label>Prochaine maintenance planifiée</label>
+        <input type="date" [(ngModel)]="rapport.prochaineMaintenance" class="form-input">
+      </div>
+      <div class="field-wrapper full-width">
+        <label>Recommandations</label>
+        <textarea [(ngModel)]="rapport.observations" rows="3" class="form-textarea" placeholder="Recommandations..."></textarea>
+      </div>
+    </div>
+    <div class="checklist-section">
+      <h3>✅ Checklist des opérations</h3>
+      <div class="checklist-grid">
+        <div *ngFor="let item of checklistItems" class="checklist-item" (click)="item.fait = !item.fait">
+          <span class="check-icon" [class.checked]="item.fait">{{ item.fait ? '✅' : '⬜' }}</span>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Boutons -->
-  <div class="form-actions">
-    <button mat-button (click)="goBack()">Annuler</button>
-    <button mat-raised-button color="primary" (click)="genererPDF()" [disabled]="isLoading">
-      <mat-icon>picture_as_pdf</mat-icon>
-      {{ isLoading ? 'Chargement...' : 'Générer rapport PDF SCRIM' }}
+  <!-- MISE À JOUR -->
+  <div class="form-card type-maj" *ngIf="rapport.type === 'MISE_A_JOUR'">
+    <div class="section-header"><div class="section-icon">🔄</div><h2>Détails — Mise à jour / FCO Philips</h2></div>
+    <div class="form-grid">
+      <div class="field-wrapper">
+        <label>Référence FCO Philips</label>
+        <input type="text" [(ngModel)]="rapport.referenceFCO" class="form-input" placeholder="Ex: FCO-2025-001">
+      </div>
+      <div class="field-wrapper">
+        <label>Version logicielle avant</label>
+        <input type="text" [(ngModel)]="rapport.versionAvant" class="form-input" placeholder="Ex: R8.0.1">
+      </div>
+      <div class="field-wrapper">
+        <label>Version logicielle après</label>
+        <input type="text" [(ngModel)]="rapport.versionApres" class="form-input" placeholder="Ex: R8.0.2">
+      </div>
+      <div class="field-wrapper">
+        <label>Coût total (DH)</label>
+        <input type="number" [(ngModel)]="rapport.cout" class="form-input">
+      </div>
+      <div class="field-wrapper full-width">
+        <label>Description de la mise à jour</label>
+        <textarea [(ngModel)]="rapport.actions" rows="3" class="form-textarea" placeholder="Décrivez les modifications..."></textarea>
+      </div>
+      <div class="field-wrapper full-width">
+        <label>Tests de validation effectués</label>
+        <textarea [(ngModel)]="rapport.observations" rows="3" class="form-textarea" placeholder="Tests réalisés après la mise à jour..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions" *ngIf="rapport.type">
+    <button class="btn-cancel" (click)="goBack()">Annuler</button>
+    <button class="btn-generate" (click)="genererPDF()" [disabled]="isLoading">
+      📄 {{ isLoading ? 'Chargement...' : 'Générer et télécharger le PDF' }}
     </button>
   </div>
 </div>
