@@ -1,11 +1,13 @@
 <div class="app-container" [class.sidebar-collapsed]="!sidebarOpen">
-  
-  <!-- Sidebar -->
+
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        
-        <span class="logo-text">MaintManager</span><span class="logo-sub">by SCRIM</span>
+        <div class="logo-icon-box">🔷</div>
+        <div class="logo-texts">
+          <span class="logo-text">MaintManager</span>
+          <span class="logo-sub">by SCRIM</span>
+        </div>
       </div>
       <button class="toggle-btn" (click)="toggleSidebar()">
         {{ sidebarOpen ? '◀' : '▶' }}
@@ -23,9 +25,13 @@
     </nav>
 
     <div class="sidebar-footer">
-      <div class="user-info">
-        <span class="user-icon">👤</span>
-        <span class="user-email">{{ email }}</span>
+      <div class="user-card">
+        <div class="user-avatar">{{ email?.charAt(0)?.toUpperCase() }}</div>
+        <div class="user-details">
+          <span class="user-email">{{ email }}</span>
+          <span class="user-role">{{ role === 'ADMIN' ? 'Administrateur' : role }}</span>
+        </div>
+        <button class="chevron-btn">▾</button>
       </div>
       <button class="logout-btn" (click)="logout()">
         <span>🚪</span>
@@ -34,7 +40,6 @@
     </div>
   </aside>
 
-  <!-- Contenu principal -->
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
