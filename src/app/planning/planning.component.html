@@ -1,90 +1,91 @@
 <div class="page-container">
   <div class="page-header">
-    <div>
-      <h1>📅 Planning des interventions</h1>
-      <p>{{ monthNames[currentMonth] }} {{ currentYear }}</p>
+    <div class="header-left">
+      <h1>Planning des interventions</h1>
+      <div class="month-nav">
+        <button class="nav-btn" (click)="prevMonth()">‹</button>
+        <span class="month-label">{{ monthNames[currentMonth] }} {{ currentYear }}</span>
+        <button class="nav-btn" (click)="nextMonth()">›</button>
+      </div>
     </div>
-    <div class="header-actions">
-      <button mat-raised-button color="primary" (click)="router.navigate(['/planning/nouveau'])">
-        <mat-icon>picture_as_pdf</mat-icon> Nouveau planning PDF
-      </button>
-      <button mat-icon-button (click)="prevMonth()"><mat-icon>chevron_left</mat-icon></button>
-      <button mat-icon-button (click)="nextMonth()"><mat-icon>chevron_right</mat-icon></button>
+    <button class="btn-new-pdf" (click)="router.navigate(['/planning/nouveau'])">
+      📄 Nouveau planning PDF
+    </button>
+  </div>
+
+  <div class="calendar-card">
+    <div class="calendar-header">
+      <span *ngFor="let day of ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']" class="day-name">{{ day }}</span>
+    </div>
+    <div class="calendar-grid">
+      <div *ngFor="let cell of calendarDays"
+           class="calendar-cell"
+           [class.empty]="!cell.day"
+           [class.today]="cell.day && isToday(cell.day)"
+           [class.has-events]="cell.interventions?.length > 0">
+        <div class="cell-top">
+          <span class="day-number" *ngIf="cell.day">{{ cell.day }}</span>
+          <span class="cell-dot" *ngIf="cell.day && !cell.interventions?.length"></span>
+        </div>
+        <div class="events" *ngIf="cell.interventions?.length > 0">
+          <span *ngFor="let inv of cell.interventions.slice(0,2)"
+                class="event-badge"
+                [ngClass]="getTypeClass(inv.type)">
+            {{ inv.type === 'CORRECTIF' ? 'Correctif' : inv.type === 'PREVENTIF' ? 'Préventif' : 'Mise à jour' }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="dot type-correctif"></span> Correctif</span>
+      <span class="legend-item"><span class="dot type-preventif"></span> Préventif</span>
+      <span class="legend-item"><span class="dot type-maj"></span> Mise à jour</span>
     </div>
   </div>
 
-  <div class="planning-layout">
-
-    <!-- Calendrier -->
-    <mat-card class="calendar-card">
-      <mat-card-content>
-        <div class="calendar-header">
-          <span *ngFor="let day of ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']" class="day-name">{{ day }}</span>
+  <div class="month-section">
+    <div class="month-section-header">
+      <div class="month-section-title">
+        <div class="month-icon">📋</div>
+        <div>
+          <h2>Interventions de {{ monthNames[currentMonth] }} {{ currentYear }}</h2>
+          <p>Historique des interventions planifiées et correctives</p>
         </div>
-        <div class="calendar-grid">
-          <div *ngFor="let cell of calendarDays"
-               class="calendar-cell"
-               [class.empty]="!cell.day"
-               [class.today]="cell.day && isToday(cell.day)"
-               [class.has-events]="cell.interventions?.length > 0">
-            <span class="day-number" *ngIf="cell.day">{{ cell.day }}</span>
-            <div class="events" *ngIf="cell.interventions?.length > 0">
-              <span *ngFor="let inv of cell.interventions.slice(0,2)"
-                    class="event-dot"
-                    [ngClass]="getTypeClass(inv.type)"
-                    [title]="inv.type">
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Légende -->
-        <div class="legend">
-          <span class="legend-item"><span class="dot type-correctif"></span> Correctif</span>
-          <span class="legend-item"><span class="dot type-preventif"></span> Préventif</span>
-          <span class="legend-item"><span class="dot type-maj"></span> Mise à jour</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-
-  </div>
-
-  <!-- Liste des interventions du mois -->
-  <div class="month-table-card">
-    <div class="month-table-header">
-      <span>📋 Interventions de {{ monthNames[currentMonth] }} {{ currentYear }}</span>
+      </div>
       <span class="month-count">{{ getInterventionsDuMois().length }} intervention(s)</span>
     </div>
+
     <div *ngIf="getInterventionsDuMois().length === 0" class="empty-state">
       <p>Aucune intervention planifiée ce mois.</p>
     </div>
-    <table *ngIf="getInterventionsDuMois().length > 0" class="month-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Type</th>
-          <th>Équipement</th>
-          <th>FSE</th>
-          <th>Statut</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let inv of getInterventionsDuMois()" class="month-row">
-          <td class="td-date">{{ inv.dateIntervention | date:'dd/MM/yyyy' }}</td>
-          <td>
-            <span class="type-chip" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
-          </td>
-          <td>{{ inv.equipement?.nom || '—' }}</td>
-          <td>{{ inv.nomFse || '—' }}</td>
-          <td>
-            <span class="statut-chip statut-{{ inv.statut?.toLowerCase() }}">{{ inv.statut || '—' }}</span>
-          </td>
-          <td class="td-desc">{{ inv.descriptionPanne || '—' }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
+    <div class="interventions-list" *ngIf="getInterventionsDuMois().length > 0">
+      <div class="list-header">
+        <span>📅 Date</span>
+        <span>🔧 Type</span>
+        <span>📦 Équipement</span>
+        <span>👤 FSE</span>
+        <span>🎯 Statut</span>
+        <span>📝 Description</span>
+      </div>
+      <div *ngFor="let inv of getInterventionsDuMois()" class="intervention-row">
+        <div class="date-block" [ngClass]="getTypeClass(inv.type)">
+          <span class="date-month">{{ inv.dateIntervention | date:'MMM' | uppercase }}</span>
+          <span class="date-day">{{ inv.dateIntervention | date:'dd' }}</span>
+          <span class="date-weekday">{{ inv.dateIntervention | date:'EEEE' }}</span>
+        </div>
+        <div>
+          <span class="type-chip" [ngClass]="getTypeClass(inv.type)">🔧 {{ inv.type }}</span>
+        </div>
+        <div>{{ inv.equipement?.nom || '—' }}</div>
+        <div>{{ inv.nomFse || '—' }}</div>
+        <div>
+          <span class="statut-chip statut-{{ inv.statut?.toLowerCase() }}">
+            <span class="statut-dot"></span>{{ inv.statut || '—' }}
+          </span>
+        </div>
+        <div class="td-desc">{{ inv.descriptionPanne || '—' }}</div>
+      </div>
+    </div>
+  </div>
 </div>

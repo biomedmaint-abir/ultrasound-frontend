@@ -2,23 +2,13 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-planning',
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    MatCardModule, MatButtonModule, MatIconModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './planning.component.html',
   styleUrl: './planning.component.scss'
 })
@@ -118,29 +108,6 @@ export class PlanningComponent implements OnInit {
     return day === today.getDate() &&
       this.currentMonth === today.getMonth() &&
       this.currentYear === today.getFullYear();
-  }
-
-  planifier(): void {
-    if (!this.form.dateIntervention || !this.form.type) return;
-    this.isSaving = true;
-    const payload = {
-      dateIntervention: this.form.dateIntervention,
-      type: this.form.type,
-      descriptionPanne: this.form.description,
-      dureeHeures: this.form.dureeHeures,
-      statut: 'EN_COURS',
-      equipement: this.form.equipementId ? { id: this.form.equipementId } : null
-    };
-    this.http.post(`${environment.apiUrl}/interventions`, payload).subscribe({
-      next: () => {
-        this.isSaving = false;
-        this.successMessage = 'Intervention planifiée avec succès !';
-        this.form = { dateIntervention: '', type: '', description: '', equipementId: null, dureeHeures: null };
-        this.loadData();
-        setTimeout(() => { this.successMessage = ''; this.cdr.detectChanges(); }, 3000);
-      },
-      error: () => { this.isSaving = false; this.cdr.detectChanges(); }
-    });
   }
 
   getTypeClass(type: string): string {
