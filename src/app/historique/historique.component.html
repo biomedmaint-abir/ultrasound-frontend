@@ -1,36 +1,27 @@
 <div class="page-container">
   <div class="page-header">
     <div>
-      <h1>🕐 Historique des interventions</h1>
+      <h1>Historique des interventions</h1>
       <p>Traçabilité complète — {{ filtered.length }} intervention(s)</p>
     </div>
   </div>
 
-  <!-- Filtres -->
-  <div class="filter-bar">
-    <div class="filter-item">
-      <label class="filter-label">Recherche</label>
+  <div class="filter-card">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
       <input [(ngModel)]="searchText" (ngModelChange)="applyFilter()"
-        placeholder="Description ou équipement..." class="filter-input">
+        placeholder="Rechercher une intervention, un équipement..." class="search-input">
     </div>
-    <div class="filter-item">
-      <label class="filter-label">Type</label>
-      <select [(ngModel)]="filterType" (ngModelChange)="applyFilter()" class="filter-select">
-        <option value="">Tous les types</option>
-        <option *ngFor="let t of types" [value]="t">{{ t }}</option>
-      </select>
-    </div>
-    <div class="filter-item">
-      <label class="filter-label">Statut</label>
-      <select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()" class="filter-select">
-        <option value="">Tous les statuts</option>
-        <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
-      </select>
-    </div>
-    <button class="btn-reset" (click)="reset()">↺ Réinitialiser</button>
+    <select [(ngModel)]="filterType" (ngModelChange)="applyFilter()" class="filter-select">
+      <option value="">Tous les types</option>
+      <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+    </select>
+    <select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()" class="filter-select">
+      <option value="">Tous les statuts</option>
+      <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+    </select>
   </div>
 
-  <!-- Timeline -->
   <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
 
   <div class="timeline" *ngIf="!isLoading">
@@ -39,10 +30,13 @@
     </div>
 
     <div *ngFor="let inv of filtered" class="timeline-item">
-      <div class="timeline-icon" [ngClass]="getTypeClass(inv.type)">
-        {{ getTypeIcon(inv.type) }}
+      <div class="timeline-left">
+        <div class="timeline-icon" [ngClass]="getTypeClass(inv.type)">
+          {{ getTypeIcon(inv.type) }}
+        </div>
+        <div class="timeline-dot" [ngClass]="getTypeClass(inv.type)"></div>
+        <div class="timeline-line"></div>
       </div>
-      <div class="timeline-line"></div>
       <div class="timeline-card">
         <div class="card-header">
           <div class="card-left">
@@ -50,17 +44,17 @@
             <span class="badge type" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
             <span class="badge statut" [ngClass]="getStatutClass(inv.statut)">{{ inv.statut }}</span>
           </div>
-          <div class="card-date">
-            📅 {{ inv.dateIntervention | date:'dd/MM/yyyy' }}
+          <div class="card-right">
+            <span class="card-date">📅 {{ inv.dateIntervention | date:'dd/MM/yyyy' }}</span>
+            <span class="chevron">▾</span>
           </div>
         </div>
         <div class="card-body">
           <p class="description">{{ inv.descriptionPanne || '—' }}</p>
           <div class="card-meta">
-            <span *ngIf="inv.equipement">🔬 {{ inv.equipement.nom }}</span>
-            <span *ngIf="inv.technicien">👤 {{ inv.technicien.nom }}</span>
-            <span *ngIf="inv.dureeHeures">⏱️ {{ inv.dureeHeures }}h</span>
-            <span *ngIf="inv.actionsEffectuees">🔧 {{ inv.actionsEffectuees }}</span>
+            <span *ngIf="inv.equipement">{{ inv.equipement.nom }}</span>
+            <span class="meta-sep" *ngIf="inv.equipement && inv.dureeHeures">|</span>
+            <span *ngIf="inv.dureeHeures">⏱ {{ inv.dureeHeures }}h</span>
           </div>
         </div>
       </div>
