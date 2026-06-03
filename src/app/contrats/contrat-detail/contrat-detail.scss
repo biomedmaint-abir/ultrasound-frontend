@@ -1,19 +1,74 @@
-.page-container { max-width: 800px; margin: 0 auto; padding: 24px; }
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
-  .header-left { display: flex; align-items: center; gap: 12px;
-    h1 { margin: 0; font-size: 24px; font-weight: 600; color: #1a237e; }
-    p { margin: 0; font-size: 13px; color: #666; }
+.page-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #f8f9fc;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  .header-left {
+    display: flex; align-items: center; gap: 12px;
+    h1 { margin: 0; font-size: 26px; font-weight: 800; color: #0d1340; }
+    p  { margin: 0; font-size: 13px; color: #6b7280; }
   }
-  .header-actions { display: flex; gap: 8px; }
+  .header-actions { display: flex; gap: 10px; }
 }
-.detail-card { border-radius: 16px !important; mat-card-content { padding-top: 16px; } }
-.info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0;
-  .label { font-size: 13px; color: #666; }
-  .value { font-size: 14px; color: #1a1a1a; font-weight: 500; }
+
+.back-btn {
+  background: none; border: none; font-size: 20px;
+  cursor: pointer; color: #0d1340; padding: 4px 8px; border-radius: 8px;
+  &:hover { background: #f0f4ff; }
 }
-.statut-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
-  &.statut-termine  { background: #e8f5e9; color: #2e7d32; }
-  &.statut-planifie { background: #ffebee; color: #c62828; }
-  &.statut-default  { background: #f5f5f5; color: #666; }
+
+.btn-edit {
+  background: white; border: 1.5px solid #1a2eff; border-radius: 10px;
+  padding: 8px 18px; font-size: 13px; font-weight: 600; color: #1a2eff; cursor: pointer;
+  &:hover { background: #EFF6FF; }
 }
-.center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; }
+
+.btn-delete {
+  background: white; border: 1.5px solid #DC2626; border-radius: 10px;
+  padding: 8px 18px; font-size: 13px; font-weight: 600; color: #DC2626; cursor: pointer;
+  &:hover { background: #FEF2F2; }
+}
+
+.detail-card {
+  background: white; border-radius: 16px;
+  padding: 24px; box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.section-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+  .section-icon {
+    width: 32px; height: 32px; background: #EFF6FF; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  h2 { margin: 0; font-size: 16px; font-weight: 700; color: #0d1340; }
+}
+
+.info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid #f1f3f5;
+  &:last-child { border-bottom: none; }
+  .label { font-size: 13px; color: #6b7280; font-weight: 500; }
+  .value { font-size: 14px; color: #0d1340; font-weight: 600; }
+  .total { font-size: 18px; font-weight: 800; color: #1a2eff; }
+}
+
+.statut-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  .statut-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  &.statut-actif   { background: #DCFCE7; color: #16A34A; .statut-dot { background: #16A34A; } }
+  &.statut-expire  { background: #FEE2E2; color: #DC2626; .statut-dot { background: #DC2626; } }
+  &.statut-resilie { background: #FEF9C3; color: #CA8A04; .statut-dot { background: #CA8A04; } }
+  &.statut-default { background: #F3F4F6; color: #6B7280; .statut-dot { background: #6B7280; } }
+}
+
+.center-state {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 16px; padding: 64px 0; color: #666;
+}
