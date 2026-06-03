@@ -20,15 +20,13 @@ export class UtilisateursComponent implements OnInit {
   utilisateurs: any[] = [];
   isLoading = true;
   showForm = false;
+  isEditMode = false;
+  editUserId: number | null = null;
   successMessage = '';
   errorMessage = '';
 
   form = {
-    nom: '',
-    prenom: '',
-    email: '',
-    motDePasse: '',
-    role: { id: 1 }
+    nom: '', prenom: '', email: '', motDePasse: '', role: { id: 1 }
   };
 
   roles = [
@@ -66,28 +64,74 @@ export class UtilisateursComponent implements OnInit {
     }
   }
 
-  ajouterUtilisateur(): void {
-    if (!this.form.nom || !this.form.email || !this.form.motDePasse) {
+  ouvrirFormulaire(): void {
+    this.isEditMode = false;
+    this.editUserId = null;
+    this.form = { nom: '', prenom: '', email: '', motDePasse: '', role: { id: 1 } };
+    this.errorMessage = '';
+    this.showForm = true;
+  }
+
+  modifierUtilisateur(u: any): void {
+    this.isEditMode = true;
+    this.editUserId = u.id;
+    this.form = {
+      nom: u.nom || '',
+      prenom: u.prenom || '',
+      email: u.email || '',
+      motDePasse: '',
+      role: { id: u.role?.id || 1 }
+    };
+    this.errorMessage = '';
+    this.showForm = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  enregistrer(): void {
+    if (!this.form.nom || !this.form.email) {
       this.errorMessage = 'Veuillez remplir tous les champs obligatoires.';
       return;
     }
-    const payload = {
+    if (!this.isEditMode && !this.form.motDePasse) {
+      this.errorMessage = 'Le mot de passe est obligatoire.';
+      return;
+    }
+
+    const payload: any = {
       nom: this.form.nom,
       prenom: this.form.prenom,
       email: this.form.email,
-      motDePasse: this.form.motDePasse,
       role: { id: Number(this.form.role.id) }
     };
-    this.http.post(`${environment.apiUrl}/utilisateurs`, payload).subscribe({
-      next: () => {
-        this.successMessage = 'Utilisateur ajoute avec succes !';
-        this.showForm = false;
-        this.form = { nom: '', prenom: '', email: '', motDePasse: '', role: { id: 1 } };
-        this.loadData();
-        setTimeout(() => { this.successMessage = ''; this.cdr.detectChanges(); }, 3000);
-      },
-      error: () => { this.errorMessage = 'Erreur lors de l\'ajout.'; this.cdr.detectChanges(); }
-    });
+    if (this.form.motDePasse) {
+      payload.motDePasse = this.form.motDePasse;
+    }
+
+    if (this.isEditMode && this.editUserId) {
+      this.http.put(`${environment.apiUrl}/utilisateurs/${this.editUserId}`, payload).subscribe({
+        next: () => {
+          this.successMessage = 'Utilisateur modifié avec succès !';
+          this.showForm = false;
+          this.isEditMode = false;
+          this.editUserId = null;
+          this.form = { nom: '', prenom: '', email: '', motDePasse: '', role: { id: 1 } };
+          this.loadData();
+          setTimeout(() => { this.successMessage = ''; this.cdr.detectChanges(); }, 3000);
+        },
+        error: () => { this.errorMessage = 'Erreur lors de la modification.'; this.cdr.detectChanges(); }
+      });
+    } else {
+      this.http.post(`${environment.apiUrl}/utilisateurs`, payload).subscribe({
+        next: () => {
+          this.successMessage = 'Utilisateur ajouté avec succès !';
+          this.showForm = false;
+          this.form = { nom: '', prenom: '', email: '', motDePasse: '', role: { id: 1 } };
+          this.loadData();
+          setTimeout(() => { this.successMessage = ''; this.cdr.detectChanges(); }, 3000);
+        },
+        error: () => { this.errorMessage = 'Erreur lors de l\'ajout.'; this.cdr.detectChanges(); }
+      });
+    }
   }
 
   supprimerUtilisateur(id: number): void {
