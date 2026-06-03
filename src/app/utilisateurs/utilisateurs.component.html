@@ -1,7 +1,7 @@
 <div class="page-container">
   <div class="page-header">
     <div>
-      <h1>👥 Gestion des Utilisateurs</h1>
+      <h1>Gestion des Utilisateurs</h1>
       <p>{{ utilisateurs.length }} utilisateur(s) enregistré(s)</p>
     </div>
     <button class="btn-add" (click)="ouvrirFormulaire()">+ Nouvel utilisateur</button>
@@ -10,8 +10,48 @@
   <div *ngIf="successMessage" class="success-banner">✅ {{ successMessage }}</div>
   <div *ngIf="errorMessage" class="error-banner">⚠️ {{ errorMessage }}</div>
 
+  <!-- KPI Cards -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-icon blue">👥</div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ utilisateurs.length }}</div>
+        <div class="kpi-label">Utilisateurs</div>
+        <div class="kpi-sub">Total</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon indigo">🛡️</div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ getCountByRole('ADMIN') }}</div>
+        <div class="kpi-label">Administrateurs</div>
+        <div class="kpi-sub">Rôle Administrateur</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon orange">👤</div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ getCountByRole('TECHNICIEN') }}</div>
+        <div class="kpi-label">FSE</div>
+        <div class="kpi-sub">Rôle FSE</div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon green">✅</div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ utilisateurs.length }}</div>
+        <div class="kpi-label">Actifs</div>
+        <div class="kpi-sub">Utilisateurs actifs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
   <div *ngIf="showForm" class="form-card">
-    <h3>{{ isEditMode ? '✏️ Modifier l\'utilisateur' : '➕ Ajouter un utilisateur' }}</h3>
+    <div class="form-card-header">
+      <div class="form-card-icon">👤</div>
+      <h3>{{ isEditMode ? 'Modifier l\'utilisateur' : 'Ajouter un utilisateur' }}</h3>
+    </div>
     <div class="form-grid">
       <div class="form-group">
         <label>Nom *</label>
@@ -38,12 +78,19 @@
     </div>
     <div class="form-actions">
       <button class="btn-save" (click)="enregistrer()">
-        {{ isEditMode ? '✅ Mettre à jour' : '✅ Enregistrer' }}
+        💾 {{ isEditMode ? 'Mettre à jour' : 'Enregistrer' }}
       </button>
       <button class="btn-cancel" (click)="showForm = false">Annuler</button>
     </div>
   </div>
 
+  <!-- Recherche -->
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" [(ngModel)]="searchQuery" (input)="applyFilter()" placeholder="Rechercher un utilisateur..." class="search-input">
+  </div>
+
+  <!-- Tableau -->
   <div class="table-card">
     <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
     <table *ngIf="!isLoading">
@@ -57,19 +104,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let u of utilisateurs">
+        <tr *ngFor="let u of filtered">
           <td>{{ u.id }}</td>
           <td>
             <div class="user-info">
-              <div class="avatar">{{ u.nom?.charAt(0) }}{{ u.prenom?.charAt(0) }}</div>
+              <div class="avatar" [ngClass]="getAvatarClass(u)">{{ u.nom?.charAt(0) }}{{ u.prenom?.charAt(0) }}</div>
               <span>{{ u.nom }} {{ u.prenom }}</span>
             </div>
           </td>
           <td>{{ u.email }}</td>
           <td><span class="badge" [ngClass]="getRoleClass(u)">{{ getRoleLabel(u) }}</span></td>
           <td class="actions-cell">
-            <button class="btn-edit" (click)="modifierUtilisateur(u)">✏️</button>
-            <button class="btn-delete" (click)="supprimerUtilisateur(u.id)">🗑️</button>
+            <button class="btn-edit-icon" (click)="modifierUtilisateur(u)">✏️</button>
+            <button class="btn-delete-icon" (click)="supprimerUtilisateur(u.id)">🗑️</button>
           </td>
         </tr>
       </tbody>
