@@ -51,18 +51,18 @@
   color: #6b7280; text-decoration: none;
   transition: all 0.2s ease; cursor: pointer; position: relative;
 
-  .nav-icon { font-size: 18px; flex-shrink: 0; filter: grayscale(100%); opacity: 0.7; }
+  .nav-icon { font-size: 18px; flex-shrink: 0; color: #9CA3AF; }
   .nav-label { font-size: 13.5px; font-weight: 500; white-space: nowrap; }
 
   &:hover {
     background: #f8f9fc; color: #0d1340;
-    .nav-icon { filter: grayscale(0%); opacity: 1; }
+    .nav-icon { color: currentColor; }
   }
 
   &.active {
     background: #EFF6FF; color: #1a2eff;
     .nav-label { font-weight: 700; }
-    .nav-icon { filter: grayscale(0%); opacity: 1; }
+    .nav-icon { color: currentColor; }
     &::before {
       content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
       width: 3px; height: 24px; background: #1a2eff; border-radius: 0 4px 4px 0;
