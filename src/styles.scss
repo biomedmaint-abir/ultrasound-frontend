@@ -1,131 +1,40 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
-
-html {
-  height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
-}
-
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-  height: 100%;
-}
 /* You can add global styles to this file, and also import other style files */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Plus Jakarta Sans', Inter, sans-serif; }
 
-.mat-mdc-select-panel,
-.mdc-menu-surface,
-.mat-mdc-autocomplete-panel {
-  background: #F0F4FF !important;
-  border-radius: 12px !important;
-}
-
-.mat-mdc-option {
-  background-color: #F0F4FF !important;
-  color: #1C2B5A !important;
-  font-weight: 500 !important;
-}
-
-.mat-mdc-option .mdc-list-item__primary-text {
-  color: #1C2B5A !important;
-}
-
-.mat-mdc-option:hover .mdc-list-item__primary-text,
-.mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
-  color: #1C2B5A !important;
-}
-
-.mat-mdc-option:hover,
-.mat-mdc-option.mat-mdc-option-active,
-.mat-mdc-option.mdc-list-item--selected {
-  background-color: #DBEAFE !important;
-}
-
-:root {
-  --mat-select-panel-background-color: #F0F4FF;
-  --mat-option-background-color: #F0F4FF;
-  --mat-option-selected-state-background-color: #DBEAFE;
-  --mat-option-focus-state-background-color: #DBEAFE;
-  --mat-option-label-text-color: #1C2B5A;
-  --mat-option-selected-state-label-text-color: #1C2B5A;
-}
-
-.mat-mdc-card {
-  background: white !important;
-}
-
-body, html {
-  background: #F0F4FF !important;
-}
-
-/* ── Global dropdown style ── */
 select.filter-select,
 select.form-select,
-select.filter-input {
-  padding: 10px 32px 10px 14px !important;
-  border: 2px solid #C7D2FE !important;
-  border-radius: 10px !important;
-  background-color: #F0F4FF !important;
-  color: #1C2B5A !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  outline: none !important;
-  cursor: pointer !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C2B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 12px center !important;
-  &:focus { border-color: #2563EB !important; }
-}
-
-select option {
-  background: white !important;
-  color: #1C2B5A !important;
-  font-weight: 500 !important;
-}
-
+select.filter-input,
 select.annee-select,
 select.form-select-sm,
 select.page-size-select {
-  padding: 10px 32px 10px 14px !important;
-  border: 2px solid #C7D2FE !important;
-  border-radius: 10px !important;
-  background-color: #F0F4FF !important;
-  color: #1C2B5A !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  outline: none !important;
-  cursor: pointer !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C2B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 12px center !important;
-  &:focus { border-color: #2563EB !important; }
+  padding: 10px 32px 10px 14px;
+  border: 2px solid #C7D2FE;
+  border-radius: 10px;
+  background-color: #F0F4FF;
+  color: #1C2B5A;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C2B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+select.filter-select:focus,
+select.form-select:focus,
+select.filter-input:focus,
+select.annee-select:focus,
+select.form-select-sm:focus,
+select.page-size-select:focus {
+  border-color: #2563EB;
+}
+
+select option {
+  background: white;
+  color: #1C2B5A;
+  font-weight: 500;
 }
