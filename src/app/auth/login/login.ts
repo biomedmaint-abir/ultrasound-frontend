@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
     this.sessionMessage = '';
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        this.authService.saveToken(response.token, response.email, response.role);
+        this.authService.saveToken(response.token, response.email, response.role, response.nom, response.prenom);
         this.router.navigate(['/dashboard']);
       },
       error: () => {

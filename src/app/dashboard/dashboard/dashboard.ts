@@ -26,6 +26,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   mttr: number | null = 0;
   disponibilite = 0;
   email = localStorage.getItem('email') || '';
+  nom = localStorage.getItem('nom') || '';
+  prenom = localStorage.getItem('prenom') || '';
   isLoading = true;
   today = new Date();
 
