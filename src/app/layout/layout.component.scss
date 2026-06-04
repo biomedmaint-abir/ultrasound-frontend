@@ -30,11 +30,11 @@
   }
   .logo-texts { display: flex; flex-direction: column; }
   .logo-text { color: #1C2B5A; font-size: 16px; font-weight: 800; letter-spacing: 0.3px; }
-  .logo-sub { font-size: 10px; color: #6b7280; font-style: italic; margin-top: -1px; }
+  .logo-sub { font-size: 10px; color: #2E6DB4; font-style: italic; margin-top: -1px; }
 }
 
 .toggle-btn {
-  background: #f8f9fc; border: 1.5px solid #e2e6f0; color: #6b7280;
+  background: #f8f9fc; border: 1.5px solid #e2e6f0; color: #2E6DB4;
   width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-size: 10px;
   display: flex; align-items: center; justify-content: center;
   &:hover { background: #EFF6FF; border-color: #1a2eff; color: #1a2eff; }
@@ -48,7 +48,7 @@
 .nav-item {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 14px; border-radius: 10px;
-  color: #6b7280; text-decoration: none;
+  color: #2E6DB4; text-decoration: none;
   transition: all 0.2s ease; cursor: pointer; position: relative;
 
   .nav-icon { font-size: 18px; flex-shrink: 0; color: #9CA3AF; }
@@ -90,10 +90,10 @@
 
   .user-details { flex: 1; min-width: 0;
     .user-email { display: block; font-size: 12px; font-weight: 600; color: #0d1340; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .user-role  { display: block; font-size: 11px; color: #6b7280; }
+    .user-role  { display: block; font-size: 11px; color: #2E6DB4; }
   }
 
-  .chevron-btn { background: none; border: none; color: #6b7280; font-size: 12px; cursor: pointer; flex-shrink: 0; }
+  .chevron-btn { background: none; border: none; color: #2E6DB4; font-size: 12px; cursor: pointer; flex-shrink: 0; }
 }
 
 .logout-btn {
