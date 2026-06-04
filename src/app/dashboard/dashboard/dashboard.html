@@ -3,7 +3,7 @@
   <div class="dashboard-header">
     <div>
       <h1>Tableau de bord</h1>
-      <p>Bienvenue, <strong>{{ email }}</strong> — {{ today | date:'EEEE dd MMMM yyyy' }}</p>
+      <p>Bienvenue, <strong>{{ nom && prenom ? nom + ' ' + prenom : email }}</strong> — {{ today | date:'EEEE dd MMMM yyyy' }}</p>
     </div>
     <div class="parc-filter">
       <mat-select [(ngModel)]="selectedParc" (ngModelChange)="filterByParc()" class="parc-select" placeholder="Filtrer par parc">
