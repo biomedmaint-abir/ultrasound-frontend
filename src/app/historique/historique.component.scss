@@ -1,134 +1,104 @@
-.page-container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+.page-container {
+  max-width: 1000px; margin: 0 auto; padding: 28px 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f9fc; min-height: 100vh;
+}
 
 .page-header {
   margin-bottom: 24px;
-  h1 { margin: 0; font-size: 24px; font-weight: 700; color: #1a237e; }
-  p { margin: 4px 0 0; color: #666; font-size: 14px; }
+  h1 { margin: 0; font-size: 26px; font-weight: 800; color: #0d1340; }
+  p  { margin: 4px 0 0; color: #6b7280; font-size: 13px; }
 }
 
-.filter-bar {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  background: #1C2B5A;
-  border-radius: 14px;
-  padding: 16px 20px;
+.filter-card {
+  display: flex; align-items: center; gap: 12px;
+  background: white; border-radius: 14px; padding: 16px 20px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06); margin-bottom: 28px; flex-wrap: wrap;
 }
 
-.filter-item {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 160px;
-}
-
-.filter-label {
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.filter-input, .filter-select {
-  padding: 10px 14px;
-  border: 2px solid #C7D2FE;
-  border-radius: 10px;
-  background: #F0F4FF;
-  color: #1C2B5A;
-  font-size: 13px;
-  font-weight: 500;
-  outline: none;
-  font-family: Calibri, sans-serif;
-  &:focus { border-color: #2563EB; }
+.search-wrap {
+  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;
+  background: #f8f9fc; border: 1.5px solid #e2e6f0; border-radius: 10px;
+  padding: 0 14px; height: 44px;
+  &:focus-within { border-color: #1a2eff; }
+  .search-icon { font-size: 14px; flex-shrink: 0; }
+  .search-input { flex: 1; border: none; outline: none; font-size: 14px; color: #0d1340; background: transparent;
+    &::placeholder { color: #b0b8cc; }
+  }
 }
 
 .filter-select {
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C2B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-color: #F0F4FF;
-  padding-right: 32px;
+  padding: 10px 14px; border: 1.5px solid #e2e6f0; border-radius: 10px;
+  font-size: 13px; font-weight: 600; color: #0d1340; background: white;
+  cursor: pointer; outline: none; min-width: 150px;
+  &:focus { border-color: #1a2eff; }
 }
 
-.btn-reset {
-  padding: 10px 20px;
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  margin-top: 20px;
-  &:hover { background: rgba(255,255,255,0.25); }
-}
-
-.timeline {
-  position: relative; padding-left: 60px;
-}
+.timeline { position: relative; }
 
 .timeline-item {
-  position: relative; margin-bottom: 24px; display: flex; align-items: flex-start;
+  display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;
+}
+
+.timeline-left {
+  display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 44px;
 }
 
 .timeline-icon {
-  position: absolute; left: -60px; width: 44px; height: 44px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 20px; z-index: 1;
-  &.type-correctif { background: #ffebee; }
-  &.type-preventif { background: #e8f5e9; }
-  &.type-maj { background: #e3f2fd; }
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 1;
+  &.type-correctif { background: #FEE2E2; }
+  &.type-preventif { background: #DCFCE7; }
+  &.type-maj       { background: #DBEAFE; }
+}
+
+.timeline-dot {
+  width: 8px; height: 8px; border-radius: 50%; margin: 4px 0;
+  &.type-correctif { background: #DC2626; }
+  &.type-preventif { background: #16A34A; }
+  &.type-maj       { background: #1a2eff; }
 }
 
 .timeline-line {
-  position: absolute; left: -38px; top: 44px; bottom: -24px;
-  width: 2px; background: #e0e0e0;
+  width: 2px; flex: 1; min-height: 20px; background: #e2e6f0;
 }
 
 .timeline-item:last-child .timeline-line { display: none; }
 
 .timeline-card {
-  flex: 1; background: white; border-radius: 16px; padding: 20px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  border-left: 4px solid #e0e0e0;
-  transition: box-shadow 0.2s;
-
-  &:hover { box-shadow: 0 4px 20px rgba(26,35,126,0.12); }
+  flex: 1; background: white; border-radius: 14px; padding: 18px 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06); transition: box-shadow 0.2s;
+  &:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 }
 
 .card-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
 }
 
 .card-left { display: flex; align-items: center; gap: 8px; }
+.card-right { display: flex; align-items: center; gap: 10px; }
 
-.inv-id { font-weight: 700; color: #1a237e; font-size: 14px; }
-
-.card-date { font-size: 13px; color: #666; }
+.inv-id { font-weight: 800; color: #0d1340; font-size: 15px; }
+.card-date { font-size: 13px; color: #6b7280; }
+.chevron { color: #6b7280; font-size: 14px; cursor: pointer; }
 
 .badge {
-  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
-
-  &.type-correctif { background: #ffebee; color: #c62828; }
-  &.type-preventif { background: #e8f5e9; color: #2e7d32; }
-  &.type-maj { background: #e3f2fd; color: #1565c0; }
-
-  &.statut-termine { background: #e8f5e9; color: #2e7d32; }
-  &.statut-en-cours { background: #fff3e0; color: #e65100; }
-  &.statut-attente { background: #e3f2fd; color: #1565c0; }
+  padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  &.type-correctif { background: #FEE2E2; color: #DC2626; }
+  &.type-preventif { background: #DCFCE7; color: #16A34A; }
+  &.type-maj       { background: #DBEAFE; color: #1a2eff; }
+  &.statut-terminee         { background: #DCFCE7; color: #16A34A; }
+  &.statut-en_cours         { background: #FFF7ED; color: #f97316; }
+  &.statut-en_attente       { background: #DBEAFE; color: #1a2eff; }
+  &.statut-en_attente_piece { background: #FEE2E2; color: #DC2626; }
 }
 
-.description { margin: 0 0 12px; font-size: 14px; color: #333; }
+.description { margin: 0 0 10px; font-size: 14px; color: #0d1340; font-weight: 500; }
 
 .card-meta {
-  display: flex; gap: 16px; flex-wrap: wrap;
-  span { font-size: 12px; color: #666; }
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  span { font-size: 12px; color: #6b7280; }
+  .meta-sep { color: #d1d5db; }
 }
 
 .center-state { text-align: center; padding: 32px; color: #666; }
-.empty-state { text-align: center; padding: 32px; color: #999; }
+.empty-state  { text-align: center; padding: 32px; color: #999; font-size: 14px; }

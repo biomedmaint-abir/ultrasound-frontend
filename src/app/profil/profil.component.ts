@@ -10,68 +10,127 @@ import { environment } from '../../environments/environment';
   imports: [CommonModule, FormsModule],
   template: `
 <div class="profil-container">
-  <div class="profil-card">
-    <div class="profil-header">
-      <div class="avatar">{{ email.charAt(0).toUpperCase() }}</div>
-      <h2>Mon Profil</h2>
+  <div class="profil-header">
+    <div class="avatar">{{ email.charAt(0).toUpperCase() }}</div>
+    <div>
+      <h1>Mon Profil</h1>
       <p>{{ email }}</p>
       <span class="role-badge">{{ roleLabel }}</span>
     </div>
+  </div>
 
-    <div class="section-title">Modifier mes informations</div>
-
-    <div class="form-group">
-      <label>Nouvel email</label>
-      <input type="email" [(ngModel)]="newEmail" placeholder="nouveau@email.com">
-    </div>
-
-    <div class="form-group">
-      <label>Nouveau mot de passe</label>
-      <input [type]="showPass ? 'text' : 'password'" [(ngModel)]="newPassword" placeholder="••••••••">
-      <span class="toggle" (click)="showPass = !showPass">{{ showPass ? '👁️' : '👁️‍🗨️' }}</span>
-    </div>
-
-    <div class="form-group">
-      <label>Confirmer le mot de passe</label>
-      <input [type]="showPass ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="••••••••">
+  <div class="profil-card">
+    <div class="section-header">
+      <div class="section-icon">👤</div>
+      <h2>Modifier l'utilisateur</h2>
     </div>
 
     <div *ngIf="successMsg" class="success-banner">✅ {{ successMsg }}</div>
     <div *ngIf="errorMsg" class="error-banner">⚠️ {{ errorMsg }}</div>
 
-    <button class="save-btn" (click)="sauvegarder()" [disabled]="saving">
-      {{ saving ? 'Enregistrement...' : 'Enregistrer les modifications' }}
-    </button>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nom *</label>
+        <input type="text" [(ngModel)]="newNom" [placeholder]="nom || 'Nom'" class="form-input">
+      </div>
+      <div class="form-group">
+        <label>Prénom</label>
+        <input type="text" [(ngModel)]="newPrenom" [placeholder]="prenom || 'Prénom'" class="form-input">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" [(ngModel)]="newEmail" [placeholder]="email" class="form-input">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe (laisser vide pour ne pas changer)</label>
+        <input [type]="showPass ? 'text' : 'password'" [(ngModel)]="newPassword" placeholder="Mot de passe" class="form-input">
+      </div>
+      <div class="form-group">
+        <label>Confirmer le mot de passe</label>
+        <input [type]="showPass ? 'text' : 'password'" [(ngModel)]="confirmPassword" placeholder="Confirmer" class="form-input">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-save" (click)="sauvegarder()" [disabled]="saving">
+        💾 {{ saving ? 'Enregistrement...' : 'Mettre à jour' }}
+      </button>
+      <button class="btn-cancel" (click)="reset()">Annuler</button>
+    </div>
   </div>
 </div>
   `,
   styles: [`
-.profil-container { display:flex; justify-content:center; padding:40px 24px; }
-.profil-card { width:480px; background:white; border-radius:24px; padding:40px; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
-.profil-header { text-align:center; margin-bottom:32px;
-  .avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,#1C2B5A,#2563EB); color:white; font-size:28px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; }
-  h2 { margin:0 0 4px; font-size:22px; font-weight:700; color:#1C2B5A; }
-  p { margin:0 0 8px; color:#666; font-size:14px; }
-  .role-badge { display:inline-block; padding:4px 14px; border-radius:20px; background:#E3F2FD; color:#1565C0; font-size:12px; font-weight:600; }
+.profil-container {
+  max-width: 1000px; margin: 0 auto; padding: 28px 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif; background: #f8f9fc; min-height: 100vh;
 }
-.section-title { font-size:14px; font-weight:700; color:#1C2B5A; margin-bottom:20px; padding-bottom:8px; border-bottom:2px solid #E3F2FD; }
-.form-group { margin-bottom:18px; position:relative;
-  label { display:block; font-size:13px; font-weight:600; color:#333; margin-bottom:7px; }
-  input { width:100%; padding:12px 14px; border:2px solid #E9ECEF; border-radius:12px; font-size:14px; outline:none; box-sizing:border-box; transition:border-color 0.2s;
-    &:focus { border-color:#2563EB; } }
-  .toggle { position:absolute; right:14px; bottom:12px; cursor:pointer; font-size:16px; }
+
+.profil-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 28px;
+  .avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #1a2eff; color: white; font-size: 24px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  h1 { margin: 0; font-size: 26px; font-weight: 800; color: #0d1340; }
+  p  { margin: 4px 0; font-size: 13px; color: #6b7280; }
+  .role-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; background: #EFF6FF; color: #1a2eff; font-size: 12px; font-weight: 600; }
 }
-.success-banner { background:#E8F5E9; color:#2E7D32; padding:12px 16px; border-radius:10px; font-size:13px; margin-bottom:16px; }
-.error-banner { background:#FFEBEE; color:#C62828; padding:12px 16px; border-radius:10px; font-size:13px; margin-bottom:16px; }
-.save-btn { width:100%; padding:14px; background:linear-gradient(135deg,#1C2B5A,#2563EB); color:white; border:none; border-radius:12px; font-size:15px; font-weight:600; cursor:pointer;
-  &:hover { opacity:0.9; }
-  &:disabled { opacity:0.7; cursor:not-allowed; }
+
+.profil-card {
+  background: white; border-radius: 16px; padding: 28px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
 }
+
+.section-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 24px;
+  .section-icon {
+    width: 36px; height: 36px; background: #EFF6FF; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  h2 { margin: 0; font-size: 16px; font-weight: 700; color: #0d1340; }
+}
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+
+.form-group {
+  display: flex; flex-direction: column; gap: 8px;
+  label { font-size: 13px; font-weight: 600; color: #0d1340; }
+}
+
+.form-input {
+  padding: 12px 14px; border: 1.5px solid #e2e6f0; border-radius: 10px;
+  font-size: 14px; color: #0d1340; outline: none; background: white; box-sizing: border-box; width: 100%;
+  &:focus { border-color: #1a2eff; }
+  &::placeholder { color: #b0b8cc; }
+}
+
+.form-actions { display: flex; gap: 12px; }
+
+.btn-save {
+  background: #1a2eff; color: white; border: none; border-radius: 10px;
+  padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer;
+  &:hover { background: #0d1bb5; } &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-cancel {
+  background: white; border: 1.5px solid #e2e6f0; border-radius: 10px;
+  padding: 12px 24px; font-size: 14px; font-weight: 600; color: #0d1340; cursor: pointer;
+  &:hover { background: #f8f9fc; }
+}
+
+.success-banner { background: #DCFCE7; color: #16A34A; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; border-left: 4px solid #16A34A; font-size: 13px; }
+.error-banner   { background: #FEE2E2; color: #DC2626; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; border-left: 4px solid #DC2626; font-size: 13px; }
   `]
 })
 export class ProfilComponent implements OnInit {
   email = localStorage.getItem('email') || '';
   role = localStorage.getItem('role') || '';
+  nom = '';
+  prenom = '';
+  newNom = '';
+  newPrenom = '';
   newEmail = '';
   newPassword = '';
   confirmPassword = '';
@@ -96,49 +155,45 @@ export class ProfilComponent implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/utilisateurs`).subscribe({
       next: (users) => {
         const me = users.find(u => u.email === this.email);
-        if (me) this.userId = me.id;
+        if (me) {
+          this.userId = me.id;
+          this.nom = me.nom || '';
+          this.prenom = me.prenom || '';
+        }
       }
     });
   }
 
+  reset(): void {
+    this.newNom = ''; this.newPrenom = ''; this.newEmail = '';
+    this.newPassword = ''; this.confirmPassword = '';
+    this.successMsg = ''; this.errorMsg = '';
+  }
+
   sauvegarder(): void {
-    this.errorMsg = '';
-    this.successMsg = '';
-
+    this.errorMsg = ''; this.successMsg = '';
     if (this.newPassword && this.newPassword !== this.confirmPassword) {
-      this.errorMsg = 'Les mots de passe ne correspondent pas.';
-      return;
+      this.errorMsg = 'Les mots de passe ne correspondent pas.'; return;
     }
-
-    if (!this.newEmail && !this.newPassword) {
-      this.errorMsg = 'Veuillez remplir au moins un champ.';
-      return;
-    }
-
     if (!this.userId) return;
-
     this.saving = true;
-    const payload: any = { email: this.newEmail || this.email };
+    const payload: any = {
+      nom: this.newNom || this.nom,
+      prenom: this.newPrenom || this.prenom,
+      email: this.newEmail || this.email
+    };
     if (this.newPassword) payload.motDePasse = this.newPassword;
-
     this.http.patch(`${environment.apiUrl}/utilisateurs/${this.userId}`, payload).subscribe({
       next: () => {
         this.saving = false;
-        if (this.newEmail) {
-          localStorage.setItem('email', this.newEmail);
-          this.email = this.newEmail;
-          this.newEmail = '';
-        }
-        this.newPassword = '';
-        this.confirmPassword = '';
+        if (this.newNom) this.nom = this.newNom;
+        if (this.newPrenom) this.prenom = this.newPrenom;
+        if (this.newEmail) { localStorage.setItem('email', this.newEmail); this.email = this.newEmail; }
+        this.reset();
         this.successMsg = 'Profil mis à jour avec succès !';
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.saving = false;
-        this.errorMsg = 'Erreur lors de la mise à jour.';
-        this.cdr.detectChanges();
-      }
+      error: () => { this.saving = false; this.errorMsg = 'Erreur lors de la mise à jour.'; this.cdr.detectChanges(); }
     });
   }
 }
