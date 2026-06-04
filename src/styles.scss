@@ -82,3 +82,30 @@ body {
 body, html {
   background: #F0F4FF !important;
 }
+
+/* ── Global dropdown style ── */
+select.filter-select,
+select.form-select,
+select.filter-input {
+  padding: 10px 32px 10px 14px !important;
+  border: 2px solid #C7D2FE !important;
+  border-radius: 10px !important;
+  background-color: #F0F4FF !important;
+  color: #1C2B5A !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  outline: none !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231C2B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  &:focus { border-color: #2563EB !important; }
+}
+
+select option {
+  background: white !important;
+  color: #1C2B5A !important;
+  font-weight: 500 !important;
+}
