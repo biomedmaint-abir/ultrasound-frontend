@@ -76,10 +76,19 @@ export class InterventionDetail implements OnInit {
   goBack(): void { this.router.navigate(['/interventions']); }
   goToEdit(): void { this.router.navigate(['/interventions', this.intervention.id, 'edit']); }
 
+  getTypeClass(type: string): string {
+    switch (type) {
+      case "CORRECTIF": return "type-correctif";
+      case "PREVENTIF": return "type-preventif";
+      case "MISE_A_JOUR": return "type-maj";
+      default: return "";
+    }
+  }
+
   getStatutClass(statut: string): string {
     switch (statut) {
-      case 'TERMINEE': return 'statut-termine';
-      case 'EN_COURS': return 'statut-en-cours';
+      case 'TERMINEE': return 'statut-terminee';
+      case 'EN_COURS': return 'statut-en_cours';
       case 'EN_ATTENTE_PIECE': return 'statut-planifie';
       default: return 'statut-default';
     }

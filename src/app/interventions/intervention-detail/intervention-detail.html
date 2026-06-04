@@ -4,7 +4,7 @@
       <button class="back-btn" (click)="goBack()">←</button>
       <div>
         <h1>Détail de l'intervention</h1>
-        <p *ngIf="intervention">#{{ intervention.id }} — {{ intervention.dateIntervention | date:'dd/MM/yyyy' }}</p>
+        <p *ngIf="intervention">📅 #{{ intervention.id }} • {{ intervention.dateIntervention | date:'dd/MM/yyyy' }}</p>
       </div>
     </div>
     <div class="header-actions" *ngIf="intervention">
@@ -23,40 +23,79 @@
 
     <div class="detail-row">
       <div class="detail-card">
-        <div class="section-header"><span class="section-icon">ℹ️</span><h2>Informations générales</h2></div>
+        <div class="section-header">
+          <div class="section-icon blue">📋</div>
+          <h2>Informations générales</h2>
+        </div>
         <div class="info-row">
-          <span class="label">Statut</span>
+          <div class="info-left"><span class="row-icon">🏳️</span><span class="label">Statut</span></div>
           <span class="statut-badge" [ngClass]="getStatutClass(intervention.statut)">
             <span class="statut-dot"></span>{{ intervention.statut }}
           </span>
         </div>
-        <div class="info-row"><span class="label">Type</span><span class="value">{{ intervention.type || '—' }}</span></div>
-        <div class="info-row"><span class="label">Date</span><span class="value">{{ intervention.dateIntervention | date:'dd/MM/yyyy' }}</span></div>
-        <div class="info-row"><span class="label">Durée</span><span class="value">{{ intervention.dureeHeures ? intervention.dureeHeures + 'h' : '—' }}</span></div>
-        <div class="info-row"><span class="label">Coût total</span><span class="value total">{{ intervention.coutTotal ? (intervention.coutTotal | number:'1.0-0') + ' DH' : '—' }}</span></div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">🔧</span><span class="label">Type</span></div>
+          <span class="value type-value" [ngClass]="getTypeClass(intervention.type)">{{ intervention.type || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">📅</span><span class="label">Date</span></div>
+          <span class="value">{{ intervention.dateIntervention | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">⏱️</span><span class="label">Durée</span></div>
+          <span class="value">{{ intervention.dureeHeures ? intervention.dureeHeures + 'h' : '—' }}</span>
+        </div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">💰</span><span class="label">Coût total</span></div>
+          <span class="value total">{{ intervention.coutTotal ? (intervention.coutTotal | number:'1.0-0') + ' DH' : '—' }}</span>
+        </div>
       </div>
 
       <div class="detail-card">
-        <div class="section-header"><span class="section-icon">🔬</span><h2>Équipement & FSE</h2></div>
-        <div class="info-row"><span class="label">Équipement</span><span class="value">{{ intervention.equipement?.nom || '—' }}</span></div>
-        <div class="info-row"><span class="label">Parc</span><span class="value">{{ intervention.equipement?.parc || '—' }}</span></div>
-        <div class="info-row"><span class="label">Service</span><span class="value">{{ intervention.equipement?.service || '—' }}</span></div>
-        <div class="info-row"><span class="label">FSE</span><span class="value">{{ intervention.nomFse || '—' }}</span></div>
+        <div class="section-header">
+          <div class="section-icon purple">🖥️</div>
+          <h2>Équipement & FSE</h2>
+        </div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">🔬</span><span class="label">Équipement</span></div>
+          <span class="value">{{ intervention.equipement?.nom || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">🏥</span><span class="label">Parc</span></div>
+          <span class="value">{{ intervention.equipement?.parc || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">🏢</span><span class="label">Service</span></div>
+          <span class="value">{{ intervention.equipement?.service || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <div class="info-left"><span class="row-icon">👤</span><span class="label">FSE</span></div>
+          <span class="value">{{ intervention.nomFse || '—' }}</span>
+        </div>
       </div>
     </div>
 
     <div class="detail-card" *ngIf="intervention.descriptionPanne">
-      <div class="section-header"><span class="section-icon">📝</span><h2>Description de la panne</h2></div>
+      <div class="section-header">
+        <div class="section-icon orange">📝</div>
+        <h2>Description de la panne</h2>
+      </div>
       <p class="text-content">{{ intervention.descriptionPanne }}</p>
     </div>
 
     <div class="detail-card" *ngIf="intervention.actionsEffectuees">
-      <div class="section-header"><span class="section-icon">🔧</span><h2>Actions effectuées</h2></div>
+      <div class="section-header">
+        <div class="section-icon green">🔧</div>
+        <h2>Actions effectuées</h2>
+      </div>
       <p class="text-content">{{ intervention.actionsEffectuees }}</p>
     </div>
 
     <div class="detail-card">
-      <div class="section-header"><span class="section-icon">🔩</span><h2>Pièces de rechange utilisées</h2></div>
+      <div class="section-header">
+        <div class="section-icon yellow">🔩</div>
+        <h2>Pièces de rechange utilisées</h2>
+      </div>
       <div *ngIf="pieces.length === 0" class="empty-pieces"><p>Aucune pièce enregistrée pour cette intervention.</p></div>
       <table *ngIf="pieces.length > 0" class="pieces-table">
         <thead>
@@ -64,11 +103,11 @@
         </thead>
         <tbody>
           <tr *ngFor="let p of pieces">
-            <td>{{ p.piece?.nom || '—' }}</td>
+            <td><span class="piece-icon">📦</span> {{ p.piece?.nom || '—' }}</td>
             <td>{{ p.piece?.reference || '—' }}</td>
             <td>{{ p.quantite }}</td>
             <td>{{ p.coutUnitaire | number:'1.0-0' }} DH</td>
-            <td>{{ (p.quantite * p.coutUnitaire) | number:'1.0-0' }} DH</td>
+            <td class="cout-total">{{ (p.quantite * p.coutUnitaire) | number:'1.0-0' }} DH</td>
           </tr>
         </tbody>
       </table>
