@@ -9,6 +9,7 @@ template: `<div style="padding:28px;background:#f8f9fc;min-height:100vh"><h1 sty
 export class FseInterventionsComponent implements OnInit {
   email = localStorage.getItem("email") || "";
   nom = localStorage.getItem("nom") || "";
+  prenom = localStorage.getItem("prenom") || "";
   filtered: any[] = [];
   isLoading = true;
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
