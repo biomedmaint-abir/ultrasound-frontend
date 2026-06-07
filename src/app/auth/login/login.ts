@@ -40,7 +40,8 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
         this.authService.saveToken(response.token, response.email, response.role, response.nom, response.prenom);
-        this.router.navigate(['/dashboard']);
+        const role = response.role;
+        if (role === 'ADMIN') { this.router.navigate(['/dashboard']); } else { this.router.navigate(['/fse/dashboard']); }
       },
       error: () => {
         this.errorMessage = 'Email ou mot de passe incorrect.';

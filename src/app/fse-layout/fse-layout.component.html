@@ -1,0 +1,35 @@
+<div class="app-container" [class.sidebar-collapsed]="!sidebarOpen">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon-box">🔷</div>
+        <div class="logo-texts">
+          <span class="logo-text">MaintManager</span>
+          <span class="logo-sub">by SCRIM</span>
+        </div>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">{{ sidebarOpen ? '◀' : '▶' }}</button>
+    </div>
+    <nav class="nav-menu">
+      <a *ngFor="let item of navItems" [routerLink]="item.path" class="nav-item" [class.active]="isActive(item.path)">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">{{ email?.charAt(0)?.toUpperCase() }}</div>
+        <div class="user-details">
+          <span class="user-email">{{ nom && prenom ? nom + ' ' + prenom : email }}</span>
+          <span class="user-role">FSE</span>
+        </div>
+        <button class="chevron-btn">▾</button>
+      </div>
+      <button class="logout-btn" (click)="logout()">
+        <span>🚪</span><span class="nav-label">Déconnexion</span>
+      </button>
+    </div>
+  </aside>
+  <main class="main-content"><router-outlet></router-outlet></main>
+</div>
+<app-confirm-dialog [visible]="showLogoutConfirm" title="Déconnexion" message="Êtes-vous sûr de vouloir vous déconnecter ?" confirmLabel="Se déconnecter" cancelLabel="Annuler" icon="🔒" [danger]="false" (confirmed)="confirmLogout()" (cancelled)="showLogoutConfirm = false"></app-confirm-dialog>
