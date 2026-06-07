@@ -10,5 +10,5 @@ export class FseHistoriqueComponent implements OnInit {
   nom = localStorage.getItem("nom") || "";
   interventions: any[] = [];
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
-  ngOnInit(): void { this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({ next: (data) => { this.interventions = data.filter(i => i.nomFse === this.nom || i.nomFse === this.email); this.cdr.detectChanges(); } }); }
+  ngOnInit(): void { this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({ next: (data) => { this.interventions = data.filter(i => i.nomFse === this.prenom || i.nomFse === this.nom || i.nomFse === this.email); this.cdr.detectChanges(); } }); }
 }

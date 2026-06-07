@@ -17,7 +17,7 @@ export class FseDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
-        this.mesInterventions = data.filter(i => i.nomFse === this.nom || i.nomFse === this.email);
+        this.mesInterventions = data.filter(i => i.nomFse === this.prenom || i.nomFse === this.nom || i.nomFse === this.email);
         this.interventionsUrgentes = this.mesInterventions.filter(i => i.statut === "EN_COURS");
         this.terminees = this.mesInterventions.filter(i => i.statut === "TERMINEE").length;
         this.cdr.detectChanges();
