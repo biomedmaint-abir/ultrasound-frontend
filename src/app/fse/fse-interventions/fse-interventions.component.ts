@@ -11,7 +11,6 @@ export class FseInterventionsComponent implements OnInit {
   nom = localStorage.getItem("nom") || "";
   prenom = localStorage.getItem("prenom") || "";
   userId = Number(localStorage.getItem("userId")) || 0;
-  prenom = localStorage.getItem("prenom") || "";
   filtered: any[] = [];
   isLoading = true;
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
