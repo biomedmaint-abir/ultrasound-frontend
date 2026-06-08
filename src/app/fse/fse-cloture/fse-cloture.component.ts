@@ -93,7 +93,7 @@ h1{margin:0;font-size:26px;font-weight:800;color:#0d1340}p{margin:0;font-size:13
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
 .section-icon{width:36px;height:36px;background:#EFF6FF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
 h2{margin:0;font-size:16px;font-weight:700;color:#0d1340}
-.info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f3f5}&:last-child{border-bottom:none}
+.info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f3f5}.info-row:last-child{border-bottom:none}
 .label{font-size:13px;color:#6b7280}.value{font-size:14px;color:#0d1340;font-weight:600}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
 .full-width{grid-column:span 2}
