@@ -23,10 +23,11 @@ export class InterventionForm implements OnInit {
   submitted = false;
   equipements: any[] = [];
   piecesDisponibles: any[] = [];
+  fseList: any[] = [];
 
   form = {
-    date: '', type: '', description: '', fse: '', statut: '',
-    duree: null as number | null, coutTotal: null as number | null,
+    date: '', type: '', description: '', fse: '', fseId: null as number | null,
+    statut: '', duree: null as number | null, coutTotal: null as number | null,
     observations: '', equipementId: null as number | null
   };
 
@@ -35,11 +36,10 @@ export class InterventionForm implements OnInit {
   statuts = ['EN_ATTENTE', 'EN_COURS', 'TERMINEE', 'EN_ATTENTE_PIECE'];
 
   get isFormValid(): boolean {
-    return !!(this.form.date && this.form.type && this.form.equipementId && this.form.fse && this.form.statut);
+    return !!(this.form.date && this.form.type && this.form.equipementId && this.form.statut);
   }
 
   isInvalid(field: any): boolean { return this.submitted && !field; }
-
   updateResume(): void {}
 
   getEquipementNom(): string {
@@ -57,6 +57,11 @@ export class InterventionForm implements OnInit {
     return p?.prixUnitaire || 0;
   }
 
+  onFseChange(): void {
+    const fse = this.fseList.find(f => f.id === this.form.fseId);
+    if (fse) this.form.fse = fse.prenom || fse.nom || fse.email;
+  }
+
   constructor(
     private interventionService: InterventionService,
     private equipementService: EquipementService,
@@ -68,6 +73,12 @@ export class InterventionForm implements OnInit {
   ngOnInit(): void {
     this.equipementService.getAll().subscribe({ next: (data) => this.equipements = data });
     this.http.get<any[]>(`${environment.apiUrl}/pieces`).subscribe({ next: (data) => this.piecesDisponibles = data, error: () => {} });
+    this.http.get<any[]>(`${environment.apiUrl}/utilisateurs`).subscribe({
+      next: (data) => {
+        this.fseList = data.filter(u => u.role?.nom === 'TECHNICIEN' || u.role?.nom === 'INGENIEUR');
+      },
+      error: () => {}
+    });
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEditMode = true;
@@ -78,9 +89,10 @@ export class InterventionForm implements OnInit {
           this.form = {
             date: data.dateIntervention?.substring(0, 10) || '',
             type: data.type || '', description: data.descriptionPanne || '',
-            fse: data.nomFse || '', statut: data.statut || '',
-            duree: data.dureeHeures || null, coutTotal: data.coutTotal || null,
-            observations: data.actionsEffectuees || '', equipementId: data.equipement?.id || null
+            fse: data.nomFse || '', fseId: data.technicien?.id || null,
+            statut: data.statut || '', duree: data.dureeHeures || null,
+            coutTotal: data.coutTotal || null, observations: data.actionsEffectuees || '',
+            equipementId: data.equipement?.id || null
           };
           this.isLoading = false;
         },
@@ -101,13 +113,15 @@ export class InterventionForm implements OnInit {
     if (!this.isFormValid) return;
     this.isSaving = true;
     this.errorMessage = '';
-    const payload = {
+    const payload: any = {
       dateIntervention: this.form.date, type: this.form.type,
       descriptionPanne: this.form.description, statut: this.form.statut,
       dureeHeures: this.form.duree, coutTotal: this.form.coutTotal,
       nomFse: this.form.fse, actionsEffectuees: this.form.observations,
       equipement: this.form.equipementId ? { id: this.form.equipementId } : null
     };
+    if (this.form.fseId) payload.technicien = { id: this.form.fseId };
+
     const req$ = this.isEditMode && this.interventionId
       ? this.interventionService.update(this.interventionId, payload)
       : this.interventionService.create(payload);

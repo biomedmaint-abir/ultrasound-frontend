@@ -9,7 +9,9 @@ export class FsePlanningComponent implements OnInit {
   email = localStorage.getItem("email") || "";
   nom = localStorage.getItem("nom") || "";
   prenom = localStorage.getItem("prenom") || "";
+  userId = Number(localStorage.getItem("userId")) || 0;
+  prenom = localStorage.getItem("prenom") || "";
   interventions: any[] = [];
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
-  ngOnInit(): void { this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({ next: (data) => { this.interventions = data.filter(i => i.nomFse === this.prenom || i.nomFse === this.nom || i.nomFse === this.email); this.cdr.detectChanges(); } }); }
+  ngOnInit(): void { this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({ next: (data) => { this.interventions = data.filter(i => i.technicien?.id === this.userId || i.nomFse === this.prenom || i.nomFse === this.nom || i.nomFse === this.email); this.cdr.detectChanges(); } }); }
 }

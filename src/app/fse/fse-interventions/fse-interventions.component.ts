@@ -10,12 +10,14 @@ export class FseInterventionsComponent implements OnInit {
   email = localStorage.getItem("email") || "";
   nom = localStorage.getItem("nom") || "";
   prenom = localStorage.getItem("prenom") || "";
+  userId = Number(localStorage.getItem("userId")) || 0;
+  prenom = localStorage.getItem("prenom") || "";
   filtered: any[] = [];
   isLoading = true;
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
   ngOnInit(): void {
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
-      next: (data) => { this.filtered = data.filter(i => i.nomFse === this.prenom || i.nomFse === this.nom || i.nomFse === this.email); this.isLoading = false; this.cdr.detectChanges(); }
+      next: (data) => { this.filtered = data.filter(i => i.technicien?.id === this.userId || i.nomFse === this.prenom || i.nomFse === this.nom || i.nomFse === this.email); this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
 }
