@@ -15,6 +15,7 @@ import { environment } from '../../environments/environment';
 export class PlanningComponent implements OnInit {
 
   interventions: any[] = [];
+  interventionsSansFs: any[] = [];
   equipements: any[] = [];
   isLoading = true;
 
@@ -55,6 +56,7 @@ export class PlanningComponent implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
         this.interventions = data;
+        this.interventionsSansFs = data.filter((i: any) => !i.technicien && (i.statut === "EN_ATTENTE" || i.statut === "EN_COURS" || !i.statut));
         this.buildCalendar();
         this.isLoading = false;
         this.cdr.detectChanges();
