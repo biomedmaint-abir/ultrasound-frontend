@@ -10,7 +10,6 @@ export class FseDashboardComponent implements OnInit {
   nom = localStorage.getItem("nom") || "";
   prenom = localStorage.getItem("prenom") || "";
   userId = Number(localStorage.getItem("userId")) || 0;
-  prenom = localStorage.getItem("prenom") || "";
   today = new Date();
   mesInterventions: any[] = [];
   interventionsUrgentes: any[] = [];
