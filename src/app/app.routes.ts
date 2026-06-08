@@ -24,6 +24,7 @@ export const routes: Routes = [
       { path: 'pieces', loadChildren: () => import('./pieces/pieces-module').then(m => m.PiecesModule) },
       { path: 'contrats', loadChildren: () => import('./contrats/contrats-module').then(m => m.ContratsModule) },
       { path: 'planning', loadChildren: () => import('./planning/planning.module').then(m => m.PlanningModule) },
+      { path: 'planning/assign/:id', loadComponent: () => import('./planning/assign-fse/assign-fse.component').then(m => m.AssignFseComponent) },
       { path: 'rapports', loadChildren: () => import('./rapports/rapports.module').then(m => m.RapportsModule) },
       { path: 'optimisation', loadChildren: () => import('./optimisation/optimisation.module').then(m => m.OptimisationModule) },
       { path: 'utilisateurs', loadChildren: () => import('./utilisateurs/utilisateurs.module').then(m => m.UtilisateursModule) },

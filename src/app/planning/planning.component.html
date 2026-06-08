@@ -43,6 +43,35 @@
     </div>
   </div>
 
+  <!-- Interventions à planifier -->
+  <div class="planif-section">
+    <div class="planif-header">
+      <div class="planif-icon">👤</div>
+      <div>
+        <h2>Interventions à assigner</h2>
+        <p>Cliquez sur une intervention pour assigner un FSE responsable</p>
+      </div>
+      <button class="btn-new-interv" (click)="router.navigate(['/interventions/new'])">+ Nouvelle intervention</button>
+    </div>
+    <div *ngIf="interventionsSansFs.length === 0" class="empty-state-planif">
+      <p>✅ Toutes les interventions ont un FSE assigné</p>
+    </div>
+    <div *ngFor="let inv of interventionsSansFs" class="planif-row" (click)="router.navigate(['/planning/assign', inv.id])">
+      <div class="planif-left">
+        <span class="type-chip" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
+        <div>
+          <div class="planif-equip">{{ inv.equipement?.nom || '—' }}</div>
+          <div class="planif-parc">{{ inv.equipement?.parc || '—' }}</div>
+        </div>
+      </div>
+      <div class="planif-right">
+        <span class="planif-date">📅 {{ inv.dateIntervention | date:'dd/MM/yyyy' }}</span>
+        <span class="assign-btn">👤 Assigner FSE →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des interventions du mois -->
   <div class="month-section">
     <div class="month-section-header">
       <div class="month-section-title">
