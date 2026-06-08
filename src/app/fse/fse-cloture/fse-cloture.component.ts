@@ -116,7 +116,7 @@ h3{margin:0;font-size:14px;font-weight:700;color:#0d1340}
 .empty-pieces{text-align:center;padding:20px;background:#f8f9fa;border-radius:10px;color:#9CA3AF;font-size:13px}
 .form-actions{display:flex;gap:12px;justify-content:flex-end}
 .btn-cancel{background:white;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;color:#0d1340;cursor:pointer}
-.btn-submit{background:#1a2eff;color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer}&:disabled{opacity:.6;cursor:not-allowed}
+.btn-submit{background:#1a2eff;color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer}.btn-submit:disabled{opacity:.6;cursor:not-allowed}
 .success-banner{background:#DCFCE7;color:#16A34A;padding:12px 16px;border-radius:10px;margin-bottom:16px}
 .error-banner{background:#FEE2E2;color:#DC2626;padding:12px 16px;border-radius:10px;margin-bottom:16px}
 .center-state{text-align:center;padding:48px;color:#6b7280}
