@@ -139,7 +139,7 @@ export class AssignFseComponent implements OnInit {
       nomFse: fse ? (fse.prenom || fse.nom) : '',
       statut: this.selectedStatut
     };
-    this.http.patch(`${environment.apiUrl}/interventions/${this.intervention.id}`, payload).subscribe({
+    this.http.put(`${environment.apiUrl}/interventions/${this.intervention.id}`, {...this.intervention, technicien: { id: this.selectedFseId }, nomFse: payload.nomFse, statut: this.selectedStatut}).subscribe({
       next: () => {
         this.isSaving = false;
         this.successMsg = 'FSE assigné avec succès !';

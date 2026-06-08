@@ -175,7 +175,7 @@ export class FseClotureComponent implements OnInit {
       statut: statut
     };
 
-    this.http.patch(`${environment.apiUrl}/interventions/${this.intervention.id}`, payload).subscribe({
+    this.http.put(`${environment.apiUrl}/interventions/${this.intervention.id}`, {...this.intervention, actionsEffectuees: this.form.actionsEffectuees, dureeHeures: this.form.duree, coutTotal: this.form.coutTotal, statut: statut}).subscribe({
       next: () => {
         const piecesValides = this.piecesUtilisees.filter(p => p.pieceId && p.quantite > 0);
         if (piecesValides.length > 0) {
