@@ -52,7 +52,7 @@ import { environment } from '../../../environments/environment';
         <span class="statut-badge" [ngClass]="getStatutClass(e.statut)">
           <span class="dot"></span>{{ getStatutLabel(e.statut) }}
         </span>
-        <button class="btn-fiche" (click)="router.navigate(['/equipements', e.id])">
+        <button class="btn-fiche" (click)="router.navigate(['/fse/equipements', e.id])">
           Voir fiche →
         </button>
       </div>

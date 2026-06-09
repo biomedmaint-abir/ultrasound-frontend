@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="header-stats">
-      <div class="stat">
+      <div class="stat" *ngIf="isAdmin">
         <span class="stat-num">{{ allCodes.length }}</span>
         <span class="stat-label">Codes erreur</span>
       </div>

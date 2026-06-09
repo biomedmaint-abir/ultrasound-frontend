@@ -44,6 +44,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./fse/fse-dashboard/fse-dashboard.component').then(m => m.FseDashboardComponent) },
       { path: 'interventions', loadComponent: () => import('./fse/fse-interventions/fse-interventions.component').then(m => m.FseInterventionsComponent) },
       { path: 'equipements', loadComponent: () => import('./fse/fse-equipements/fse-equipements.component').then(m => m.FseEquipementsComponent) },
+      { path: 'equipements/:id', loadComponent: () => import('./fse/fse-equipement-detail/fse-equipement-detail.component').then(m => m.FseEquipementDetailComponent) },
       { path: 'planning', loadComponent: () => import('./fse/fse-planning/fse-planning.component').then(m => m.FsePlanningComponent) },
       { path: 'rapports', loadComponent: () => import('./fse/fse-rapports/fse-rapports.component').then(m => m.FseRapportsComponent) },
       { path: 'historique', loadComponent: () => import('./fse/fse-historique/fse-historique.component').then(m => m.FseHistoriqueComponent) },
