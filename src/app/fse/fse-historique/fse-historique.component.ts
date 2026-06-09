@@ -37,7 +37,7 @@ import { environment } from '../../../environments/environment';
   <div class="filter-card">
     <div class="search-wrap">
       <span>🔍</span>
-      <input type="text" [(ngModel)]="search" (input)="applyFilter()" placeholder="Rechercher un équipement..." class="search-input">
+      <input type="text" [(ngModel)]="search" (input)="applyFilter()" placeholder="Rechercher une intervention..." class="search-input">
     </div>
     <select [(ngModel)]="filterType" (change)="applyFilter()" class="filter-select">
       <option value="">Tous les types</option>
@@ -51,6 +51,13 @@ import { environment } from '../../../environments/environment';
       <option value="EN_COURS">En cours</option>
       <option value="EN_ATTENTE">En attente</option>
       <option value="EN_ATTENTE_VALIDATION">En attente validation</option>
+    </select>
+    <select [(ngModel)]="filterPeriode" (change)="applyFilter()" class="filter-select">
+      <option value="">Toutes les périodes</option>
+      <option value="7">7 derniers jours</option>
+      <option value="30">30 derniers jours</option>
+      <option value="90">3 derniers mois</option>
+      <option value="365">Cette année</option>
     </select>
   </div>
 
@@ -105,10 +112,10 @@ p{margin:4px 0 0;color:#6b7280;font-size:13px}
 .kpi-value{font-size:22px;font-weight:800;color:#0d1340}
 .kpi-label{font-size:12px;color:#6b7280}
 .blue{border-top:4px solid #1a2eff}.green{border-top:4px solid #16A34A}.orange{border-top:4px solid #f97316}.purple{border-top:4px solid #7C3AED}
-.filter-card{display:flex;gap:12px;background:white;border-radius:14px;padding:16px 20px;box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:24px}
-.search-wrap{display:flex;align-items:center;gap:8px;flex:1;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:0 14px;height:44px}
+.filter-card{display:flex;gap:12px;flex-wrap:wrap;background:white;border-radius:14px;padding:16px 20px;box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:24px}
+.search-wrap{display:flex;align-items:center;gap:8px;flex:1;min-width:200px;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:0 14px;height:44px}
 .search-input{flex:1;border:none;outline:none;font-size:14px;background:transparent}
-.filter-select{padding:10px 14px;border:1.5px solid #e2e6f0;border-radius:10px;font-size:13px;color:#0d1340;background:white;outline:none;min-width:140px}
+.filter-select{padding:10px 14px;border:1.5px solid #e2e6f0;border-radius:10px;font-size:13px;color:#0d1340;background:white;outline:none;min-width:130px}
 .timeline{display:flex;flex-direction:column}
 .timeline-item{display:flex;gap:12px;margin-bottom:4px}
 .timeline-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:44px}
@@ -149,7 +156,7 @@ export class FseHistoriqueComponent implements OnInit {
   userId = Number(localStorage.getItem('userId')) || 0;
   interventions: any[] = [];
   filtered: any[] = [];
-  search = ''; filterType = ''; filterStatut = '';
+  search = ''; filterType = ''; filterStatut = ''; filterPeriode = '';
   isLoading = true;
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
@@ -171,11 +178,21 @@ export class FseHistoriqueComponent implements OnInit {
   }
 
   applyFilter(): void {
-    this.filtered = this.interventions.filter(i =>
-      (!this.search || i.equipement?.nom?.toLowerCase().includes(this.search.toLowerCase())) &&
-      (!this.filterType || i.type === this.filterType) &&
-      (!this.filterStatut || i.statut === this.filterStatut)
-    );
+    const now = new Date();
+    this.filtered = this.interventions.filter(i => {
+      const matchSearch = !this.search ||
+        i.equipement?.nom?.toLowerCase().includes(this.search.toLowerCase()) ||
+        i.dateIntervention?.includes(this.search);
+      const matchType = !this.filterType || i.type === this.filterType;
+      const matchStatut = !this.filterStatut || i.statut === this.filterStatut;
+      let matchPeriode = true;
+      if (this.filterPeriode) {
+        const days = Number(this.filterPeriode);
+        const limit = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        matchPeriode = new Date(i.dateIntervention) >= limit;
+      }
+      return matchSearch && matchType && matchStatut && matchPeriode;
+    });
   }
 
   getCount(statut: string): number { return this.interventions.filter(i => i.statut === statut).length; }
