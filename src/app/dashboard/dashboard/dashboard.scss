@@ -167,3 +167,43 @@
 ::ng-deep .parc-select .mat-mdc-select-arrow { color: #0d1340 !important; }
 ::ng-deep .mat-mdc-select-panel { background: white !important; border-radius: 12px !important; }
 ::ng-deep .mat-mdc-option { color: #0d1340 !important; font-weight: 500 !important; &:hover { background: #EFF6FF !important; } }
+
+.validation-section {
+  background: white; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06); margin-bottom: 24px;
+  border-left: 4px solid #f97316;
+}
+
+.validation-header {
+  display: flex; align-items: center; gap: 14px; padding: 20px 24px;
+  border-bottom: 1px solid #f1f3f5; background: #FFF7ED;
+  .validation-icon { font-size: 24px; }
+  h2 { margin: 0; font-size: 16px; font-weight: 700; color: #0d1340; }
+  p  { margin: 4px 0 0; font-size: 12px; color: #6b7280; }
+  .validation-count { margin-left: auto; background: #f97316; color: white; padding: 4px 14px; border-radius: 20px; font-size: 14px; font-weight: 700; }
+}
+
+.validation-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px; border-bottom: 1px solid #f1f3f5;
+  &:last-child { border-bottom: none; }
+}
+
+.val-left { display: flex; align-items: flex-start; gap: 12px; }
+.val-equip { font-size: 14px; font-weight: 700; color: #0d1340; }
+.val-info  { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.val-actions { font-size: 12px; color: #16A34A; margin-top: 4px; }
+.val-right { display: flex; align-items: center; gap: 10px; }
+.val-date  { font-size: 12px; color: #6b7280; }
+
+.btn-valider {
+  background: #16A34A; color: white; border: none; border-radius: 8px;
+  padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+  &:hover { background: #15803d; }
+}
+
+.btn-rejeter {
+  background: white; border: 1.5px solid #DC2626; color: #DC2626;
+  border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+  &:hover { background: #FEF2F2; }
+}

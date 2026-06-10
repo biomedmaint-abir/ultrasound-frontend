@@ -169,13 +169,20 @@ export class FseClotureComponent implements OnInit {
                    this.form.resultat === 'EN_ATTENTE_PIECE' ? 'EN_ATTENTE_PIECE' : 'EN_COURS';
 
     const payload = {
+      id: this.intervention.id,
+      dateIntervention: this.intervention.dateIntervention,
+      type: this.intervention.type,
+      statut: statut,
+      descriptionPanne: this.intervention.descriptionPanne,
       actionsEffectuees: this.form.actionsEffectuees,
       dureeHeures: this.form.duree,
       coutTotal: this.form.coutTotal,
-      statut: statut
+      nomFse: this.intervention.nomFse,
+      equipement: this.intervention.equipement ? { id: this.intervention.equipement.id } : null,
+      technicien: this.intervention.technicien ? { id: this.intervention.technicien.id } : null
     };
 
-    this.http.put(`${environment.apiUrl}/interventions/${this.intervention.id}`, {...this.intervention, actionsEffectuees: this.form.actionsEffectuees, dureeHeures: this.form.duree, coutTotal: this.form.coutTotal, statut: statut}).subscribe({
+    this.http.put(`${environment.apiUrl}/interventions/${this.intervention.id}`, payload).subscribe({
       next: () => {
         const piecesValides = this.piecesUtilisees.filter(p => p.pieceId && p.quantite > 0);
         if (piecesValides.length > 0) {
@@ -183,16 +190,20 @@ export class FseClotureComponent implements OnInit {
             intervention: { id: this.intervention.id },
             piece: { id: p.pieceId },
             quantite: p.quantite,
-            coutUnitaire: this.piecesDisponibles.find(pd => pd.id === p.pieceId)?.prixUnitaire || 0
+            coutUnitaire: this.piecesDisponibles.find((pd: any) => pd.id === p.pieceId)?.prixUnitaire || 0
           }));
           this.http.post(`${environment.apiUrl}/intervention-pieces/bulk`, piecesPayload).subscribe();
         }
         this.isSaving = false;
-        this.successMsg = 'Rapport soumis pour validation !';
+        this.successMsg = '✅ Rapport soumis pour validation par l\'administrateur !';
         this.cdr.detectChanges();
-        setTimeout(() => this.router.navigate(['/fse/interventions']), 2000);
+        setTimeout(() => this.router.navigate(['/fse/interventions']), 2500);
       },
-      error: () => { this.isSaving = false; this.errorMsg = 'Erreur lors de la soumission.'; this.cdr.detectChanges(); }
+      error: (err) => { 
+        this.isSaving = false; 
+        this.errorMsg = 'Erreur lors de la soumission. Code: ' + err.status; 
+        this.cdr.detectChanges(); 
+      }
     });
   }
 

@@ -136,6 +136,32 @@
 
     </div>
 
+    <div class="validation-section" *ngIf="enAttenteValidation.length > 0">
+      <div class="validation-header">
+        <div class="validation-icon">⏳</div>
+        <div>
+          <h2>Interventions en attente de validation</h2>
+          <p>Le FSE a soumis ces interventions — validez ou rejetez</p>
+        </div>
+        <span class="validation-count">{{ enAttenteValidation.length }}</span>
+      </div>
+      <div *ngFor="let inv of enAttenteValidation" class="validation-row">
+        <div class="val-left">
+          <span class="type-chip type-{{ inv.type?.toLowerCase() }}">{{ inv.type }}</span>
+          <div>
+            <div class="val-equip">{{ inv.equipement?.nom || "—" }}</div>
+            <div class="val-info">{{ inv.equipement?.parc }} — FSE : {{ inv.nomFse }}</div>
+            <div class="val-actions" *ngIf="inv.actionsEffectuees">✅ {{ inv.actionsEffectuees }}</div>
+          </div>
+        </div>
+        <div class="val-right">
+          <span class="val-date">{{ inv.dateIntervention | date:"dd/MM/yyyy" }}</span>
+          <button class="btn-valider" (click)="validerIntervention(inv.id)">✅ Valider</button>
+          <button class="btn-rejeter" (click)="rejeterIntervention(inv.id)">❌ Rejeter</button>
+        </div>
+      </div>
+    </div>
+
     <div class="dashboard-footer">
       <span>MaintManager v1.0 — SCRIM © 2026</span>
       <span>🔒 Système sécurisé</span>

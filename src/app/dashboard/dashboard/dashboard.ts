@@ -35,6 +35,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   allEquipements: any[] = [];
   allContrats: any[] = [];
   interventionsData: any[] = [];
+  enAttenteValidation: any[] = [];
   equipementsData: any[] = [];
 
   parcs: string[] = [];
@@ -98,6 +99,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.allInterventions = data;
         this.interventionsData = data;
+        this.enAttenteValidation = data.filter((i: any) => i.statut === "EN_ATTENTE_VALIDATION");
         this.totalInterventions = data.length;
         const durees = data.filter((i: any) => i.dureeHeures).map((i: any) => i.dureeHeures);
         this.mttr = durees.length > 0 ? durees.reduce((a: number, b: number) => a + b, 0) / durees.length : 0;
