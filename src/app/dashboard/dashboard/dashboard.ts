@@ -230,4 +230,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   navigateTo(path: string): void { this.router.navigate([path]); }
+
+  validerIntervention(id: number): void {
+    this.http.put(`${environment.apiUrl}/interventions/${id}/valider`, {}).subscribe({
+      next: () => {
+        this.enAttenteValidation = this.enAttenteValidation.filter((i: any) => i.id !== id);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  rejeterIntervention(id: number): void {
+    const commentaire = prompt('Raison du rejet (obligatoire):');
+    if (!commentaire) { alert('Le commentaire est obligatoire.'); return; }
+    this.http.put(`${environment.apiUrl}/interventions/${id}/rejeter`, { commentaire }).subscribe({
+      next: () => {
+        this.enAttenteValidation = this.enAttenteValidation.filter((i: any) => i.id !== id);
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }
