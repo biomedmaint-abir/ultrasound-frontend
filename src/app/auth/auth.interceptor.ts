@@ -13,13 +13,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      const isAiRequest = req.url.includes('/assistant') ||
-                          req.url.includes('/documents') ||
-                          req.url.includes('/documents-philips') ||
-                          req.url.includes('/codes-erreur') ||
-                          req.url.includes('anthropic.com');
+      const isExcluded = req.url.includes('/assistant') ||
+                         req.url.includes('/documents') ||
+                         req.url.includes('/documents-philips') ||
+                         req.url.includes('/codes-erreur') ||
+                         req.url.includes('anthropic.com') ||
+                         req.url.includes('/interventions') ||
+                         req.url.includes('/equipements') ||
+                         req.url.includes('/pieces') ||
+                         req.url.includes('/intervention-pieces');
 
-      if ((error.status === 401 || error.status === 403) && !isAiRequest) {
+      if (error.status === 401 && !isExcluded) {
         localStorage.removeItem('token');
         localStorage.removeItem('email');
         router.navigate(['/auth']);
