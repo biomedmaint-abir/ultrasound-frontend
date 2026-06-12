@@ -100,6 +100,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.allInterventions = data;
         this.interventionsData = data;
         this.enAttenteValidation = data.filter((i: any) => i.statut === "EN_ATTENTE_VALIDATION");
+        const t = data.filter((i: any) => i.statut === "TERMINEE").length;
+        this.disponibilite = data.length > 0 ? Math.round((t / data.length) * 100) : 0;
         this.totalInterventions = data.length;
         const durees = data.filter((i: any) => i.dureeHeures).map((i: any) => i.dureeHeures);
         this.mttr = durees.length > 0 ? durees.reduce((a: number, b: number) => a + b, 0) / durees.length : 0;
@@ -160,8 +162,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   calculateEquipStats(data: any[]): void {
     this.totalEquipements = data.length;
     const enService = data.filter((e: any) => e.statut === 'EN_SERVICE').length;
-    const terminees = this.interventionsData.filter((i: any) => i.statut === "TERMINEE").length;
-    this.disponibilite = this.interventionsData.length > 0 ? Math.round((terminees / this.interventionsData.length) * 100) : 0;
+    const terminees = this.allInterventions.filter((i: any) => i.statut === "TERMINEE").length;
+    this.disponibilite = this.allInterventions.length > 0 ? Math.round((terminees / this.allInterventions.length) * 100) : 0;
     this.totalInterventions = this.interventionsData.length;
   }
 
