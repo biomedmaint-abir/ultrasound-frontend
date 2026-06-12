@@ -160,7 +160,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   calculateEquipStats(data: any[]): void {
     this.totalEquipements = data.length;
     const enService = data.filter((e: any) => e.statut === 'EN_SERVICE').length;
-    this.disponibilite = data.length > 0 ? Math.round((enService / data.length) * 100) : 0;
+    const terminees = this.interventionsData.filter((i: any) => i.statut === "TERMINEE").length;
+    this.disponibilite = this.interventionsData.length > 0 ? Math.round((terminees / this.interventionsData.length) * 100) : 0;
     this.totalInterventions = this.interventionsData.length;
   }
 
