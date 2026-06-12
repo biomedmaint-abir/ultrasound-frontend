@@ -145,6 +145,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
     this.calculateEquipStats(this.equipementsData);
     this.totalInterventions = this.interventionsData.length;
+    const tResolution = this.interventionsData.filter((i: any) => i.statut === "TERMINEE").length;
+    this.disponibilite = this.interventionsData.length > 0 ? Math.round((tResolution / this.interventionsData.length) * 100) : 0;
     const durees = this.interventionsData.filter((i: any) => i.dureeHeures).map((i: any) => i.dureeHeures);
     this.mttr = durees.length > 0 ? durees.reduce((a: number, b: number) => a + b, 0) / durees.length : 0;
     this.http.get<any[]>(`${environment.apiUrl}/contrats`).subscribe({
