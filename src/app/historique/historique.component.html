@@ -16,6 +16,17 @@
       <option value="">Tous les types</option>
       <option *ngFor="let t of types" [value]="t">{{ t }}</option>
     </select>
+    <select [(ngModel)]="filterFse" (ngModelChange)="applyFilter()" class="filter-select">
+      <option value="">Tous les FSE</option>
+      <option *ngFor="let f of fseList" [value]="f">{{ f }}</option>
+    </select>
+    <select [(ngModel)]="filterPeriode" (ngModelChange)="applyFilter()" class="filter-select">
+      <option value="">Toutes les périodes</option>
+      <option value="7">7 derniers jours</option>
+      <option value="30">30 derniers jours</option>
+      <option value="90">3 derniers mois</option>
+      <option value="365">Cette année</option>
+    </select>
     <select [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()" class="filter-select">
       <option value="">Tous les statuts</option>
       <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>

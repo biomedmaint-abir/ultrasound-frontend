@@ -18,6 +18,9 @@ export class HistoriqueComponent implements OnInit {
   searchText = '';
   filterType = '';
   filterStatut = '';
+  filterFse = '';
+  filterPeriode = '';
+  fseList: string[] = [];
 
   types = ['PREVENTIF', 'CORRECTIF', 'MISE_A_JOUR'];
   statuts = ['TERMINEE', 'EN_COURS', 'EN_ATTENTE_PIECE'];
@@ -25,6 +28,7 @@ export class HistoriqueComponent implements OnInit {
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
+    this.loadFseList();
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
         this.interventions = data.sort((a, b) =>
@@ -38,6 +42,14 @@ export class HistoriqueComponent implements OnInit {
     });
   }
 
+  loadFseList(): void {
+    this.http.get<any[]>(`${environment.apiUrl}/utilisateurs`).subscribe({
+      next: (users) => {
+        this.fseList = users.filter(u => u.role?.nom === 'TECHNICIEN').map(u => u.prenom || u.nom);
+      }
+    });
+  }
+
   applyFilter(): void {
     this.filtered = this.interventions.filter(i => {
       const matchSearch = !this.searchText ||
@@ -45,7 +57,15 @@ export class HistoriqueComponent implements OnInit {
         i.equipement?.nom?.toLowerCase().includes(this.searchText.toLowerCase());
       const matchType = !this.filterType || i.type === this.filterType;
       const matchStatut = !this.filterStatut || i.statut === this.filterStatut;
-      return matchSearch && matchType && matchStatut;
+      const matchFse = !this.filterFse || i.nomFse === this.filterFse;
+      const now = new Date();
+      let matchPeriode = true;
+      if (this.filterPeriode) {
+        const days = Number(this.filterPeriode);
+        const limit = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        matchPeriode = new Date(i.dateIntervention) >= limit;
+      }
+      return matchSearch && matchType && matchStatut && matchFse && matchPeriode;
     });
     this.cdr.detectChanges();
   }
@@ -54,6 +74,8 @@ export class HistoriqueComponent implements OnInit {
     this.searchText = '';
     this.filterType = '';
     this.filterStatut = '';
+    this.filterFse = '';
+    this.filterPeriode = '';
     this.filtered = [...this.interventions];
     this.cdr.detectChanges();
   }

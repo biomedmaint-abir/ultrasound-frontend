@@ -33,6 +33,8 @@ export class RapportsComponent implements OnInit {
   filterStatut = '';
   filterType = '';
   filterParc = '';
+  filterFse = '';
+  fseList: string[] = [];
   filterDateDebut = '';
   filterDateFin = '';
   parcsList: string[] = [];
@@ -51,6 +53,7 @@ export class RapportsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadFseList();
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
         this.interventions = data;
@@ -73,21 +76,32 @@ export class RapportsComponent implements OnInit {
     this.stats.coutTotal = this.filtered.filter(i => i.coutTotal).reduce((a, b) => a + Number(b.coutTotal), 0);
   }
 
+  loadFseList(): void {
+    this.http.get<any[]>(`${environment.apiUrl}/utilisateurs`).subscribe({
+      next: (users) => {
+        this.fseList = users.filter(u => u.role?.nom === 'TECHNICIEN').map(u => u.prenom || u.nom);
+      }
+    });
+  }
+
   applyFilter(): void {
     this.filtered = this.interventions.filter(i => {
       const matchStatut = !this.filterStatut || i.statut === this.filterStatut;
       const matchType = !this.filterType || i.type === this.filterType;
       const matchParc = !this.filterParc || i.equipement?.parc === this.filterParc;
+      const matchFse = !this.filterFse || i.nomFse === this.filterFse;
       const matchDateDebut = !this.filterDateDebut || (i.dateIntervention && i.dateIntervention >= this.filterDateDebut);
       const matchDateFin = !this.filterDateFin || (i.dateIntervention && i.dateIntervention <= this.filterDateFin);
-      return matchStatut && matchType && matchParc && matchDateDebut && matchDateFin;
+      return matchStatut && matchType && matchParc && matchFse && matchDateDebut && matchDateFin;
     });
     this.calculateStats();
     this.cdr.detectChanges();
   }
 
   resetFilter(): void {
-    this.filterStatut = ''; this.filterType = ''; this.filterParc = '';
+    this.filterStatut = ''; this.filterType = ''; this.filterParc = ''; this.filterFse = '';
+  filterFse = '';
+  fseList: string[] = [];
     this.filterDateDebut = ''; this.filterDateFin = '';
     this.filtered = [...this.interventions];
     this.calculateStats();
