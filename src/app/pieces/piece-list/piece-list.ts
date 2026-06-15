@@ -116,6 +116,15 @@ export class PieceList implements OnInit {
     }
   }
 
+  getValeurTotale(): number {
+    return this.pieces.reduce((sum, p) => sum + ((p.prixUnitaire || 0) * (p.quantite || 1)), 0);
+  }
+
+  getPct(statut: string): number {
+    if (!this.pieces.length) return 0;
+    return Math.round((this.countByStatut(statut) / this.pieces.length) * 100);
+  }
+
   countByStatut(statut: string): number {
     return this.pieces.filter(p => (p.statut || 'EN_STOCK') === statut).length;
   }
