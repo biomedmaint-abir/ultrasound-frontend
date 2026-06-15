@@ -11,127 +11,114 @@
     </div>
   </div>
 
-  <!-- Stats -->
+  <!-- 2 KPIs dynamiques -->
   <div class="stats-grid">
-    <div class="stat-card blue">
-      <div class="stat-icon">📋</div>
-      <div class="stat-info"><h2>{{ stats.total }}</h2><p>Total interventions</p></div>
-    </div>
-    <div class="stat-card green">
-      <div class="stat-icon">✅</div>
-      <div class="stat-info"><h2>{{ stats.terminees }}</h2><p>Terminées</p></div>
-    </div>
-    <div class="stat-card orange">
-      <div class="stat-icon">🔄</div>
-      <div class="stat-info"><h2>{{ stats.enCours }}</h2><p>En cours</p></div>
-    </div>
-    <div class="stat-card purple">
-      <div class="stat-icon">⏱️</div>
-      <div class="stat-info"><h2>{{ stats.mttrMoyen | number:'1.0-1' }}h</h2><p>MTTR moyen</p></div>
-    </div>
     <div class="stat-card navy">
       <div class="stat-icon">💰</div>
-      <div class="stat-info"><h2>{{ stats.coutTotal | number:'1.0-0' }} DH</h2><p>Coût total</p></div>
+      <div class="stat-info"><h2>{{ getCoutTotal() | number:'1.0-0' }} DH</h2><p>Coût total filtré</p></div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">📋</div>
+      <div class="stat-info"><h2>{{ filtered.length }}</h2><p>Rapports trouvés</p></div>
     </div>
   </div>
 
   <!-- Filtres -->
   <div class="filter-card">
-      <div class="filter-row">
-        <div class="filter-item">
-          <label class="filter-label">Statut</label>
-          <select class="filter-select" [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()">
-            <option value="">Tous</option>
-            <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
-          </select>
-        </div>
-        <div class="filter-item">
-          <label class="filter-label">Type</label>
-          <select class="filter-select" [(ngModel)]="filterType" (ngModelChange)="applyFilter()">
-            <option value="">Tous</option>
-            <option *ngFor="let t of types" [value]="t">{{ t }}</option>
-          </select>
-        </div>
-        <div class="filter-item">
-          <label class="filter-label">Parc</label>
-          <select class="filter-select" [(ngModel)]="filterParc" (ngModelChange)="applyFilter()">
-            <option value="">Tous</option>
-            <option *ngFor="let p of parcsList" [value]="p">{{ p }}</option>
-          </select>
-        </div>
-        <div class="filter-item">
-          <label class="filter-label">FSE</label>
-          <select class="filter-select" [(ngModel)]="filterFse" (ngModelChange)="applyFilter()">
-            <option value="">Tous les FSE</option>
-            <option *ngFor="let f of fseList" [value]="f">{{ f }}</option>
-          </select>
-        </div>
-        <div class="filter-item">
-          <label class="filter-label">Date début</label>
-          <input class="filter-input" type="date" [(ngModel)]="filterDateDebut" (ngModelChange)="applyFilter()">
-        </div>
-        <div class="filter-item">
-          <label class="filter-label">Date fin</label>
-          <input class="filter-input" type="date" [(ngModel)]="filterDateFin" (ngModelChange)="applyFilter()">
-        </div>
-        <button mat-stroked-button (click)="resetFilter()" style="color:white;border-color:white;margin-top:20px">
-          <mat-icon>refresh</mat-icon> Réinitialiser
-        </button>
+    <div class="filter-row">
+      <div class="filter-item">
+        <label class="filter-label">Statut</label>
+        <select class="filter-select" [(ngModel)]="filterStatut" (ngModelChange)="applyFilter()">
+          <option value="">Tous</option>
+          <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+        </select>
       </div>
+      <div class="filter-item">
+        <label class="filter-label">Type</label>
+        <select class="filter-select" [(ngModel)]="filterType" (ngModelChange)="applyFilter()">
+          <option value="">Tous</option>
+          <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">Parc</label>
+        <select class="filter-select" [(ngModel)]="filterParc" (ngModelChange)="applyFilter()">
+          <option value="">Tous</option>
+          <option *ngFor="let p of parcsList" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">FSE</label>
+        <select class="filter-select" [(ngModel)]="filterFse" (ngModelChange)="applyFilter()">
+          <option value="">Tous les FSE</option>
+          <option *ngFor="let f of fseList" [value]="f">{{ f }}</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">Date début</label>
+        <input class="filter-input" type="date" [(ngModel)]="filterDateDebut" (ngModelChange)="applyFilter()">
+      </div>
+      <div class="filter-item">
+        <label class="filter-label">Date fin</label>
+        <input class="filter-input" type="date" [(ngModel)]="filterDateFin" (ngModelChange)="applyFilter()">
+      </div>
+    </div>
   </div>
 
   <!-- Tableau -->
-  <mat-card class="table-card">
-    <mat-card-content>
-      <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
-      <table *ngIf="!isLoading" mat-table [dataSource]="filtered" class="mat-elevation-z0">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>#</th>
-          <td mat-cell *matCellDef="let row">{{ row.id }}</td>
-        </ng-container>
-        <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef>Date</th>
-          <td mat-cell *matCellDef="let row">{{ row.dateIntervention | date:'dd/MM/yyyy' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>Type</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="badge" [ngClass]="getTypeClass(row.type)">{{ row.type }}</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="statut">
-          <th mat-header-cell *matHeaderCellDef>Statut</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="badge" [ngClass]="getStatutClass(row.statut)">{{ row.statut }}</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="equipement">
-          <th mat-header-cell *matHeaderCellDef>Équipement</th>
-          <td mat-cell *matCellDef="let row">{{ row.equipement?.nom || '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="parc">
-          <th mat-header-cell *matHeaderCellDef>Parc</th>
-          <td mat-cell *matCellDef="let row">{{ row.equipement?.parc || '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="technicien">
-          <th mat-header-cell *matHeaderCellDef>FSE</th>
-          <td mat-cell *matCellDef="let row">{{ row.nomFse || '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="duree">
-          <th mat-header-cell *matHeaderCellDef>Durée</th>
-          <td mat-cell *matCellDef="let row">{{ row.dureeHeures ? row.dureeHeures + 'h' : '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="cout">
-          <th mat-header-cell *matHeaderCellDef>Coût (DH)</th>
-          <td mat-cell *matCellDef="let row">{{ row.coutTotal ? (row.coutTotal | number:'1.0-0') : '—' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>Description</th>
-          <td mat-cell *matCellDef="let row">{{ row.descriptionPanne || '—' }}</td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-    </mat-card-content>
-  </mat-card>
+  <div class="table-wrapper">
+    <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
+    <table *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Statut</th>
+          <th>Équipement</th>
+          <th>FSE</th>
+          <th>Coût (DH)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of filtered" class="clickable-row" (click)="ouvrirDetail(row)">
+          <td>{{ row.id }}</td>
+          <td>{{ row.dateIntervention | date:'dd/MM/yyyy' }}</td>
+          <td><span class="badge" [ngClass]="getTypeClass(row.type)">{{ row.type }}</span></td>
+          <td><span class="badge" [ngClass]="getStatutClass(row.statut)">{{ row.statut }}</span></td>
+          <td>{{ row.equipement?.nom || '—' }}</td>
+          <td>{{ row.nomFse || '—' }}</td>
+          <td>{{ row.coutTotal ? (row.coutTotal | number:'1.0-0') : '—' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal détail -->
+<div class="modal-overlay" *ngIf="selectedRapport" (click)="selectedRapport = null">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Détail de l'intervention #{{ selectedRapport.id }}</h2>
+      <button class="modal-close" (click)="selectedRapport = null">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">{{ selectedRapport.dateIntervention | date:'dd/MM/yyyy' }}</span></div>
+        <div class="detail-row"><span class="detail-label">Type</span><span class="badge" [ngClass]="getTypeClass(selectedRapport.type)">{{ selectedRapport.type }}</span></div>
+        <div class="detail-row"><span class="detail-label">Statut</span><span class="badge" [ngClass]="getStatutClass(selectedRapport.statut)">{{ selectedRapport.statut }}</span></div>
+        <div class="detail-row"><span class="detail-label">Équipement</span><span class="detail-value">{{ selectedRapport.equipement?.nom || '—' }}</span></div>
+        <div class="detail-row"><span class="detail-label">Parc / Site</span><span class="detail-value">{{ selectedRapport.equipement?.parc || '—' }}</span></div>
+        <div class="detail-row"><span class="detail-label">FSE</span><span class="detail-value">{{ selectedRapport.nomFse || '—' }}</span></div>
+        <div class="detail-row"><span class="detail-label">Durée</span><span class="detail-value">{{ selectedRapport.dureeHeures ? selectedRapport.dureeHeures + 'h' : '—' }}</span></div>
+        <div class="detail-row"><span class="detail-label">Coût total</span><span class="detail-value total">{{ selectedRapport.coutTotal ? (selectedRapport.coutTotal | number:'1.0-0') + ' DH' : '—' }}</span></div>
+        <div class="detail-row full"><span class="detail-label">Description</span><span class="detail-value">{{ selectedRapport.descriptionPanne || '—' }}</span></div>
+        <div class="detail-row full" *ngIf="selectedRapport.actionsEffectuees"><span class="detail-label">Actions effectuées</span><span class="detail-value">{{ selectedRapport.actionsEffectuees }}</span></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="selectedRapport = null">Fermer</button>
+      <button class="btn-pdf" (click)="telechargerPDF(selectedRapport)">📄 Télécharger PDF Fiche 34</button>
+    </div>
+  </div>
 </div>

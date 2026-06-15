@@ -35,6 +35,7 @@ export class RapportsComponent implements OnInit {
   filterParc = '';
   filterFse = '';
   fseList: string[] = [];
+  selectedRapport: any = null;
   filterDateDebut = '';
   filterDateFin = '';
   parcsList: string[] = [];
@@ -44,7 +45,7 @@ export class RapportsComponent implements OnInit {
 
   stats = { total: 0, terminees: 0, enCours: 0, mttrMoyen: 0, coutTotal: 0 };
 
-  displayedColumns = ['id', 'date', 'type', 'statut', 'equipement', 'parc', 'technicien', 'duree', 'cout', 'description'];
+  displayedColumns = ['id', 'date', 'type', 'statut', 'equipement', 'technicien', 'cout'];
 
   constructor(
     private http: HttpClient,
@@ -113,6 +114,64 @@ export class RapportsComponent implements OnInit {
       case 'EN_ATTENTE_PIECE': return 'statut-attente';
       default: return '';
     }
+  }
+
+  getCoutTotal(): number {
+    return this.filtered.reduce((sum, i) => sum + (i.coutTotal || 0), 0);
+  }
+
+  ouvrirDetail(row: any): void {
+    this.selectedRapport = row;
+  }
+
+  telechargerPDF(inv: any): void {
+    import('jspdf').then(({ default: jsPDF }) => {
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const W = 210;
+      doc.setFillColor(28, 43, 90); doc.rect(0, 0, W, 35, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+      doc.text('SCRIM', 20, 20);
+      doc.setFontSize(14); doc.text('Rapport d\'Intervention — Fiche 34', W/2, 18, { align: 'center' });
+      doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+      doc.text('Format officiel SCRIM', W/2, 27, { align: 'center' });
+      let y = 45;
+      const infos = [
+        ['Equipement', inv.equipement?.nom || '—'],
+        ['Site / Parc', inv.equipement?.parc || '—'],
+        ['Type', inv.type || '—'],
+        ['Date', new Date(inv.dateIntervention).toLocaleDateString('fr-FR')],
+        ['FSE', inv.nomFse || '—'],
+        ['Duree', inv.dureeHeures ? inv.dureeHeures + 'h' : '—'],
+        ['Cout total', inv.coutTotal ? inv.coutTotal + ' DH' : '—'],
+        ['Statut', inv.statut || '—'],
+      ];
+      doc.setTextColor(0,0,0);
+      infos.forEach((info, idx) => {
+        if (idx % 2 === 0) doc.setFillColor(245,247,250); else doc.setFillColor(255,255,255);
+        doc.rect(10, y-3, W-20, 8, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(28,43,90);
+        doc.text(info[0] + ' :', 14, y+2);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(51,51,51);
+        doc.text(info[1], 70, y+2);
+        y += 9;
+      });
+      if (inv.descriptionPanne) {
+        y += 6;
+        doc.setFillColor(28,43,90); doc.rect(10, y, W-20, 7, 'F');
+        doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+        doc.text('Description', 14, y+5);
+        y += 10;
+        doc.setFillColor(245,247,250); doc.rect(10, y, W-20, 20, 'F');
+        doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(51,51,51);
+        const lines = doc.splitTextToSize(inv.descriptionPanne, W-28);
+        doc.text(lines, 14, y+6);
+      }
+      doc.setFillColor(28,43,90); doc.rect(0, 287, W, 10, 'F');
+      doc.setTextColor(255,255,255); doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+      doc.text('SCRIM | Confidentiel', 14, 293);
+      doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W/2, 293, { align: 'center' });
+      doc.save('Rapport_' + (inv.equipement?.nom || 'Equipement') + '_' + inv.dateIntervention + '.pdf');
+    });
   }
 
   getTypeClass(type: string): string {
