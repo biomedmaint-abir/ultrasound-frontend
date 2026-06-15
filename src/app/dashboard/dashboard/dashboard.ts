@@ -36,6 +36,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   allContrats: any[] = [];
   interventionsData: any[] = [];
   enAttenteValidation: any[] = [];
+  interventionsBloquees: any[] = [];
   equipementsData: any[] = [];
 
   parcs: string[] = [];
@@ -100,6 +101,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.allInterventions = data;
         this.interventionsData = data;
         this.enAttenteValidation = data.filter((i: any) => i.statut === "EN_ATTENTE_VALIDATION");
+        this.interventionsBloquees = data.filter((i: any) => i.commentaireRejet && i.commentaireRejet.startsWith("BLOCAGE FSE:"));
         const t = data.filter((i: any) => i.statut === "TERMINEE").length;
         this.disponibilite = data.length > 0 ? Math.round((t / data.length) * 100) : 0;
         this.totalInterventions = data.length;
