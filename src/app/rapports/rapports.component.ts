@@ -100,8 +100,6 @@ export class RapportsComponent implements OnInit {
 
   resetFilter(): void {
     this.filterStatut = ''; this.filterType = ''; this.filterParc = ''; this.filterFse = '';
-  filterFse = '';
-  fseList: string[] = [];
     this.filterDateDebut = ''; this.filterDateFin = '';
     this.filtered = [...this.interventions];
     this.calculateStats();
