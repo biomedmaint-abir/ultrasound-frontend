@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { InterventionService } from '../../services/intervention';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -42,10 +44,20 @@ export class InterventionList implements OnInit {
   constructor(
     private interventionService: InterventionService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.load();
+    this.http.get<any[]>(`${environment.apiUrl}/utilisateurs`).subscribe({
+      next: (users) => {
+        this.fseList = users
+          .filter(u => u.role?.nom === 'TECHNICIEN' || u.role?.nom === 'INGENIEUR')
+          .map(u => u.prenom || u.nom);
+      }
+    });
+  }
 
   load(): void {
     this.isLoading = true;
@@ -62,7 +74,6 @@ export class InterventionList implements OnInit {
         this.equipements = [...new Set(this.interventions
           .map(i => i.equipement?.nom)
           .filter(Boolean))] as string[];
-        this.fseList = [...new Set(data.map((i: any) => i.nomFse).filter(Boolean))] as string[];
         this.filtered = [...this.interventions];
         this.updatePagination();
         this.cdr.detectChanges();
