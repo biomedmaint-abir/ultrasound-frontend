@@ -104,8 +104,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let u of filtered">
-          <td>{{ u.id }}</td>
+        <tr *ngFor="let u of filtered; let i = index">
+          <td>{{ i + 1 }}</td>
           <td>
             <div class="user-info">
               <div class="avatar" [ngClass]="getAvatarClass(u)">{{ u.nom?.charAt(0) }}{{ u.prenom?.charAt(0) }}</div>

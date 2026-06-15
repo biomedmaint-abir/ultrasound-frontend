@@ -37,6 +37,10 @@
       <input type="date" [(ngModel)]="dateTo" (change)="applyFilter()" class="date-input" />
       <span>📅</span>
     </div>
+    <select [(ngModel)]="filterFse" (change)="applyFilter()" class="filter-select">
+      <option value="">Tous les FSE</option>
+      <option *ngFor="let fse of fseList" [value]="fse">{{ fse }}</option>
+    </select>
     <button class="filter-icon-btn">⚙️</button>
   </div>
 

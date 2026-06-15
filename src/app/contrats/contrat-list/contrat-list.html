@@ -33,12 +33,13 @@
     <div class="table-wrapper" *ngIf="filtered.length > 0">
       <table>
         <thead>
-          <tr><th>#</th><th>Référence</th><th>Type</th><th>Début</th><th>Fin</th><th>Montant</th><th>Statut</th><th>Actions</th></tr>
+          <tr><th>#</th><th>Référence</th><th>Client/Site</th><th>Type</th><th>Début</th><th>Fin</th><th>Montant</th><th>Statut</th><th>Actions</th></tr>
         </thead>
         <tbody>
           <tr *ngFor="let row of pagedData" (click)="goToDetail(row.id)" class="clickable-row">
             <td>{{ row.id }}</td>
             <td><strong>{{ row.reference }}</strong></td>
+            <td>{{ row.parc || row.client || "—" }}</td>
             <td>{{ row.type }}</td>
             <td>{{ row.dateDebut | date:'dd/MM/yyyy' }}</td>
             <td>{{ row.dateFin | date:'dd/MM/yyyy' }}</td>

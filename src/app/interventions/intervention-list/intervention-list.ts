@@ -27,6 +27,8 @@ export class InterventionList implements OnInit {
   filterType = '';
   filterStatut = '';
   filterEquipement = '';
+  filterFse = '';
+  fseList: string[] = [];
   dateFrom = '';
   dateTo = '';
 
@@ -79,9 +81,10 @@ export class InterventionList implements OnInit {
       const matchType = !this.filterType || i.type === this.filterType;
       const matchStatut = !this.filterStatut || i.statut === this.filterStatut;
       const matchEquipement = !this.filterEquipement || i.equipement?.nom === this.filterEquipement;
+      const matchFse = !this.filterFse || i.nomFse === this.filterFse;
       const matchDateFrom = !this.dateFrom || new Date(i.date) >= new Date(this.dateFrom);
       const matchDateTo = !this.dateTo || new Date(i.date) <= new Date(this.dateTo);
-      return matchSearch && matchType && matchStatut && matchEquipement && matchDateFrom && matchDateTo;
+      return matchSearch && matchType && matchStatut && matchEquipement && matchFse && matchDateFrom && matchDateTo;
     });
     this.currentPage = 1;
     this.updatePagination();
