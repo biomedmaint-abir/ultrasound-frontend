@@ -53,7 +53,7 @@ export class InterventionList implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/utilisateurs`).subscribe({
       next: (users) => {
         this.fseList = users
-          .filter(u => u.role?.nom === 'TECHNICIEN' || u.role?.nom === 'INGENIEUR')
+          .filter(u => u.role?.nom === 'TECHNICIEN')
           .map(u => u.prenom || u.nom);
       }
     });
