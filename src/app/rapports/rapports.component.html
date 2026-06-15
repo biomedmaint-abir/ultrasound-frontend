@@ -60,6 +60,13 @@
           </select>
         </div>
         <div class="filter-item">
+          <label class="filter-label">FSE</label>
+          <select class="filter-select" [(ngModel)]="filterFse" (ngModelChange)="applyFilter()">
+            <option value="">Tous les FSE</option>
+            <option *ngFor="let f of fseList" [value]="f">{{ f }}</option>
+          </select>
+        </div>
+        <div class="filter-item">
           <label class="filter-label">Date début</label>
           <input class="filter-input" type="date" [(ngModel)]="filterDateDebut" (ngModelChange)="applyFilter()">
         </div>
