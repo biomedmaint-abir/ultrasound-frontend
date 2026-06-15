@@ -75,6 +75,34 @@ import { environment } from '../../../environments/environment';
         </div>
       </div>
 
+      <!-- Section code erreur non reconnu -->
+      <div class="code-erreur-section">
+        <div class="code-erreur-header" (click)="showCodeErreur = !showCodeErreur">
+          <div class="code-erreur-title">
+            <span>⚠️</span>
+            <h3>Code erreur non reconnu ? <span class="optionnel">(optionnel)</span></h3>
+          </div>
+          <span class="toggle-icon">{{ showCodeErreur ? '▲' : '▼' }}</span>
+        </div>
+        <div class="code-erreur-body" *ngIf="showCodeErreur">
+          <p class="code-erreur-desc">Si vous avez rencontré un code erreur absent de la base IA, signalez-le ici. L'administrateur pourra l'ajouter à la base de connaissances.</p>
+          <div class="form-grid">
+            <div class="field-wrapper">
+              <label>Code erreur</label>
+              <input type="text" [(ngModel)]="codeErreur.code" class="form-input" placeholder="Ex: E089, U034...">
+            </div>
+            <div class="field-wrapper">
+              <label>Symptômes observés</label>
+              <input type="text" [(ngModel)]="codeErreur.symptomes" class="form-input" placeholder="Ex: Écran noir, bruit anormal...">
+            </div>
+            <div class="field-wrapper full-width">
+              <label>Solution appliquée</label>
+              <textarea [(ngModel)]="codeErreur.solution" rows="2" class="form-textarea" placeholder="Décrivez ce que vous avez fait pour résoudre..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-actions">
         <button class="btn-cancel" (click)="goBack()">Annuler</button>
         <button class="btn-submit" (click)="soumettre()" [disabled]="isSaving">
@@ -114,6 +142,13 @@ h3{margin:0;font-size:14px;font-weight:700;color:#0d1340}
 .small{width:80px!important}
 .btn-delete{background:#FEF2F2;border:none;border-radius:8px;padding:8px 10px;cursor:pointer}
 .empty-pieces{text-align:center;padding:20px;background:#f8f9fa;border-radius:10px;color:#9CA3AF;font-size:13px}
+.code-erreur-section{background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:14px;margin-bottom:24px;overflow:hidden}
+.code-erreur-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer}
+.code-erreur-title{display:flex;align-items:center;gap:10px}
+.optionnel{font-size:11px;color:#6b7280;font-weight:400}
+.toggle-icon{font-size:12px;color:#6b7280}
+.code-erreur-body{padding:0 20px 20px}
+.code-erreur-desc{font-size:12px;color:#6b7280;margin:0 0 16px;font-style:italic}
 .form-actions{display:flex;gap:12px;justify-content:flex-end}
 .btn-cancel{background:white;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;color:#0d1340;cursor:pointer}
 .btn-submit{background:#1a2eff;color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer}.btn-submit:disabled{opacity:.6;cursor:not-allowed}
@@ -130,12 +165,19 @@ export class FseClotureComponent implements OnInit {
   isSaving = false;
   successMsg = '';
   errorMsg = '';
+  showCodeErreur = false;
 
   form = {
     actionsEffectuees: '',
     duree: null as number | null,
     coutTotal: null as number | null,
     resultat: ''
+  };
+
+  codeErreur = {
+    code: '',
+    symptomes: '',
+    solution: ''
   };
 
   constructor(
@@ -194,15 +236,27 @@ export class FseClotureComponent implements OnInit {
           }));
           this.http.post(`${environment.apiUrl}/intervention-pieces/bulk`, piecesPayload).subscribe();
         }
+        if (this.codeErreur.code && this.codeErreur.symptomes) {
+          const codePayload = {
+            code: this.codeErreur.code,
+            symptomes: this.codeErreur.symptomes,
+            actionsCorrectives: this.codeErreur.solution,
+            causesProbables: 'Signalé par FSE — à vérifier',
+            interventionId: this.intervention.id
+          };
+          this.http.post(`${environment.apiUrl}/codes-erreur/signalement`, codePayload).subscribe({
+            error: () => {}
+          });
+        }
         this.isSaving = false;
         this.successMsg = '✅ Rapport soumis pour validation par l\'administrateur !';
         this.cdr.detectChanges();
         setTimeout(() => this.router.navigate(['/fse/interventions']), 2500);
       },
-      error: (err) => { 
-        this.isSaving = false; 
-        this.errorMsg = 'Erreur lors de la soumission. Code: ' + err.status; 
-        this.cdr.detectChanges(); 
+      error: (err) => {
+        this.isSaving = false;
+        this.errorMsg = 'Erreur lors de la soumission. Code: ' + err.status;
+        this.cdr.detectChanges();
       }
     });
   }
