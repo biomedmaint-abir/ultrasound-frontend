@@ -83,7 +83,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private interventionService: InterventionService,
     private equipementService: EquipementService,
     private http: HttpClient,
-    private router: Router,
+    public router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 

@@ -162,6 +162,31 @@
       </div>
     </div>
 
+    <div class="bloquees-section" *ngIf="interventionsBloquees.length > 0">
+      <div class="bloquees-header">
+        <div class="bloquees-icon">🚫</div>
+        <div>
+          <h2>Interventions bloquées par FSE</h2>
+          <p>Le FSE ne peut pas intervenir — action requise</p>
+        </div>
+        <span class="bloquees-count">{{ interventionsBloquees.length }}</span>
+      </div>
+      <div *ngFor="let inv of interventionsBloquees" class="bloquees-row">
+        <div class="val-left">
+          <span class="type-chip type-{{ inv.type?.toLowerCase() }}">{{ inv.type }}</span>
+          <div>
+            <div class="val-equip">{{ inv.equipement?.nom || "—" }}</div>
+            <div class="val-info">{{ inv.equipement?.parc }} — FSE : {{ inv.nomFse }}</div>
+            <div class="motif-badge">⚠️ {{ inv.commentaireRejet?.replace("BLOCAGE FSE: ", "") }}</div>
+          </div>
+        </div>
+        <div class="val-right">
+          <span class="val-date">{{ inv.dateIntervention | date:"dd/MM/yyyy" }}</span>
+          <button class="btn-reassigner" (click)="router.navigate(['/planning/assign', inv.id])">👤 Réassigner</button>
+        </div>
+      </div>
+    </div>
+
     <div class="dashboard-footer">
       <span>MaintManager v1.0 — SCRIM © 2026</span>
       <span>🔒 Système sécurisé</span>
