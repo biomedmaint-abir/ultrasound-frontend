@@ -55,13 +55,14 @@ export class InterventionList implements OnInit {
         this.isLoading = false;
         this.interventions = data.map((i: any) => ({
           id: i.id, date: i.dateIntervention, type: i.type,
-          technicien: i.nomFse || '-', statut: i.statut,
+          technicien: i.nomFse || '-', nomFse: i.nomFse, statut: i.statut,
           description: i.descriptionPanne, observations: i.actionsEffectuees,
           duree: i.dureeHeures, equipement: i.equipement
         }));
         this.equipements = [...new Set(this.interventions
           .map(i => i.equipement?.nom)
           .filter(Boolean))] as string[];
+        this.fseList = [...new Set(data.map((i: any) => i.nomFse).filter(Boolean))] as string[];
         this.filtered = [...this.interventions];
         this.updatePagination();
         this.cdr.detectChanges();
@@ -81,7 +82,7 @@ export class InterventionList implements OnInit {
       const matchType = !this.filterType || i.type === this.filterType;
       const matchStatut = !this.filterStatut || i.statut === this.filterStatut;
       const matchEquipement = !this.filterEquipement || i.equipement?.nom === this.filterEquipement;
-      const matchFse = !this.filterFse || i.nomFse === this.filterFse;
+      const matchFse = !this.filterFse || i.nomFse === this.filterFse || i.technicien === this.filterFse;
       const matchDateFrom = !this.dateFrom || new Date(i.date) >= new Date(this.dateFrom);
       const matchDateTo = !this.dateTo || new Date(i.date) <= new Date(this.dateTo);
       return matchSearch && matchType && matchStatut && matchEquipement && matchFse && matchDateFrom && matchDateTo;
