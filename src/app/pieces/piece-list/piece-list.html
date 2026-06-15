@@ -1,7 +1,6 @@
 <div class="page-container">
   <div class="page-header">
     <div class="header-left">
-      <button class="back-btn" (click)="goBack()">←</button>
       <div>
         <h1>Pièces de rechange</h1>
         <p>{{ total }} pièces enregistrées</p>
@@ -10,7 +9,7 @@
     <button class="btn-new" (click)="goToNew()">+ Nouvelle pièce</button>
   </div>
 
-  <!-- Stats -->
+  <!-- 4 KPIs -->
   <div class="stats-grid">
     <div class="stat-card stat-stock">
       <span class="stat-num">{{ countByStatut('EN_STOCK') }}</span>
@@ -27,6 +26,27 @@
     <div class="stat-card stat-retour">
       <span class="stat-num">{{ countByStatut('RETOURNEE') }}</span>
       <span class="stat-lbl">Retournées</span>
+    </div>
+  </div>
+
+  <!-- 2 cards visuelles -->
+  <div class="visual-cards">
+    <div class="visual-card">
+      <div class="visual-label">Valeur totale stock</div>
+      <div class="visual-value">{{ getValeurTotale() | number:'1.0-0' }} DH</div>
+    </div>
+    <div class="visual-card">
+      <div class="visual-label">Répartition par statut</div>
+      <div class="repartition-bar">
+        <div class="bar-segment bar-stock" [style.width]="getPct('EN_STOCK') + '%'" [title]="'En stock: ' + getPct('EN_STOCK') + '%'"></div>
+        <div class="bar-segment bar-attente" [style.width]="getPct('EN_ATTENTE_RETOUR') + '%'" [title]="'Attente: ' + getPct('EN_ATTENTE_RETOUR') + '%'"></div>
+        <div class="bar-segment bar-rupture" [style.width]="(getPct('DEFECTUEUSE') + getPct('RETOURNEE')) + '%'" [title]="'Autres: ' + (getPct('DEFECTUEUSE') + getPct('RETOURNEE')) + '%'"></div>
+      </div>
+      <div class="bar-legend">
+        <span class="legend-item green">● En stock {{ getPct('EN_STOCK') }}%</span>
+        <span class="legend-item orange">● Attente {{ getPct('EN_ATTENTE_RETOUR') }}%</span>
+        <span class="legend-item red">● Autres {{ getPct('DEFECTUEUSE') + getPct('RETOURNEE') }}%</span>
+      </div>
     </div>
   </div>
 
@@ -54,25 +74,29 @@
       <table>
         <thead>
           <tr>
-            <th>#</th>
             <th>Nom pièce</th>
             <th>Référence</th>
-            <th>Client (Stock)</th>
-            <th>Prix</th>
+            <th>Site</th>
+            <th>Quantité</th>
+            <th>Prix (DH)</th>
             <th>Statut</th>
-            <th>Échangée avec</th>
-            <th>Retour fournisseur</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of pagedData" (click)="goToDetail(row.id)" class="clickable-row"
-            [class.row-defect]="row.statut === 'DEFECTUEUSE'"
-            [class.row-attente]="row.statut === 'EN_ATTENTE_RETOUR'">
-            <td>{{ row.id }}</td>
+          <tr *ngFor="let row of pagedData; let i = index"
+            [class.row-even]="i % 2 === 0">
             <td><strong>{{ row.nom }}</strong></td>
-            <td>{{ row.reference }}</td>
+            <td class="text-secondary">{{ row.reference }}</td>
             <td>{{ row.client || '—' }}</td>
+            <td>
+              <span class="qty-badge"
+                [class.qty-green]="row.quantite > 2"
+                [class.qty-orange]="row.quantite === 1"
+                [class.qty-red]="row.quantite === 0">
+                {{ row.quantite ?? '—' }}
+              </span>
+            </td>
             <td>{{ row.prixUnitaire | number:'1.0-0' }} DH</td>
             <td>
               <span class="statut-badge" [ngClass]="getStatutClass(row.statut)">
@@ -80,24 +104,10 @@
                 {{ getStatutLabel(row.statut || 'EN_STOCK') }}
               </span>
             </td>
-            <td>
-              <span *ngIf="row.clientEchange">🏥 {{ row.clientEchange }}</span>
-              <span *ngIf="!row.clientEchange" class="text-muted">—</span>
-            </td>
-            <td>
-              <span *ngIf="row.retourFournisseur" class="retour-oui">✅ Oui</span>
-              <span *ngIf="!row.retourFournisseur && row.statut === 'DEFECTUEUSE'" class="retour-non">❌ Non</span>
-              <span *ngIf="!row.retourFournisseur && row.statut !== 'DEFECTUEUSE'" class="text-muted">—</span>
-            </td>
             <td class="actions-cell" (click)="$event.stopPropagation()">
-              <button class="btn-action" (click)="ouvrirSuivi(row, $event)" title="Suivi">🔧</button>
-              <button class="btn-action btn-warn" (click)="changerStatutRapide(row, 'DEFECTUEUSE', $event)"
-                *ngIf="row.statut === 'EN_STOCK' || !row.statut" title="Marquer défectueuse">❌</button>
-              <button class="btn-action btn-success" (click)="changerStatutRapide(row, 'EN_STOCK', $event)"
-                *ngIf="row.statut && row.statut !== 'EN_STOCK'" title="Retour en stock">✅</button>
-              <button class="btn-view" (click)="goToDetail(row.id)">👁️</button>
-              <button class="btn-edit" (click)="goToEdit(row.id, $event)">✏️</button>
-              <button class="btn-delete" (click)="delete(row.id, $event)">🗑️</button>
+              <button class="btn-view" (click)="goToDetail(row.id)" title="Voir">👁️</button>
+              <button class="btn-edit" (click)="goToEdit(row.id, $event)" title="Modifier">✏️</button>
+              <button class="btn-delete" (click)="delete(row.id, $event)" title="Supprimer">🗑️</button>
             </td>
           </tr>
         </tbody>
@@ -135,37 +145,15 @@
       <div class="field-wrapper">
         <label>Statut de la pièce</label>
         <select [(ngModel)]="suiviForm.statut" class="form-select">
-          <option value="EN_STOCK">✅ En stock — Disponible</option>
-          <option value="DEFECTUEUSE">❌ Défectueuse — À retourner</option>
-          <option value="EN_ATTENTE_RETOUR">⏳ En attente retour fournisseur</option>
-          <option value="RETOURNEE">🔄 Retournée au fournisseur</option>
+          <option value="EN_STOCK">✅ En stock</option>
+          <option value="DEFECTUEUSE">❌ Défectueuse</option>
+          <option value="EN_ATTENTE_RETOUR">⏳ En attente retour</option>
+          <option value="RETOURNEE">🔄 Retournée</option>
         </select>
-      </div>
-      <div class="field-wrapper">
-        <label>Client avec qui la pièce a été échangée</label>
-        <select [(ngModel)]="suiviForm.clientEchange" class="form-select">
-          <option value="">— Non échangée —</option>
-          <option *ngFor="let p of parcs" [value]="p">🏥 {{ p }}</option>
-        </select>
-      </div>
-      <div class="field-wrapper">
-        <label>Date de l'échange</label>
-        <input type="date" [(ngModel)]="suiviForm.dateEchange" class="form-input">
-      </div>
-      <div class="retour-toggle">
-        <label class="toggle-label">
-          <input type="checkbox" [(ngModel)]="suiviForm.retourFournisseur">
-          <span>Pièce retournée au fournisseur</span>
-        </label>
-      </div>
-      <div class="field-wrapper" *ngIf="!suiviForm.retourFournisseur">
-        <label>Date de retour prévue du fournisseur</label>
-        <input type="date" [(ngModel)]="suiviForm.dateRetourPrevu" class="form-input">
       </div>
       <div class="field-wrapper">
         <label>Notes de suivi</label>
-        <textarea [(ngModel)]="suiviForm.notesSuivi" rows="3" class="form-textarea"
-          placeholder="Numéro bon de retour, contact fournisseur..."></textarea>
+        <textarea [(ngModel)]="suiviForm.notesSuivi" rows="3" class="form-textarea" placeholder="Notes..."></textarea>
       </div>
     </div>
     <div class="modal-actions">
