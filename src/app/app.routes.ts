@@ -1,18 +1,19 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { FseLayoutComponent } from './fse-layout/fse-layout.component';
+import { BackofficeLayoutComponent } from './backoffice-layout/backoffice-layout.component';
+import { ChefPoleLayoutComponent } from './chefpole-layout/chefpole-layout.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { AdminGuard } from './guards/admin.guard';
 import { FseGuard } from './guards/fse.guard';
+import { BackofficeGuard } from './guards/backoffice.guard';
+import { ChefPoleGuard } from './guards/chefpole.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth', pathMatch: 'full' },
-  {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth-module').then(m => m.AuthModule)
-  },
+  { path: 'auth', loadChildren: () => import('./auth/auth-module').then(m => m.AuthModule) },
 
-  // ── ROUTES ADMIN ──
+  // ── ADMIN ──
   {
     path: '',
     component: LayoutComponent,
@@ -34,7 +35,7 @@ export const routes: Routes = [
     ]
   },
 
-  // ── ROUTES FSE ──
+  // ── FSE ──
   {
     path: 'fse',
     component: FseLayoutComponent,
@@ -48,9 +49,35 @@ export const routes: Routes = [
       { path: 'planning', loadComponent: () => import('./fse/fse-planning/fse-planning.component').then(m => m.FsePlanningComponent) },
       { path: 'rapports', loadComponent: () => import('./fse/fse-rapports/fse-rapports.component').then(m => m.FseRapportsComponent) },
       { path: 'historique', loadComponent: () => import('./fse/fse-historique/fse-historique.component').then(m => m.FseHistoriqueComponent) },
-      { path: 'cloture/:id', loadComponent: () => import('./fse/fse-cloture/fse-cloture.component').then(m => m.FseClotureComponent) },
       { path: 'assistant-ia', loadComponent: () => import('./fse/fse-assistant/fse-assistant.component').then(m => m.FseAssistantComponent) },
       { path: 'profil', loadComponent: () => import('./fse/fse-profil/fse-profil.component').then(m => m.FseProfilComponent) },
+      { path: 'cloture/:id', loadComponent: () => import('./fse/fse-cloture/fse-cloture.component').then(m => m.FseClotureComponent) },
+    ]
+  },
+
+  // ── BACK-OFFICE ──
+  {
+    path: 'backoffice',
+    component: BackofficeLayoutComponent,
+    canActivate: [BackofficeGuard],
+    children: [
+      { path: '', redirectTo: 'planning', pathMatch: 'full' },
+      { path: 'planning', loadComponent: () => import('./backoffice/backoffice-planning/backoffice-planning.component').then(m => m.BackofficePlanningComponent) },
+      { path: 'pieces', loadChildren: () => import('./pieces/pieces-module').then(m => m.PiecesModule) },
+      { path: 'profil', loadComponent: () => import('./backoffice/backoffice-profil/backoffice-profil.component').then(m => m.BackofficeProfilComponent) },
+    ]
+  },
+
+  // ── CHEF DE POLE ──
+  {
+    path: 'chefpole',
+    component: ChefPoleLayoutComponent,
+    canActivate: [ChefPoleGuard],
+    children: [
+      { path: '', redirectTo: 'planning', pathMatch: 'full' },
+      { path: 'planning', loadComponent: () => import('./chefpole/chefpole-planning/chefpole-planning.component').then(m => m.ChefPolePlanningComponent) },
+      { path: 'disponibilite', loadComponent: () => import('./chefpole/chefpole-disponibilite/chefpole-disponibilite.component').then(m => m.ChefPoleDisponibiliteComponent) },
+      { path: 'profil', loadComponent: () => import('./chefpole/chefpole-profil/chefpole-profil.component').then(m => m.ChefPoleProfilComponent) },
     ]
   },
 
