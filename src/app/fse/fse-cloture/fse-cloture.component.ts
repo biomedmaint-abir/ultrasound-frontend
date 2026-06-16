@@ -223,11 +223,10 @@ export class FseClotureComponent implements OnInit {
       type: this.intervention.type,
       statut: statut,
       descriptionPanne: this.intervention.descriptionPanne,
-      actionsEffectuees: this.form.actionsEffectuees,
+      actionsEffectuees: this.form.actionsEffectuees + (this.form.responsableClient ? ' | Responsable client: ' + this.form.responsableClient : ''),
       dureeHeures: this.form.duree,
       coutTotal: this.form.coutTotal,
       nomFse: this.intervention.nomFse,
-      actionsEffectuees: this.form.actionsEffectuees + (this.form.responsableClient ? ' | Responsable client: ' + this.form.responsableClient : ''),
       equipement: this.intervention.equipement ? { id: this.intervention.equipement.id } : null,
       technicien: this.intervention.technicien ? { id: this.intervention.technicien.id } : null
     };
