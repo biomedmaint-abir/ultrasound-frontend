@@ -31,8 +31,9 @@ export class UtilisateursComponent implements OnInit {
 
   roles = [
     { id: 1, nom: 'ADMIN', label: 'Administrateur' },
-    { id: 2, nom: 'INGENIEUR', label: 'Ingenieur' },
-    { id: 3, nom: 'TECHNICIEN', label: 'FSE' },
+    { id: 2, nom: 'FSE', label: 'FSE / Ingénieur biomédical' },
+    { id: 4, nom: 'BACK_OFFICE', label: 'Back-office' },
+    { id: 5, nom: 'CHEF_POLE', label: 'Chef de pôle imagerie' },
   ];
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
@@ -68,8 +69,9 @@ export class UtilisateursComponent implements OnInit {
   getRoleLabel(user: any): string {
     switch (user.role?.nom) {
       case 'ADMIN': return 'Administrateur';
-      case 'INGENIEUR': return 'Ingenieur';
-      case 'TECHNICIEN': return 'FSE';
+      case 'FSE': return 'FSE / Ingénieur biomédical';
+      case 'BACK_OFFICE': return 'Back-office';
+      case 'CHEF_POLE': return 'Chef de pôle imagerie';
       default: return user.role?.nom || 'Admin';
     }
   }
@@ -77,8 +79,9 @@ export class UtilisateursComponent implements OnInit {
   getRoleClass(user: any): string {
     switch (user.role?.nom) {
       case 'ADMIN': return 'role-admin';
-      case 'INGENIEUR': return 'role-ingenieur';
-      case 'TECHNICIEN': return 'role-technicien';
+      case 'FSE': return 'role-ingenieur';
+      case 'BACK_OFFICE': return 'role-technicien';
+      case 'CHEF_POLE': return 'role-technicien';
       default: return 'role-admin';
     }
   }
@@ -86,8 +89,9 @@ export class UtilisateursComponent implements OnInit {
   getAvatarClass(user: any): string {
     switch (user.role?.nom) {
       case 'ADMIN': return 'avatar-blue';
-      case 'INGENIEUR': return 'avatar-green';
-      case 'TECHNICIEN': return 'avatar-orange';
+      case 'FSE': return 'avatar-green';
+      case 'BACK_OFFICE': return 'avatar-orange';
+      case 'CHEF_POLE': return 'avatar-orange';
       default: return 'avatar-blue';
     }
   }
