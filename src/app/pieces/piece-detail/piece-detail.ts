@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PieceService } from '../../services/piece';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -19,12 +21,14 @@ export class PieceDetail implements OnInit {
   piece: any = null;
   isLoading = true;
   hasError = false;
+  interventionLiee: any = null;
 
   constructor(
     private pieceService: PieceService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -34,9 +38,31 @@ export class PieceDetail implements OnInit {
 
   load(id: number): void {
     this.pieceService.getById(id).subscribe({
-      next: (data) => { this.piece = data; this.isLoading = false; this.cdr.detectChanges(); },
+      next: (data) => {
+        this.piece = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        if (data.statut === 'EN_ATTENTE_RETOUR' || data.statut === 'RETOURNEE' || data.statut === 'DEFECTUEUSE') {
+          this.http.get<any[]>(`${environment.apiUrl}/intervention-pieces`).subscribe({
+            next: (ips) => {
+              const ip = ips.find((p: any) => p.piece?.id === data.id);
+              if (ip?.intervention?.id) {
+                this.http.get<any>(`${environment.apiUrl}/interventions/${ip.intervention.id}`).subscribe({
+                  next: (inv) => { this.interventionLiee = inv; this.cdr.detectChanges(); }
+                });
+              }
+            }
+          });
+        }
+      },
       error: () => { this.hasError = true; this.isLoading = false; this.cdr.detectChanges(); }
     });
+  }
+
+  voirIntervention(): void {
+    if (this.interventionLiee) {
+      this.router.navigate(['/interventions', this.interventionLiee.id]);
+    }
   }
 
   getStatutClass(statut: string): string {

@@ -72,6 +72,33 @@
         <span class="value">{{ piece.notesSuivi }}</span>
       </div>
     </div>
+
+    <!-- Lien intervention -->
+    <div class="detail-card" *ngIf="interventionLiee">
+      <div class="section-header">
+        <span class="section-icon">🔧</span>
+        <h2>Intervention liée</h2>
+      </div>
+      <div class="info-row">
+        <span class="label">Intervention</span>
+        <span class="value">#{{ interventionLiee.id }} — {{ interventionLiee.dateIntervention | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Équipement</span>
+        <span class="value">{{ interventionLiee.equipement?.nom || '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Site client</span>
+        <span class="value">{{ interventionLiee.equipement?.parc || '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Statut</span>
+        <span class="value">{{ interventionLiee.statut }}</span>
+      </div>
+      <div class="info-row">
+        <button class="btn-edit" (click)="voirIntervention()">🔍 Voir la fiche intervention →</button>
+      </div>
+    </div>
   </div>
 </div>
 

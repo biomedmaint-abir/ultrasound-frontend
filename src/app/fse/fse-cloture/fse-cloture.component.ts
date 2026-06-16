@@ -103,6 +103,12 @@ import { environment } from '../../../environments/environment';
         </div>
       </div>
 
+      <div class="field-wrapper full-width" style="margin-bottom:24px">
+        <label>Nom du responsable client présent <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="form.responsableClient" class="form-input"
+          placeholder="Nom et prénom du responsable technique du site">
+      </div>
+
       <div class="form-actions">
         <button class="btn-cancel" (click)="goBack()">Annuler</button>
         <button class="btn-submit" (click)="soumettre()" [disabled]="isSaving">
@@ -171,7 +177,8 @@ export class FseClotureComponent implements OnInit {
     actionsEffectuees: '',
     duree: null as number | null,
     coutTotal: null as number | null,
-    resultat: ''
+    resultat: '',
+    responsableClient: ''
   };
 
   codeErreur = {
@@ -220,6 +227,7 @@ export class FseClotureComponent implements OnInit {
       dureeHeures: this.form.duree,
       coutTotal: this.form.coutTotal,
       nomFse: this.intervention.nomFse,
+      actionsEffectuees: this.form.actionsEffectuees + (this.form.responsableClient ? ' | Responsable client: ' + this.form.responsableClient : ''),
       equipement: this.intervention.equipement ? { id: this.intervention.equipement.id } : null,
       technicien: this.intervention.technicien ? { id: this.intervention.technicien.id } : null
     };
