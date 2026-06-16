@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   interventionsData: any[] = [];
   enAttenteValidation: any[] = [];
   interventionsBloquees: any[] = [];
+  piecesACommander: any[] = [];
   equipementsData: any[] = [];
 
   parcs: string[] = [];
@@ -102,6 +103,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.interventionsData = data;
         this.enAttenteValidation = data.filter((i: any) => i.statut === "EN_ATTENTE_VALIDATION");
         this.interventionsBloquees = data.filter((i: any) => i.commentaireRejet && i.commentaireRejet.startsWith("BLOCAGE FSE:"));
+        this.piecesACommander = data.filter((i: any) => i.statut === "EN_ATTENTE_PIECE");
         const t = data.filter((i: any) => i.statut === "TERMINEE").length;
         this.disponibilite = data.length > 0 ? Math.round((t / data.length) * 100) : 0;
         this.totalInterventions = data.length;
@@ -237,6 +239,22 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   navigateTo(path: string): void { this.router.navigate([path]); }
+
+  marquerTraitee(id: number): void {
+    const inv = this.piecesACommander.find((i: any) => i.id === id);
+    if (!inv) return;
+    const payload = {
+      id: inv.id, dateIntervention: inv.dateIntervention, type: inv.type,
+      statut: 'EN_COURS', nomFse: inv.nomFse, descriptionPanne: inv.descriptionPanne,
+      equipement: inv.equipement ? { id: inv.equipement.id } : null
+    };
+    this.http.put(`${environment.apiUrl}/interventions/${id}`, payload).subscribe({
+      next: () => {
+        this.piecesACommander = this.piecesACommander.filter((i: any) => i.id !== id);
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   validerIntervention(id: number): void {
     this.http.put(`${environment.apiUrl}/interventions/${id}/valider`, {}).subscribe({

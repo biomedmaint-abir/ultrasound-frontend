@@ -236,3 +236,27 @@
   border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
   &:hover { background: #1a2eff; color: white; }
 }
+
+.pieces-section {
+  background: white; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06); margin-bottom: 24px;
+  border-left: 4px solid #f97316;
+}
+.pieces-header {
+  display: flex; align-items: center; gap: 14px; padding: 20px 24px;
+  border-bottom: 1px solid #f1f3f5; background: #FFF7ED;
+  .pieces-icon { font-size: 24px; }
+  h2 { margin: 0; font-size: 16px; font-weight: 700; color: #0d1340; }
+  p  { margin: 4px 0 0; font-size: 12px; color: #6b7280; }
+  .pieces-count { margin-left: auto; background: #f97316; color: white; padding: 4px 14px; border-radius: 20px; font-size: 14px; font-weight: 700; }
+}
+.pieces-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px; border-bottom: 1px solid #f1f3f5;
+  &:last-child { border-bottom: none; }
+}
+.btn-traiter {
+  background: #16A34A; color: white; border: none; border-radius: 8px;
+  padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+  &:hover { background: #15803d; }
+}
