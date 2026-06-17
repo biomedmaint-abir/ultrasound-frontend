@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
   <div class="fse-list">
     <div *ngFor="let fse of fseList" class="fse-card">
       <div class="fse-header">
-        <div class="fse-avatar">{{ fse.prenom?.charAt(0) || fse.nom?.charAt(0) }}</div>
+        <div class="fse-avatar">{{ (fse.prenom?.charAt(0) || '') + (fse.nom?.charAt(0) || '') | uppercase }}</div>
         <div>
           <div class="fse-name">{{ fse.prenom }} {{ fse.nom }}</div>
           <div class="fse-email">{{ fse.email }}</div>

@@ -102,7 +102,7 @@ export class ChefPolePlanningComponent implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
         this.interventions = data;
-        this.nonAssignees = data.filter(i => !i.nomFse && !i.technicien);
+        this.nonAssignees = data.filter(i => (!i.nomFse || i.nomFse === '') && !i.technicien);
         this.isLoading = false; this.cdr.detectChanges();
       }
     });
