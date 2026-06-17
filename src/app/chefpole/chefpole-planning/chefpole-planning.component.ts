@@ -18,10 +18,54 @@ import { environment } from '../../../environments/environment';
     </div>
   </div>
 
+  <!-- 1. INTERVENTIONS BLOQUÉES PAR FSE - EN HAUT -->
+  <div class="bloquees-section" *ngIf="interventionsBloquees.length > 0">
+    <div class="bloquees-header">
+      <span>🚫</span>
+      <h2>Interventions bloquées par FSE</h2>
+      <span class="badge-red">{{ interventionsBloquees.length }}</span>
+    </div>
+    <div *ngFor="let inv of interventionsBloquees" class="assign-card">
+      <div class="assign-card-left">
+        <div class="date-block" [ngClass]="getTypeClass(inv.type)">
+          <span class="date-month">{{ formatMonth(inv.dateIntervention) }}</span>
+          <span class="date-day">{{ formatDay(inv.dateIntervention) }}</span>
+        </div>
+        <div class="assign-info">
+          <div class="assign-equip">{{ inv.equipement?.nom || '—' }}</div>
+          <div class="assign-site">🏥 {{ inv.equipement?.parc || '—' }}</div>
+          <div class="motif-badge">⚠️ {{ inv.commentaireRejet?.replace('BLOCAGE FSE: ', '') }}</div>
+          <div class="fse-actuel">👤 FSE actuel : {{ inv.nomFse || '—' }}</div>
+        </div>
+        <span class="type-badge" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
+      </div>
+      <div class="assign-card-right">
+        <div *ngIf="!showSelectFse[inv.id]">
+          <button class="btn-reassigner" (click)="showSelectFse[inv.id] = true">
+            👤 Réassigner FSE →
+          </button>
+        </div>
+        <div *ngIf="showSelectFse[inv.id]" class="fse-selector">
+          <select [(ngModel)]="selectedFse[inv.id]" class="fse-select">
+            <option [ngValue]="null">-- Sélectionner un FSE --</option>
+            <option *ngFor="let fse of fseList" [ngValue]="fse.id">
+              {{ fse.prenom }} {{ fse.nom }}
+            </option>
+          </select>
+          <div class="fse-actions">
+            <button class="btn-cancel-small" (click)="showSelectFse[inv.id] = false">Annuler</button>
+            <button class="btn-confirmer" (click)="reassignerFse(inv)" [disabled]="!selectedFse[inv.id]">✅ Confirmer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. INTERVENTIONS À ASSIGNER -->
   <div class="alert-section" *ngIf="nonAssignees.length > 0">
     <div class="alert-header">
       <span>🚨</span>
-      <h2>Interventions non assignées</h2>
+      <h2>Interventions à assigner</h2>
       <span class="alert-count">{{ nonAssignees.length }}</span>
     </div>
     <div *ngFor="let inv of nonAssignees" class="alert-row">
@@ -35,8 +79,8 @@ import { environment } from '../../../environments/environment';
       </div>
       <div class="inv-actions">
         <select [(ngModel)]="selectedFse[inv.id]" class="fse-select">
-          <option value="">-- Sélectionner FSE --</option>
-          <option *ngFor="let fse of fseList" [value]="fse.id">{{ fse.prenom }} {{ fse.nom }}</option>
+          <option [ngValue]="null">-- Sélectionner FSE --</option>
+          <option *ngFor="let fse of fseList" [ngValue]="fse.id">{{ fse.prenom }} {{ fse.nom }}</option>
         </select>
         <button class="btn-assigner" (click)="assignerFse(inv)" [disabled]="!selectedFse[inv.id]">
           👤 Assigner →
