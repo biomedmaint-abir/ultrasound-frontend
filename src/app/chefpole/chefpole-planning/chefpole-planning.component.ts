@@ -92,6 +92,7 @@ import { environment } from '../../../environments/environment';
 export class ChefPolePlanningComponent implements OnInit {
   interventions: any[] = [];
   nonAssignees: any[] = [];
+  interventionsBloquees: any[] = [];
   fseList: any[] = [];
   selectedFse: { [key: number]: number } = {};
   isLoading = true;
@@ -123,6 +124,25 @@ export class ChefPolePlanningComponent implements OnInit {
         this.nonAssignees = this.nonAssignees.filter(i => i.id !== inv.id);
         this.cdr.detectChanges();
       }
+    });
+  }
+
+  reassignerFse(inv: any): void {
+    const fseId = this.selectedFse[inv.id];
+    if (!fseId) return;
+    this.isSaving = true;
+    const fse = this.fseList.find(f => f.id === fseId);
+    const nomFse = fse ? (fse.prenom || fse.nom) : '';
+    this.http.put(`${environment.apiUrl}/interventions/${inv.id}/assigner-fse`, { fseId, nomFse }).subscribe({
+      next: () => {
+        this.interventionsBloquees = this.interventionsBloquees.filter(i => i.id !== inv.id);
+        inv.nomFse = nomFse;
+        inv.commentaireRejet = null;
+        this.showSelectFse[inv.id] = false;
+        this.isSaving = false;
+        this.cdr.detectChanges();
+      },
+      error: () => { this.isSaving = false; }
     });
   }
 
