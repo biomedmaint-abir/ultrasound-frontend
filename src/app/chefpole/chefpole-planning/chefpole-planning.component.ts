@@ -21,40 +21,42 @@ import { environment } from '../../../environments/environment';
   <!-- 1. INTERVENTIONS BLOQUÉES PAR FSE - EN HAUT -->
   <div class="bloquees-section" *ngIf="interventionsBloquees.length > 0">
     <div class="bloquees-header">
-      <span>🚫</span>
-      <h2>Interventions bloquées par FSE</h2>
+      <span class="bloquees-icon">🚫</span>
+      <h2 class="bloquees-title">Interventions bloquées</h2>
       <span class="badge-red">{{ interventionsBloquees.length }}</span>
     </div>
-    <div *ngFor="let inv of interventionsBloquees" class="assign-card">
-      <div class="assign-card-left">
-        <div class="date-block" [ngClass]="getTypeClass(inv.type)">
-          <span class="date-month">{{ formatMonth(inv.dateIntervention) }}</span>
-          <span class="date-day">{{ formatDay(inv.dateIntervention) }}</span>
+    <div class="bloquees-grid">
+      <div *ngFor="let inv of interventionsBloquees" class="bloquee-card">
+        <div class="bloquee-card-top">
+          <div class="date-block" [ngClass]="getTypeClass(inv.type)">
+            <span class="date-month">{{ formatMonth(inv.dateIntervention) }}</span>
+            <span class="date-day">{{ formatDay(inv.dateIntervention) }}</span>
+          </div>
+          <div class="bloquee-info">
+            <div class="bloquee-equip">{{ inv.equipement?.nom || '—' }}</div>
+            <div class="bloquee-site">🏥 {{ inv.equipement?.parc || '—' }}</div>
+            <div class="bloquee-motif">⚠️ Motif : {{ inv.commentaireRejet?.replace('BLOCAGE FSE: ', '') }}</div>
+            <div class="bloquee-fse">👤 FSE actuel : {{ inv.nomFse || 'Non assigné' }}</div>
+          </div>
+          <span class="type-badge" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
         </div>
-        <div class="assign-info">
-          <div class="assign-equip">{{ inv.equipement?.nom || '—' }}</div>
-          <div class="assign-site">🏥 {{ inv.equipement?.parc || '—' }}</div>
-          <div class="motif-badge">⚠️ {{ inv.commentaireRejet?.replace('BLOCAGE FSE: ', '') }}</div>
-          <div class="fse-actuel">👤 FSE actuel : {{ inv.nomFse || '—' }}</div>
-        </div>
-        <span class="type-badge" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
-      </div>
-      <div class="assign-card-right">
-        <div *ngIf="!showSelectFse[inv.id]">
-          <button class="btn-reassigner" (click)="showSelectFse[inv.id] = true">
-            👤 Réassigner FSE →
-          </button>
-        </div>
-        <div *ngIf="showSelectFse[inv.id]" class="fse-selector">
-          <select [(ngModel)]="selectedFse[inv.id]" class="fse-select">
-            <option [ngValue]="null">-- Sélectionner un FSE --</option>
-            <option *ngFor="let fse of fseList" [ngValue]="fse.id">
-              {{ fse.prenom }} {{ fse.nom }}
-            </option>
-          </select>
-          <div class="fse-actions">
-            <button class="btn-cancel-small" (click)="showSelectFse[inv.id] = false">Annuler</button>
-            <button class="btn-confirmer" (click)="reassignerFse(inv)" [disabled]="!selectedFse[inv.id]">✅ Confirmer</button>
+        <div class="bloquee-card-bottom">
+          <div *ngIf="!showSelectFse[inv.id]">
+            <button class="btn-reassigner" (click)="showSelectFse[inv.id] = true">
+              👤 Réassigner FSE →
+            </button>
+          </div>
+          <div *ngIf="showSelectFse[inv.id]" class="fse-selector">
+            <select [(ngModel)]="selectedFse[inv.id]" class="fse-select">
+              <option [ngValue]="null">-- Sélectionner un FSE --</option>
+              <option *ngFor="let fse of fseList" [ngValue]="fse.id">
+                {{ fse.prenom }} {{ fse.nom }}
+              </option>
+            </select>
+            <div class="fse-actions">
+              <button class="btn-cancel-small" (click)="showSelectFse[inv.id] = false">Annuler</button>
+              <button class="btn-confirmer" (click)="reassignerFse(inv)" [disabled]="!selectedFse[inv.id]">✅ Confirmer</button>
+            </div>
           </div>
         </div>
       </div>
