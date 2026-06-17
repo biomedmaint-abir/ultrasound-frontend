@@ -94,7 +94,9 @@ export class ChefPolePlanningComponent implements OnInit {
   nonAssignees: any[] = [];
   interventionsBloquees: any[] = [];
   fseList: any[] = [];
-  selectedFse: { [key: number]: number } = {};
+  selectedFse: { [key: number]: number | null } = {};
+  showSelectFse: { [key: number]: boolean } = {};
+  isSaving = false;
   isLoading = true;
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
