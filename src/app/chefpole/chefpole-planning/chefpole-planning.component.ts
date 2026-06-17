@@ -107,15 +107,26 @@ export class ChefPolePlanningComponent implements OnInit, OnDestroy {
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
+    this.loadData();
+    this.refreshSub = interval(30000).subscribe(() => this.loadData());
+    this.http.get<any[]>(`${environment.apiUrl}/utilisateurs/fse-disponibles`).subscribe({
+      next: (data) => { this.fseList = data; this.cdr.detectChanges(); }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.refreshSub?.unsubscribe();
+  }
+
+  loadData(): void {
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
         this.interventions = data;
-        this.nonAssignees = data.filter(i => (!i.nomFse || i.nomFse === '') && !i.technicien);
-        this.isLoading = false; this.cdr.detectChanges();
+        this.nonAssignees = data.filter((i: any) => (!i.nomFse || i.nomFse.trim() === '') && !i.technicien);
+        this.interventionsBloquees = data.filter((i: any) => i.commentaireRejet && i.commentaireRejet.startsWith('BLOCAGE FSE:') && i.statut !== 'TERMINEE');
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
-    });
-    this.http.get<any[]>(`${environment.apiUrl}/utilisateurs/fse-disponibles`).subscribe({
-      next: (data) => { this.fseList = data; this.cdr.detectChanges(); }
     });
   }
 
