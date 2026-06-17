@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
     this.sessionMessage = '';
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        this.authService.saveToken(response.token, response.email, response.role, response.nom, response.prenom);
+        this.authService.saveToken(response.token, response.email, response.role, response.nom, response.prenom, response.id);
         const role = response.role;
         if (role === 'ADMIN') { this.router.navigate(['/dashboard']); }
         else if (role === 'BACK_OFFICE') { this.router.navigate(['/backoffice/planning']); }

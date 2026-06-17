@@ -12,12 +12,13 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/auth/login`, { email, password });
   }
 
-  saveToken(token: string, email: string, role?: string, nom?: string, prenom?: string): void {
+  saveToken(token: string, email: string, role?: string, nom?: string, prenom?: string, userId?: string): void {
     localStorage.setItem('token', token);
     localStorage.setItem('email', email);
     if (role) localStorage.setItem('role', role);
     if (nom) localStorage.setItem('nom', nom);
     if (prenom) localStorage.setItem('prenom', prenom);
+    if (userId) localStorage.setItem('userId', userId);
   }
 
   getToken(): string | null { return localStorage.getItem('token'); }
@@ -31,5 +32,6 @@ export class AuthService {
     localStorage.removeItem('role');
     localStorage.removeItem('nom');
     localStorage.removeItem('prenom');
+    localStorage.removeItem('userId');
   }
 }
