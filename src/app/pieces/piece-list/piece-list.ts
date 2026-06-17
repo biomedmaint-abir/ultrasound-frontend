@@ -175,9 +175,15 @@ export class PieceList implements OnInit {
     });
   }
 
-  goToDetail(id: number): void { this.router.navigate(['/pieces', id]); }
-  goToEdit(id: number, e: Event): void { e.stopPropagation(); this.router.navigate(['/pieces', id, 'edit']); }
-  goToNew(): void { this.router.navigate(['/pieces/new']); }
+  get baseRoute(): string {
+    const url = this.router.url;
+    if (url.startsWith('/backoffice')) return '/backoffice/pieces';
+    return '/pieces';
+  }
+
+  goToDetail(id: number): void { this.router.navigate([this.baseRoute, id]); }
+  goToEdit(id: number, e: Event): void { e.stopPropagation(); this.router.navigate([this.baseRoute, id, 'edit']); }
+  goToNew(): void { this.router.navigate([this.baseRoute + '/new']); }
   goBack(): void { this.router.navigate(['/dashboard']); }
 
   delete(id: number, e: Event): void {

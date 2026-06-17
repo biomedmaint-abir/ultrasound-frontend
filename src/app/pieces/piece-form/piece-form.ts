@@ -96,11 +96,12 @@ export class PieceForm implements OnInit {
     req$.subscribe({
       next: (data) => {
         this.isSaving = false;
-        this.router.navigate(['/pieces', data.id || this.pieceId]);
+        const base = this.router.url.startsWith('/backoffice') ? '/backoffice/pieces' : '/pieces';
+        this.router.navigate([base, data.id || this.pieceId]);
       },
       error: () => { this.errorMessage = 'Erreur sauvegarde.'; this.isSaving = false; }
     });
   }
 
-  cancel(): void { this.router.navigate(['/pieces']); }
+  cancel(): void { const base = this.router.url.startsWith('/backoffice') ? '/backoffice/pieces' : '/pieces'; this.router.navigate([base]); }
 }

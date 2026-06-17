@@ -90,12 +90,12 @@ export class PieceDetail implements OnInit {
   confirmDelete(): void {
     if (this.pendingDeleteId) {
       this.pieceService.delete(this.pendingDeleteId).subscribe({
-        next: () => { this.showConfirm = false; this.router.navigate(['/pieces']); }
+        next: () => { this.showConfirm = false; const base = this.router.url.startsWith('/backoffice') ? '/backoffice/pieces' : '/pieces'; this.router.navigate([base]); }
       });
     }
   }
 
   cancelDelete(): void { this.showConfirm = false; this.pendingDeleteId = null; }
-  goBack(): void { this.router.navigate(['/pieces']); }
-  goToEdit(): void { this.router.navigate(['/pieces', this.piece.id, 'edit']); }
+  goBack(): void { const base = this.router.url.startsWith('/backoffice') ? '/backoffice/pieces' : '/pieces'; this.router.navigate([base]); }
+  goToEdit(): void { const base = this.router.url.startsWith('/backoffice') ? '/backoffice/pieces' : '/pieces'; this.router.navigate([base, this.piece.id, 'edit']); }
 }
