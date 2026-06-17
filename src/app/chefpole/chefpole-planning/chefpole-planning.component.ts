@@ -16,7 +16,6 @@ import { environment } from '../../../environments/environment';
       <h1>Mon Planning</h1>
       <p>Assignation des FSE aux interventions</p>
     </div>
-    <button class="btn-refresh" (click)="loadData()">🔄 Actualiser</button>
   </div>
 
   <div class="alert-section" *ngIf="nonAssignees.length > 0">
