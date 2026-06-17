@@ -112,7 +112,7 @@ import { environment } from '../../../environments/environment';
       <div class="form-actions">
         <button class="btn-cancel" (click)="goBack()">Annuler</button>
         <button class="btn-submit" (click)="soumettre()" [disabled]="isSaving">
-          📤 {{ isSaving ? 'Envoi...' : 'Soumettre pour validation' }}
+          📤 {{ isSaving ? 'Envoi...' : 'Terminer l\'intervention' }}
         </button>
       </div>
     </div>
@@ -214,7 +214,7 @@ export class FseClotureComponent implements OnInit {
     if (!this.form.actionsEffectuees) { this.errorMsg = 'Veuillez remplir les actions effectuées.'; return; }
     this.isSaving = true;
 
-    const statut = this.form.resultat === 'RESOLU' ? 'EN_ATTENTE_VALIDATION' :
+    const statut = this.form.resultat === 'RESOLU' ? 'TERMINEE' :
                    this.form.resultat === 'EN_ATTENTE_PIECE' ? 'EN_ATTENTE_PIECE' : 'EN_COURS';
 
     const payload = {
@@ -256,7 +256,7 @@ export class FseClotureComponent implements OnInit {
           });
         }
         this.isSaving = false;
-        this.successMsg = '✅ Rapport soumis pour validation par l\'administrateur !';
+        this.successMsg = '✅ Intervention clôturée avec succès !';
         this.cdr.detectChanges();
         setTimeout(() => this.router.navigate(['/fse/interventions']), 2500);
       },

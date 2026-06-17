@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   totalContrats = 0;
   mttr: number | null = 0;
   disponibilite = 0;
+  coutTotalInterventions = 0;
   email = localStorage.getItem('email') || '';
   nom = localStorage.getItem('nom') || '';
   prenom = localStorage.getItem('prenom') || '';
@@ -106,6 +107,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.piecesACommander = data.filter((i: any) => i.statut === "EN_ATTENTE_PIECE");
         const t = data.filter((i: any) => i.statut === "TERMINEE").length;
         this.disponibilite = data.length > 0 ? Math.round((t / data.length) * 100) : 0;
+        this.coutTotalInterventions = data.reduce((sum: number, i: any) => sum + (i.coutTotal || 0), 0);
         this.totalInterventions = data.length;
         const durees = data.filter((i: any) => i.dureeHeures).map((i: any) => i.dureeHeures);
         this.mttr = durees.length > 0 ? durees.reduce((a: number, b: number) => a + b, 0) / durees.length : 0;

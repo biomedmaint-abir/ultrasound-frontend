@@ -41,6 +41,10 @@
         <div class="kpi-icon">✅</div>
         <div class="kpi-info"><h2>{{ disponibilite }}%</h2><p>Taux de résolution</p></div>
       </div>
+      <div class="kpi-card navy">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-info"><h2>{{ coutTotalInterventions | number:'1.0-0' }} DH</h2><p>Coût total</p></div>
+      </div>
     </div>
 
     <div class="tables-grid">
@@ -136,7 +140,7 @@
 
     </div>
 
-    <div class="validation-section" *ngIf="true">
+    <div class="validation-section" *ngIf="enAttenteValidation.length > 0 && false">
       <div class="validation-header">
         <div class="validation-icon">⏳</div>
         <div>
