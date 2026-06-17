@@ -116,7 +116,9 @@ export class FseRapportsComponent implements OnInit {
           i.technicien?.id === this.userId ||
           i.nomFse === this.prenom ||
           i.nomFse === this.nom ||
-          i.nomFse === this.email
+          i.nomFse === this.email ||
+          i.nomFse === (this.prenom + ' ' + this.nom).trim() ||
+          i.nomFse === (this.nom + ' ' + this.prenom).trim()
         );
         this.rapports = mes
           .filter(i => i.statut === 'TERMINEE' || i.statut === 'EN_ATTENTE_VALIDATION' || i.statut === 'EN_ATTENTE_PIECE')

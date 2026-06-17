@@ -117,8 +117,8 @@ export class ChefPolePlanningComponent implements OnInit {
   assignerFse(inv: any): void {
     const fseId = this.selectedFse[inv.id];
     if (!fseId) return;
-    const fse = this.fseList.find(f => f.id === fseId);
-    const nomFse = fse ? (fse.prenom || fse.nom) : '';
+    const fse = this.fseList.find((f: any) => f.id === fseId);
+    const nomFse = fse ? ((fse.prenom || '') + ' ' + (fse.nom || '')).trim() : '';
     this.http.put(`${environment.apiUrl}/interventions/${inv.id}/assigner-fse`, { fseId, nomFse }).subscribe({
       next: () => {
         inv.nomFse = nomFse;
@@ -133,8 +133,8 @@ export class ChefPolePlanningComponent implements OnInit {
     const fseId = this.selectedFse[inv.id];
     if (!fseId) return;
     this.isSaving = true;
-    const fse = this.fseList.find(f => f.id === fseId);
-    const nomFse = fse ? (fse.prenom || fse.nom) : '';
+    const fse = this.fseList.find((f: any) => f.id === fseId);
+    const nomFse = fse ? ((fse.prenom || '') + ' ' + (fse.nom || '')).trim() : '';
     this.http.put(`${environment.apiUrl}/interventions/${inv.id}/assigner-fse`, { fseId, nomFse }).subscribe({
       next: () => {
         this.interventionsBloquees = this.interventionsBloquees.filter(i => i.id !== inv.id);

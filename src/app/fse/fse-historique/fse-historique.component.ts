@@ -168,7 +168,9 @@ export class FseHistoriqueComponent implements OnInit {
           i.technicien?.id === this.userId ||
           i.nomFse === this.prenom ||
           i.nomFse === this.nom ||
-          i.nomFse === this.email
+          i.nomFse === this.email ||
+          i.nomFse === (this.prenom + ' ' + this.nom).trim() ||
+          i.nomFse === (this.nom + ' ' + this.prenom).trim()
         );
         this.filtered = [...this.interventions];
         this.isLoading = false;

@@ -172,7 +172,9 @@ export class FseDashboardComponent implements OnInit {
           i.technicien?.id === this.userId ||
           i.nomFse === this.prenom ||
           i.nomFse === this.nom ||
-          i.nomFse === this.email
+          i.nomFse === this.email ||
+          i.nomFse === (this.prenom + ' ' + this.nom).trim() ||
+          i.nomFse === (this.nom + ' ' + this.prenom).trim()
         );
         const todayStr = new Date().toISOString().slice(0, 10);
         this.interventionsAujourdhui = this.mesInterventions.filter(i =>
