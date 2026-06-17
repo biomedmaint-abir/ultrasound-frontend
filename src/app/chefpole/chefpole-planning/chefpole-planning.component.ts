@@ -118,6 +118,21 @@ import { environment } from '../../../environments/environment';
   styles: [`
 .page-container{max-width:1000px;margin:0 auto;padding:28px 32px;background:#f8f9fc;min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif}
 .page-header{margin-bottom:24px;h1{margin:0;font-size:26px;font-weight:800;color:#0d1340}p{margin:0;font-size:13px;color:#6b7280}}
+.bloquees-section{background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:24px}
+.bloquees-header{display:flex;align-items:center;gap:12px;padding:16px 20px;background:#FEF2F2;border-bottom:1px solid #FEE2E2}
+.bloquees-icon{font-size:22px}
+.bloquees-title{margin:0;font-size:16px;font-weight:700;color:#DC2626;flex:1}
+.badge-red{background:#DC2626;color:white;padding:3px 12px;border-radius:20px;font-size:13px;font-weight:700}
+.bloquees-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 20px}
+.bloquee-card{background:#FFF5F5;border-left:3px solid #DC2626;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.bloquee-card-top{display:flex;align-items:flex-start;gap:12px}
+.bloquee-info{flex:1}
+.bloquee-equip{font-size:14px;font-weight:700;color:#0d1340;margin-bottom:3px}
+.bloquee-site{font-size:12px;color:#6b7280;margin-bottom:4px}
+.bloquee-motif{font-size:12px;color:#f97316;font-weight:600;margin-bottom:3px}
+.bloquee-fse{font-size:12px;color:#6b7280}
+.bloquee-card-bottom{display:flex;justify-content:flex-end;margin-top:8px}
+.btn-reassigner{background:#1C2B5A;color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer}
 .alert-section{background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:24px;border-left:4px solid #DC2626}
 .alert-header{display:flex;align-items:center;gap:12px;padding:16px 20px;background:#FEF2F2;border-bottom:1px solid #f1f3f5;h2{margin:0;font-size:16px;font-weight:700;color:#0d1340;flex:1}.alert-count{background:#DC2626;color:white;padding:2px 12px;border-radius:20px;font-size:13px;font-weight:700}}
 .alert-row{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #f1f3f5;&:last-child{border-bottom:none}}
