@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -11,8 +12,11 @@ import { environment } from '../../../environments/environment';
   template: `
 <div class="page-container">
   <div class="page-header">
-    <h1>Mon Planning</h1>
-    <p>Assignation des FSE aux interventions</p>
+    <div>
+      <h1>Mon Planning</h1>
+      <p>Assignation des FSE aux interventions</p>
+    </div>
+    <button class="btn-refresh" (click)="loadData()">🔄 Actualiser</button>
   </div>
 
   <div class="alert-section" *ngIf="nonAssignees.length > 0">
@@ -89,7 +93,7 @@ import { environment } from '../../../environments/environment';
 .non-assigne{font-size:12px;color:#DC2626;font-weight:600}
   `]
 })
-export class ChefPolePlanningComponent implements OnInit {
+export class ChefPolePlanningComponent implements OnInit, OnDestroy {
   interventions: any[] = [];
   nonAssignees: any[] = [];
   interventionsBloquees: any[] = [];
@@ -97,6 +101,7 @@ export class ChefPolePlanningComponent implements OnInit {
   selectedFse: { [key: number]: number | null } = {};
   showSelectFse: { [key: number]: boolean } = {};
   isSaving = false;
+  private refreshSub: Subscription | null = null;
   isLoading = true;
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
