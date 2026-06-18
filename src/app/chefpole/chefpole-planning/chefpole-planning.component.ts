@@ -48,7 +48,7 @@ import { environment } from '../../../environments/environment';
           </div>
           <div *ngIf="showSelectFse[inv.id]" class="fse-selector">
             <select [(ngModel)]="selectedFse[inv.id]" class="fse-select">
-              <option [ngValue]="null">-- Sélectionner un FSE --</option>
+              <option [ngValue]="null" disabled selected>-- Sélectionner un FSE --</option>
               <option *ngFor="let fse of fseList" [ngValue]="fse.id">
                 {{ fse.prenom }} {{ fse.nom }}
               </option>
@@ -209,14 +209,18 @@ export class ChefPolePlanningComponent implements OnInit, OnDestroy {
     const fseId = this.selectedFse[inv.id];
     if (!fseId) return;
     this.isSaving = true;
-    const fse = this.fseList.find((f: any) => f.id === fseId);
+    const fse = this.fseList.find((f: any) => Number(f.id) === Number(fseId));
     const nomFse = fse ? ((fse.prenom || '') + ' ' + (fse.nom || '')).trim() : '';
-    this.http.put(`${environment.apiUrl}/interventions/${inv.id}/assigner-fse`, { fseId, nomFse }).subscribe({
+    this.http.put(`${environment.apiUrl}/interventions/${inv.id}/assigner-fse`, { fseId: Number(fseId), nomFse }).subscribe({
       next: () => {
-        this.interventionsBloquees = this.interventionsBloquees.filter(i => i.id !== inv.id);
-        inv.nomFse = nomFse;
-        inv.commentaireRejet = null;
+        this.interventionsBloquees = this.interventionsBloquees.filter((i: any) => i.id !== inv.id);
+        const idx = this.interventions.findIndex((i: any) => i.id === inv.id);
+        if (idx > -1) {
+          this.interventions[idx].nomFse = nomFse;
+          this.interventions[idx].commentaireRejet = null;
+        }
         this.showSelectFse[inv.id] = false;
+        this.selectedFse[inv.id] = null;
         this.isSaving = false;
         this.cdr.detectChanges();
       },

@@ -181,6 +181,15 @@ import { environment } from '../../../environments/environment';
       <div *ngIf="pdfForm.parc && equipementsParc.length === 0" class="empty-state" style="padding:12px">
         Aucun équipement pour ce client.
       </div>
+      <div class="field-wrapper" *ngIf="pdfForm.parc && equipementsParc.length > 0">
+        <label>📅 Visites à inclure</label>
+        <div class="visites-check-grid">
+          <label class="visite-check-item" *ngFor="let v of visitesCochees">
+            <input type="checkbox" [(ngModel)]="v.checked">
+            <span>{{ v.label }} — {{ v.date | date:'dd/MM/yyyy' }}</span>
+          </label>
+        </div>
+      </div>
       <div class="field-wrapper" *ngIf="pdfForm.parc">
         <label>📅 Dates des visites (optionnel — sinon calculées automatiquement)</label>
         <div class="visites-grid">
@@ -260,6 +269,8 @@ import { environment } from '../../../environments/environment';
 .pdf-form{display:flex;flex-direction:column;gap:16px}
 .equipements-checkboxes{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
 .visites-grid{display:flex;flex-direction:column;gap:8px;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
+.visites-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
+.visite-check-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#0d1340;cursor:pointer;padding:6px;border-radius:8px;&:hover{background:#EFF6FF}input[type=checkbox]{width:16px;height:16px;accent-color:#1C2B5A;cursor:pointer}}
 .visite-row{display:flex;align-items:center;gap:8px}
 .visite-label{font-size:12px;font-weight:600;color:#1C2B5A;width:80px;flex-shrink:0}
 .small-date{padding:8px 10px!important;font-size:12px!important;flex:1}
@@ -297,6 +308,13 @@ export class BackofficePlanningComponent implements OnInit {
     date4debut: "", date4fin: ""
   };
 
+  visitesCochees = [
+    { num: 1, label: "1ère visite", date: "", checked: true },
+    { num: 2, label: "2ème visite", date: "", checked: true },
+    { num: 3, label: "3ème visite", date: "", checked: true },
+    { num: 4, label: "4ème visite", date: "", checked: true },
+  ];
+
   moisList = [
     {value:"01",label:"Janvier"},{value:"02",label:"Février"},{value:"03",label:"Mars"},
     {value:"04",label:"Avril"},{value:"05",label:"Mai"},{value:"06",label:"Juin"},
@@ -311,6 +329,7 @@ export class BackofficePlanningComponent implements OnInit {
   ngOnInit(): void {
     const currentYear = new Date().getFullYear();
     this.anneesList = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+    this.updateVisitesDates();
 
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => { this.interventions = data; this.filtered = [...data]; this.isLoading = false; this.cdr.detectChanges(); }
@@ -325,6 +344,14 @@ export class BackofficePlanningComponent implements OnInit {
     this.http.get<any[]>(`${environment.apiUrl}/contrats`).subscribe({
       next: (data) => { this.contrats = data; }
     });
+  }
+
+  updateVisitesDates(): void {
+    const annee = this.pdfForm.annee;
+    this.visitesCochees[0].date = annee + "-03-15";
+    this.visitesCochees[1].date = annee + "-06-15";
+    this.visitesCochees[2].date = annee + "-09-15";
+    this.visitesCochees[3].date = annee + "-12-15";
   }
 
   onParcChange(): void {
@@ -516,9 +543,11 @@ export class BackofficePlanningComponent implements OnInit {
 
     // Créer les interventions en base
     const equipementsCoches = this.equipementsParc.filter(e => e.selected).map(e => ({ id: e.id, nom: e.nom }));
+    const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.date);
     this.http.post(`${environment.apiUrl}/interventions/generer-planning`, {
       annee: annee,
-      equipements: equipementsCoches
+      equipements: equipementsCoches,
+      visitesDates: visitesDates
     }).subscribe({
       next: (res: any) => {
         this.successMsg = "✅ Planning généré — " + res.interventionsCreees + " interventions créées et disponibles pour assignation";
