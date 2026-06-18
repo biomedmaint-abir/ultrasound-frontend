@@ -114,3 +114,25 @@ table {
 
 .center-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 64px 0; color: #666; }
 .empty-state { display: flex; flex-direction: column; align-items: center; padding: 64px 0; color: #9CA3AF; font-size: 15px; }
+
+.badge-expire {
+  display: inline-block;
+  background: #FEE2E2;
+  color: #DC2626;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.badge-expire-soon {
+  display: inline-block;
+  background: #FFF7ED;
+  color: #f97316;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+}

@@ -74,6 +74,12 @@
         <select [(ngModel)]="form.role.id" class="input">
           <option *ngFor="let r of roles" [value]="r.id">{{ r.label }}</option>
         </select>
+        <div class="role-desc" *ngIf="form.role.id">
+          <span *ngIf="form.role.id == 1">👑 Supervision globale de l'application</span>
+          <span *ngIf="form.role.id == 2">🔧 Technicien terrain — exécute les interventions</span>
+          <span *ngIf="form.role.id == 4">📅 Planification et gestion des pièces de rechange</span>
+          <span *ngIf="form.role.id == 5">👥 Assignation des FSE aux interventions</span>
+        </div>
       </div>
     </div>
     <div class="form-actions">

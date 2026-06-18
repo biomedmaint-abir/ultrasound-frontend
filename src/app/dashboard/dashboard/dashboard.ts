@@ -26,6 +26,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   mttr: number | null = 0;
   disponibilite = 0;
   coutTotalInterventions = 0;
+  coutTotalMois = 0;
+  fseActifsAujourdhui = 0;
   email = localStorage.getItem('email') || '';
   nom = localStorage.getItem('nom') || '';
   prenom = localStorage.getItem('prenom') || '';
@@ -108,6 +110,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const t = data.filter((i: any) => i.statut === "TERMINEE").length;
         this.disponibilite = data.length > 0 ? Math.round((t / data.length) * 100) : 0;
         this.coutTotalInterventions = data.reduce((sum: number, i: any) => sum + (i.coutTotal || 0), 0);
+        const now = new Date();
+        this.coutTotalMois = data.filter((i: any) => {
+          const d = new Date(i.dateIntervention);
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }).reduce((sum: number, i: any) => sum + (i.coutTotal || 0), 0);
+        const todayStr = now.toISOString().slice(0, 10);
+        const fsesActifs = new Set(data.filter((i: any) =>
+          i.statut === 'EN_COURS' && i.dateIntervention === todayStr && i.nomFse
+        ).map((i: any) => i.nomFse));
+        this.fseActifsAujourdhui = fsesActifs.size;
         this.totalInterventions = data.length;
         const durees = data.filter((i: any) => i.dureeHeures).map((i: any) => i.dureeHeures);
         this.mttr = durees.length > 0 ? durees.reduce((a: number, b: number) => a + b, 0) / durees.length : 0;

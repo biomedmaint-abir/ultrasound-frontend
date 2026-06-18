@@ -82,6 +82,19 @@ export class ContratList implements OnInit {
   nextPage(): void { if (this.currentPage < this.totalPages) { this.currentPage++; this.updatePagination(); } }
   min(a: number, b: number): number { return Math.min(a, b); }
 
+  isExpire(dateFin: string): boolean {
+    if (!dateFin) return false;
+    return new Date(dateFin) < new Date();
+  }
+
+  expireBientot(dateFin: string): boolean {
+    if (!dateFin) return false;
+    const fin = new Date(dateFin);
+    const now = new Date();
+    const diff = (fin.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    return diff >= 0 && diff <= 30;
+  }
+
   getStatutClass(statut: string): string {
     switch (statut) {
       case 'ACTIF': return 'statut-actif';

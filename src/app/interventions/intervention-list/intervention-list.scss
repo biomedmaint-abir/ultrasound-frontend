@@ -269,3 +269,12 @@ table {
   color: #9CA3AF;
   font-size: 15px;
 }
+.btn-pdf-dl {
+  background: #EFF6FF;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  &:hover { background: #DBEAFE; }
+}

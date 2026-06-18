@@ -7,7 +7,7 @@
         <p>{{ filtered.length }} intervention(s) trouvée(s)</p>
       </div>
     </div>
-    <button class="btn-new" (click)="goToNew()">+ Nouvelle intervention</button>
+    
   </div>
 
   <div class="filters-bar">
@@ -86,6 +86,7 @@
               </span>
             </td>
             <td class="actions-cell" (click)="$event.stopPropagation()">
+              <button class="btn-pdf-dl" (click)="telechargerFiche34(row, $event)" title="Télécharger Fiche 34">📄</button>
               <button class="btn-edit" (click)="goToEdit(row.id, $event)">✏️</button>
               <button class="btn-delete" (click)="delete(row.id, $event)">🗑️</button>
             </td>
