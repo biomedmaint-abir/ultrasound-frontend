@@ -420,55 +420,201 @@ export class FseClotureComponent implements OnInit {
     });
   }
 
-  async genererFiche34(): Promise<void> {
+async genererFiche34(): Promise<void> {
     const { default: jsPDF } = await import('jspdf');
+    const autoTable = (await import('jspdf-autotable')).default;
     const inv = this.intervention;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const W = 210;
-    doc.setFillColor(28, 43, 90); doc.rect(0, 0, W, 35, 'F');
-    doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
-    doc.text('SCRIM', 20, 20);
-    doc.setFontSize(14); doc.text('Rapport d\'Intervention — Fiche 34', W/2, 18, { align: 'center' });
-    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.text('Format officiel SCRIM', W/2, 27, { align: 'center' });
-    let y = 45;
-    const infos = [
-      ['Equipement', inv.equipement?.nom || '—'],
-      ['Site / Parc', inv.equipement?.parc || '—'],
-      ['Type', inv.type || '—'],
-      ['Date', new Date(inv.dateIntervention).toLocaleDateString('fr-FR')],
-      ['FSE', inv.nomFse || '—'],
-      ['Duree', this.form.duree ? this.form.duree + 'h' : '—'],
-      ['Cout total', this.form.coutTotal ? this.form.coutTotal + ' DH' : '—'],
-      ['Statut', this.form.resultat || '—'],
-      ['Responsable client', this.form.responsableClient || '—'],
-    ];
-    doc.setTextColor(0,0,0);
-    infos.forEach((info, idx) => {
-      if (idx % 2 === 0) doc.setFillColor(245,247,250); else doc.setFillColor(255,255,255);
-      doc.rect(10, y-3, W-20, 8, 'F');
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(28,43,90);
-      doc.text(info[0] + ' :', 14, y+2);
-      doc.setFont('helvetica', 'normal'); doc.setTextColor(51,51,51);
-      doc.text(info[1], 70, y+2);
-      y += 9;
+    const W = 210; const margin = 15;
+    const nomFse = inv.nomFse || localStorage.getItem('nom') + ' ' + localStorage.getItem('prenom') || '—';
+    const dateStr = new Date(inv.dateIntervention).toLocaleDateString('fr-FR');
+
+    // ── EN-TÊTE ──
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(28,43,90);
+    doc.text('SCRIM', margin, 18);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(80,80,80);
+    doc.text('Service Après Vente', margin, 24);
+
+    // Badge N°Eco
+    doc.setFillColor(28,43,90); doc.rect(W-margin-55, 10, 55, 10, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(8);
+    doc.text('N° Éco 0802 000 089', W-margin-28, 16.5, {align:'center'});
+    doc.setTextColor(28,43,90); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.text('sav@scrim.ma', W-margin-28, 25, {align:'center'});
+
+    doc.setDrawColor(28,43,90); doc.setLineWidth(0.5);
+    doc.line(margin, 28, W-margin, 28);
+
+    // ── TITRE ──
+    let y = 32;
+    doc.setDrawColor(0); doc.setLineWidth(0.3);
+    doc.rect(margin, y, W-margin*2, 10);
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(0,0,0);
+    doc.text('Rapport d\'intervention', margin+4, y+7);
+    doc.setFontSize(11); doc.setTextColor(200,0,0);
+    doc.text('N°  ' + String(inv.id).padStart(6,'0'), W-margin-35, y+7);
+
+    // ── INFOS ──
+    y += 14;
+    const col1x = margin; const col2x = W/2+2;
+    const colW = W/2 - margin - 2;
+
+    const drawInfoBlock = (x: number, label: string, val: string, yy: number) => {
+      doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(28,43,90);
+      doc.text(label+' :', x, yy);
+      doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+      doc.text(val, x+30, yy);
+    };
+
+    drawInfoBlock(col1x, 'Client', inv.equipement?.parc || '—', y);
+    drawInfoBlock(col2x, 'Date', dateStr, y);
+    y+=6;
+    drawInfoBlock(col1x, 'Ville', this.getVilleFromParc(inv.equipement?.parc), y);
+    drawInfoBlock(col2x, 'Salle', inv.equipement?.service || '—', y);
+    y+=6;
+    drawInfoBlock(col1x, 'Matériel', 'Echographe', y);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(28,43,90);
+    doc.text('Utilisation conforme :', col2x, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+    doc.text('☑ Oui  ☐ Non', col2x+38, y);
+    y+=6;
+    drawInfoBlock(col1x, 'N° Série', inv.equipement?.numeroSerie || '—', y);
+
+    doc.setDrawColor(200,200,200); doc.setLineWidth(0.2);
+    doc.line(margin, y+4, W-margin, y+4);
+
+    // ── TABLEAU FSE ──
+    y+=8;
+    autoTable(doc, {
+      head: [['Nom de l\'ingénieur','Date','Heure arrivée','Heure départ']],
+      body: [[nomFse, dateStr, '', '']],
+      startY: y, margin:{left:margin,right:margin},
+      styles:{font:'helvetica',fontSize:8.5,cellPadding:2.5,lineColor:[0,0,0],lineWidth:0.2},
+      headStyles:{fillColor:[28,43,90],textColor:[255,255,255],fontStyle:'bold',halign:'center' as const},
+      columnStyles:{0:{cellWidth:60},1:{cellWidth:30,halign:'center' as const},2:{cellWidth:35,halign:'center' as const},3:{cellWidth:35,halign:'center' as const}},
     });
-    if (this.form.actionsEffectuees) {
-      y += 6;
-      doc.setFillColor(28,43,90); doc.rect(10, y, W-20, 7, 'F');
-      doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10);
-      doc.text('Actions effectuées', 14, y+5);
-      y += 10;
-      doc.setFillColor(245,247,250); doc.rect(10, y, W-20, 20, 'F');
-      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(51,51,51);
-      const lines = doc.splitTextToSize(this.form.actionsEffectuees, W-28);
-      doc.text(lines, 14, y+6);
-    }
-    doc.setFillColor(28,43,90); doc.rect(0, 287, W, 10, 'F');
-    doc.setTextColor(255,255,255); doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
-    doc.text('SCRIM | Confidentiel', 14, 293);
-    doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W/2, 293, { align: 'center' });
-    doc.save('Fiche34_' + (inv.equipement?.nom || 'Equipement') + '_' + inv.dateIntervention + '.pdf');
+
+    // ── RAPPORT TECHNIQUE ──
+    y = (doc as any).lastAutoTable.finalY + 4;
+    doc.setFillColor(28,43,90); doc.rect(margin, y, W-margin*2, 7, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.text('Rapport technique', W/2, y+5, {align:'center'});
+    y+=9;
+    doc.setDrawColor(0); doc.setLineWidth(0.2);
+    const actionsText = this.form.actionsEffectuees || '';
+    const lines = doc.splitTextToSize(actionsText, W-margin*2-6);
+    const blockH = Math.max(20, lines.length*4.5+6);
+    doc.rect(margin, y, W-margin*2, blockH);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(0,0,0);
+    doc.text(lines, margin+3, y+5);
+    y += blockH + 4;
+
+    // ── TABLEAU PIÈCES ──
+    doc.setFillColor(28,43,90); doc.rect(margin, y, W-margin*2, 7, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.text('Pièces utilisées', W/2, y+5, {align:'center'});
+    y+=7;
+
+    const piecesBody: any[] = this.piecesUtilisees
+      .filter(p => p.pieceId)
+      .map(p => {
+        const pd = this.piecesDisponibles.find((x:any) => x.id === p.pieceId);
+        return [pd?.reference || '—', String(p.quantite), '', pd?.nom || '—'];
+      });
+    while (piecesBody.length < 5) piecesBody.push(['','','','']);
+
+    autoTable(doc, {
+      head: [['Réf pièces fournies','Qté.','N° BS','Désignation']],
+      body: piecesBody,
+      startY: y, margin:{left:margin,right:margin},
+      styles:{font:'helvetica',fontSize:8,cellPadding:2.5,lineColor:[0,0,0],lineWidth:0.2,minCellHeight:6},
+      headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:'bold',halign:'center' as const},
+      columnStyles:{0:{cellWidth:45},1:{cellWidth:15,halign:'center' as const},2:{cellWidth:25,halign:'center' as const},3:{cellWidth:95}},
+    });
+
+    // ── TYPE INTERVENTION ──
+    y = (doc as any).lastAutoTable.finalY + 4;
+    if (y > 220) { doc.addPage(); y = 15; }
+
+    const isPreventif = inv.type === 'PREVENTIF';
+    const isCorrectif = inv.type === 'CORRECTIF';
+    const isTerminee = inv.statut === 'TERMINEE';
+    const numContrat = '—';
+    const col3W = (W-margin*2)/3;
+
+    doc.setLineWidth(0.2); doc.setDrawColor(0);
+    doc.rect(margin, y, col3W, 28);
+    doc.rect(margin+col3W, y, col3W, 28);
+    doc.rect(margin+col3W*2, y, col3W, 28);
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(0,0,0);
+    doc.text('☐ Installation / Mise en service', margin+2, y+6);
+    doc.text('☐ Formation', margin+2, y+12);
+    doc.text('☐ Garantie', margin+2, y+18);
+
+    doc.text('Contrat N° : '+numContrat, margin+col3W+2, y+6);
+    doc.text((isPreventif?'☑':'☐')+' Maintenance préventive', margin+col3W+2, y+12);
+    doc.text((isCorrectif?'☑':'☐')+' Maintenance corrective', margin+col3W+2, y+18);
+    doc.text('☐ Intervention facturable', margin+col3W+2, y+24);
+
+    doc.text('Intervention achevée :', margin+col3W*2+2, y+6);
+    doc.text((isTerminee?'☑':'☐')+' Oui  '+(isTerminee?'☐':'☑')+' Non', margin+col3W*2+2, y+12);
+
+    // ── SIGNATURES ──
+    y += 32;
+    if (y > 230) { doc.addPage(); y = 15; }
+
+    doc.setLineWidth(0.2);
+    doc.rect(margin, y, col3W, 32);
+    doc.rect(margin+col3W, y, col3W, 32);
+    doc.rect(margin+col3W*2, y, col3W, 32);
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+    doc.text('Signature de l\'intervenant', margin+col3W/2, y+5, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    doc.text(nomFse, margin+col3W/2, y+10, {align:'center'});
+    doc.text('Service Après Vente SCRIM', margin+2, y+15);
+    doc.text('22, Zankat Al Mariniyine Hassan - Rabat', margin+2, y+19);
+    doc.text('Tél : 05 37 26 06 06', margin+2, y+23);
+    doc.text('www.scrim.ma', margin+2, y+27);
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+    doc.text('Signature client', margin+col3W+col3W/2, y+5, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    doc.text('Date :', margin+col3W+2, y+15);
+
+    doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+    doc.text('Signature service client', margin+col3W*2+col3W/2, y+5, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    doc.text(inv.equipement?.parc || '—', margin+col3W*2+2, y+10);
+
+    // ── PIED DE PAGE ──
+    const pageH = 297;
+    doc.setFillColor(240,240,240); doc.rect(0, pageH-22, W, 22, 'F');
+    doc.setDrawColor(28,43,90); doc.setLineWidth(0.5);
+    doc.line(0, pageH-22, W, pageH-22);
+    doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(60,60,60);
+    doc.text('Avenue Mohamed Elyazidi, Villa N° 7, Bloc D, Secteur 9, Hay Riad - RABAT', W/2, pageH-16, {align:'center'});
+    doc.text('Tél : +212 (5) 37 56 64 84 – Fax : +212 (5) 37 56 64 85 – Web : www.scrim.ma', W/2, pageH-11, {align:'center'});
+    doc.text('S.A au capital de 4 000 000 Dhs - ICE 001603940000046 - RC : 20937 - CNSS : 1491696', W/2, pageH-6.5, {align:'center'});
+    doc.text('IF : 03300951 - Patente : 25119572 - BMCI : 01070 0001 47 001 41 MAD', W/2, pageH-2, {align:'center'});
+
+    doc.save('Fiche34_N'+String(inv.id).padStart(6,'0')+'_'+(inv.equipement?.nom||'Equipement')+'.pdf');
+  }
+
+  getVilleFromParc(parc: string): string {
+    const villes: {[key:string]:string} = {
+      'CHU Tanger':'Tanger','HCK Casablanca':'Casablanca','CHU Mohamed VI Oujda':'Oujda',
+      'Hopital Ghassani Fes':'Fès','ODM Fes':'Fès','HCZ Rabat':'Rabat',
+      'Dr Louah Rabat':'Rabat','Dr Loubaris Rabat':'Rabat','Clinique Slaoui Rabat':'Rabat',
+      'Daoud Layla Rabat':'Rabat','Clinique Dar DMANA Ouazzane':'Ouazzane',
+      'Dr SAFI Asfi':'Safi','Dr HADI Safi':'Safi','Dr Boudhar Safi':'Safi',
+      'Dr Lamhani Marrakech':'Marrakech','Clinique Ibn Sina Tanger':'Tanger',
+      'Dr SALMI Najlae Témara':'Témara','Dr Agharabi Témarra':'Témara',
+      'Promamec Bouskoura':'Bouskoura','Dr EZ-ZAHRAOUI Casablanca':'Casablanca',
+      'Dr ESSAKET Bani Mellal':'Beni Mellal','Clinique Tarik Ibn Ziyad':'Tanger'
+    };
+    return villes[parc] || '—';
   }
 
   async genererChecklistPDF(): Promise<void> {
