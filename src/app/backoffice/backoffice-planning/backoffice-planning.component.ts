@@ -179,6 +179,35 @@ import { environment } from '../../../environments/environment';
       <div *ngIf="pdfForm.parc && equipementsParc.length === 0" class="empty-state" style="padding:12px">
         Aucun équipement pour ce client.
       </div>
+      <div class="field-wrapper" *ngIf="pdfForm.parc">
+        <label>📅 Dates des visites (optionnel — sinon calculées automatiquement)</label>
+        <div class="visites-grid">
+          <div class="visite-row">
+            <span class="visite-label">1ère visite</span>
+            <input type="date" [(ngModel)]="pdfForm.date1debut" class="form-input small-date" placeholder="Début">
+            <span>→</span>
+            <input type="date" [(ngModel)]="pdfForm.date1fin" class="form-input small-date" placeholder="Fin">
+          </div>
+          <div class="visite-row">
+            <span class="visite-label">2ème visite</span>
+            <input type="date" [(ngModel)]="pdfForm.date2debut" class="form-input small-date">
+            <span>→</span>
+            <input type="date" [(ngModel)]="pdfForm.date2fin" class="form-input small-date">
+          </div>
+          <div class="visite-row">
+            <span class="visite-label">3ème visite</span>
+            <input type="date" [(ngModel)]="pdfForm.date3debut" class="form-input small-date">
+            <span>→</span>
+            <input type="date" [(ngModel)]="pdfForm.date3fin" class="form-input small-date">
+          </div>
+          <div class="visite-row">
+            <span class="visite-label">4ème visite</span>
+            <input type="date" [(ngModel)]="pdfForm.date4debut" class="form-input small-date">
+            <span>→</span>
+            <input type="date" [(ngModel)]="pdfForm.date4fin" class="form-input small-date">
+          </div>
+        </div>
+      </div>
     </div>
     <div class="form-actions" style="margin-top:20px">
       <button class="btn-cancel" (click)="showPdfModal = false">Annuler</button>
@@ -228,6 +257,10 @@ import { environment } from '../../../environments/environment';
 .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280}
 .pdf-form{display:flex;flex-direction:column;gap:16px}
 .equipements-checkboxes{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
+.visites-grid{display:flex;flex-direction:column;gap:8px;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
+.visite-row{display:flex;align-items:center;gap:8px}
+.visite-label{font-size:12px;font-weight:600;color:#1C2B5A;width:80px;flex-shrink:0}
+.small-date{padding:8px 10px!important;font-size:12px!important;flex:1}
 .checkbox-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;font-size:13px;color:#0d1340;&:hover{background:#f8f9fc}input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#1C2B5A}}
 .success-banner{background:#DCFCE7;color:#16A34A;padding:12px 16px;border-radius:10px;margin-bottom:16px}
 .error-banner{background:#FEE2E2;color:#DC2626;padding:12px 16px;border-radius:10px;margin-bottom:16px}
@@ -253,7 +286,14 @@ export class BackofficePlanningComponent implements OnInit {
   equipementsParc: any[] = [];
   anneesList: number[] = [];
 
-  pdfForm = { parc: "", annee: new Date().getFullYear() };
+  pdfForm = {
+    parc: "",
+    annee: new Date().getFullYear(),
+    date1debut: "", date1fin: "",
+    date2debut: "", date2fin: "",
+    date3debut: "", date3fin: "",
+    date4debut: "", date4fin: ""
+  };
 
   moisList = [
     {value:"01",label:"Janvier"},{value:"02",label:"Février"},{value:"03",label:"Mars"},
@@ -399,11 +439,20 @@ export class BackofficePlanningComponent implements OnInit {
     doc.line(W / 2 - titreWidth / 2, 53, W / 2 + titreWidth / 2, 53);
 
     // PÉRIODES
+    const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('fr-FR') : null;
     const visites = [
-      "Entre le 02 et le 31/03/" + annee,
-      "Entre le 01 et le 30/06/" + annee,
-      "Entre le 01 et le 30/09/" + annee,
-      "Entre le 01 et le 31/12/" + annee,
+      this.pdfForm.date1debut && this.pdfForm.date1fin
+        ? "Entre le " + formatDate(this.pdfForm.date1debut) + " et le " + formatDate(this.pdfForm.date1fin)
+        : "Entre le 02 et le 31/03/" + annee,
+      this.pdfForm.date2debut && this.pdfForm.date2fin
+        ? "Entre le " + formatDate(this.pdfForm.date2debut) + " et le " + formatDate(this.pdfForm.date2fin)
+        : "Entre le 01 et le 30/06/" + annee,
+      this.pdfForm.date3debut && this.pdfForm.date3fin
+        ? "Entre le " + formatDate(this.pdfForm.date3debut) + " et le " + formatDate(this.pdfForm.date3fin)
+        : "Entre le 01 et le 30/09/" + annee,
+      this.pdfForm.date4debut && this.pdfForm.date4fin
+        ? "Entre le " + formatDate(this.pdfForm.date4debut) + " et le " + formatDate(this.pdfForm.date4fin)
+        : "Entre le 01 et le 31/12/" + annee,
     ];
 
     // TABLEAU
