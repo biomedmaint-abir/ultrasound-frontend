@@ -58,6 +58,8 @@ import { environment } from '../../../environments/environment';
     </div>
   </div>
 
+  <div *ngIf="successMsg" class="success-banner" style="margin-bottom:16px">{{ successMsg }}</div>
+
   <!-- Filtres -->
   <div class="filter-card">
     <div class="search-wrap">
@@ -525,7 +527,24 @@ export class BackofficePlanningComponent implements OnInit {
     doc.text("Cachet et signature client", W - margin - 37.5, finalY + 29, { align: "center" });
 
     doc.save("Planning_Preventif_" + parc.replace(/ /g, "_") + "_" + annee + ".pdf");
-    this.showPdfModal = false;
+
+    // Créer les interventions en base
+    const equipementsCoches = this.equipementsParc.filter(e => e.selected).map(e => ({ id: e.id, nom: e.nom }));
+    this.http.post(`${environment.apiUrl}/interventions/generer-planning`, {
+      annee: annee,
+      equipements: equipementsCoches
+    }).subscribe({
+      next: (res: any) => {
+        this.successMsg = "✅ Planning généré — " + res.interventionsCreees + " interventions créées et disponibles pour assignation";
+        this.showPdfModal = false;
+        this.ngOnInit();
+        this.cdr.detectChanges();
+        setTimeout(() => { this.successMsg = ""; this.cdr.detectChanges(); }, 5000);
+      },
+      error: () => {
+        this.showPdfModal = false;
+      }
+    });
   }
 
   getVille(parc: string): string {
