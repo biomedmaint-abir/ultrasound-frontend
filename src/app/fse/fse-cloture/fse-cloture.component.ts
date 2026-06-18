@@ -59,6 +59,94 @@ import { environment } from '../../../environments/environment';
         </div>
       </div>
 
+      <!-- CHECK-LIST PREVENTIF UNIQUEMENT -->
+      <div class="checklist-section" *ngIf="intervention.type === 'PREVENTIF'">
+        <div class="checklist-header" (click)="showChecklist = !showChecklist">
+          <div class="checklist-title">
+            <span>📋</span>
+            <h3>Check-list de maintenance — Échographe</h3>
+            <span class="checklist-badge">PRÉVENTIF</span>
+          </div>
+          <span class="toggle-icon">{{ showChecklist ? '▲' : '▼' }}</span>
+        </div>
+
+        <div class="checklist-body" *ngIf="showChecklist">
+
+          <!-- INFOS GÉNÉRALES -->
+          <div class="checklist-category">
+            <div class="category-title">📌 INFORMATIONS GÉNÉRALES</div>
+            <div class="info-field-row">
+              <span class="field-label">Nom de l'hôpital / Clinique</span>
+              <input type="text" [value]="intervention.equipement?.parc || ''" class="form-input readonly-field" readonly>
+            </div>
+            <div class="info-field-row">
+              <span class="field-label">Service</span>
+              <input type="text" [value]="intervention.equipement?.service || ''" class="form-input readonly-field" readonly>
+            </div>
+            <div class="info-field-row">
+              <span class="field-label">Modèle</span>
+              <input type="text" [value]="intervention.equipement?.modele || intervention.equipement?.nom || ''" class="form-input readonly-field" readonly>
+            </div>
+            <div class="info-field-row">
+              <span class="field-label">Numéro de série</span>
+              <input type="text" [value]="intervention.equipement?.numeroSerie || ''" class="form-input readonly-field" readonly>
+            </div>
+            <div class="info-field-row">
+              <span class="field-label">Version logiciel</span>
+              <input type="text" [(ngModel)]="checklistInfos.versionLogiciel" class="form-input" placeholder="Ex: 5.0.3">
+            </div>
+            <div class="info-field-row">
+              <span class="field-label">N° ordre de service</span>
+              <input type="text" [(ngModel)]="checklistInfos.numeroOrdreService" class="form-input" placeholder="Ex: OS-2026-001">
+            </div>
+          </div>
+
+          <!-- SÉCURITÉ ÉLECTRIQUE -->
+          <div class="checklist-category">
+            <div class="category-title">⚡ SÉCURITÉ ÉLECTRIQUE</div>
+            <div *ngFor="let item of getItemsByCategory('SECURITE_ELECTRIQUE')" class="checklist-item">
+              <div class="item-info">
+                <span class="item-name">{{ item.element }}</span>
+              </div>
+              <div class="item-controls">
+                <button class="ctrl-btn" [class.ctrl-active-green]="item.statut === 'CONFORME'" (click)="item.statut = 'CONFORME'">✓ Conforme</button>
+                <button class="ctrl-btn" [class.ctrl-active-gray]="item.statut === 'NA'" (click)="item.statut = 'NA'">N/A</button>
+                <input type="text" [(ngModel)]="item.remarque" class="form-input remarque-input" placeholder="Remarque...">
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTRÔLE FONCTIONNEL -->
+          <div class="checklist-category">
+            <div class="category-title">🔧 CONTRÔLE FONCTIONNEL / MÉCANIQUE</div>
+            <div *ngFor="let item of getItemsByCategory('CONTROLE_FONCTIONNEL')" class="checklist-item">
+              <div class="item-info">
+                <span class="item-name">{{ item.element }}</span>
+              </div>
+              <div class="item-controls">
+                <button class="ctrl-btn" [class.ctrl-active-green]="item.statut === 'CONFORME'" (click)="item.statut = 'CONFORME'">✓ Conforme</button>
+                <button class="ctrl-btn" [class.ctrl-active-gray]="item.statut === 'NA'" (click)="item.statut = 'NA'">N/A</button>
+                <input type="text" [(ngModel)]="item.remarque" class="form-input remarque-input" placeholder="Remarque...">
+              </div>
+            </div>
+          </div>
+
+          <!-- SONDES -->
+          <div class="checklist-category">
+            <div class="category-title">🔬 SONDES</div>
+            <div *ngFor="let item of getItemsByCategory('SONDES')" class="checklist-item">
+              <div class="item-info">
+                <span class="item-name">{{ item.element }}</span>
+              </div>
+              <div class="item-controls">
+                <input type="text" [(ngModel)]="item.remarque" class="form-input" placeholder="Modèle de la sonde...">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <div class="pieces-section">
         <div class="pieces-header">
           <h3>🔩 Pièces utilisées</h3>
@@ -85,7 +173,7 @@ import { environment } from '../../../environments/environment';
           <span class="toggle-icon">{{ showCodeErreur ? '▲' : '▼' }}</span>
         </div>
         <div class="code-erreur-body" *ngIf="showCodeErreur">
-          <p class="code-erreur-desc">Si vous avez rencontré un code erreur absent de la base IA, signalez-le ici. L'administrateur pourra l'ajouter à la base de connaissances.</p>
+          <p class="code-erreur-desc">Si vous avez rencontré un code erreur absent de la base IA, signalez-le ici.</p>
           <div class="form-grid">
             <div class="field-wrapper">
               <label>Code erreur</label>
@@ -93,11 +181,11 @@ import { environment } from '../../../environments/environment';
             </div>
             <div class="field-wrapper">
               <label>Symptômes observés</label>
-              <input type="text" [(ngModel)]="codeErreur.symptomes" class="form-input" placeholder="Ex: Écran noir, bruit anormal...">
+              <input type="text" [(ngModel)]="codeErreur.symptomes" class="form-input" placeholder="Ex: Écran noir...">
             </div>
             <div class="field-wrapper full-width">
               <label>Solution appliquée</label>
-              <textarea [(ngModel)]="codeErreur.solution" rows="2" class="form-textarea" placeholder="Décrivez ce que vous avez fait pour résoudre..."></textarea>
+              <textarea [(ngModel)]="codeErreur.solution" rows="2" class="form-textarea" placeholder="Décrivez..."></textarea>
             </div>
           </div>
         </div>
@@ -105,8 +193,7 @@ import { environment } from '../../../environments/environment';
 
       <div class="field-wrapper full-width" style="margin-bottom:24px">
         <label>Nom du responsable client présent <span class="required">*</span></label>
-        <input type="text" [(ngModel)]="form.responsableClient" class="form-input"
-          placeholder="Nom et prénom du responsable technique du site">
+        <input type="text" [(ngModel)]="form.responsableClient" class="form-input" placeholder="Nom et prénom du responsable technique du site">
       </div>
 
       <div class="form-actions">
@@ -133,6 +220,7 @@ h2{margin:0;font-size:16px;font-weight:700;color:#0d1340}
 .full-width{grid-column:span 2}
 .field-wrapper{display:flex;flex-direction:column;gap:8px}label{font-size:13px;font-weight:600;color:#0d1340}.required{color:#DC2626}
 .form-input{padding:12px 14px;border:1.5px solid #e2e6f0;border-radius:10px;font-size:14px;outline:none;width:100%;box-sizing:border-box}
+.readonly-field{background:#f8f9fc;color:#6b7280;cursor:not-allowed}
 .form-select{padding:12px 14px;border:1.5px solid #e2e6f0;border-radius:10px;font-size:14px;outline:none;background:white;width:100%}
 .form-textarea{padding:12px 14px;border:1.5px solid #e2e6f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;width:100%;box-sizing:border-box;font-family:inherit}
 .result-buttons{display:flex;gap:12px}
@@ -148,11 +236,26 @@ h3{margin:0;font-size:14px;font-weight:700;color:#0d1340}
 .small{width:80px!important}
 .btn-delete{background:#FEF2F2;border:none;border-radius:8px;padding:8px 10px;cursor:pointer}
 .empty-pieces{text-align:center;padding:20px;background:#f8f9fa;border-radius:10px;color:#9CA3AF;font-size:13px}
+.checklist-section{background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:14px;margin-bottom:24px;overflow:hidden}
+.checklist-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer}
+.checklist-title{display:flex;align-items:center;gap:10px;h3{margin:0;font-size:14px;font-weight:700;color:#15803d}}
+.checklist-badge{background:#16A34A;color:white;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700}
+.toggle-icon{font-size:12px;color:#6b7280}
+.checklist-body{padding:0 20px 20px}
+.checklist-category{margin-bottom:20px}
+.category-title{font-size:12px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.5px;padding:8px 0;border-bottom:1.5px solid #86EFAC;margin-bottom:12px}
+.info-field-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;.field-label{font-size:13px;color:#374151;font-weight:500;width:200px;flex-shrink:0}}
+.checklist-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;margin-bottom:6px;background:white;border:1px solid #e2e6f0}
+.item-info{flex:1}.item-name{font-size:13px;color:#0d1340;font-weight:500}
+.item-controls{display:flex;gap:8px;align-items:center}
+.ctrl-btn{padding:5px 12px;border:1.5px solid #e2e6f0;border-radius:8px;background:white;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ctrl-active-green{background:#DCFCE7;border-color:#16A34A;color:#16A34A}
+.ctrl-active-gray{background:#F3F4F6;border-color:#9CA3AF;color:#6b7280}
+.remarque-input{width:160px!important}
 .code-erreur-section{background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:14px;margin-bottom:24px;overflow:hidden}
 .code-erreur-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer}
 .code-erreur-title{display:flex;align-items:center;gap:10px}
 .optionnel{font-size:11px;color:#6b7280;font-weight:400}
-.toggle-icon{font-size:12px;color:#6b7280}
 .code-erreur-body{padding:0 20px 20px}
 .code-erreur-desc{font-size:12px;color:#6b7280;margin:0 0 16px;font-style:italic}
 .form-actions{display:flex;gap:12px;justify-content:flex-end}
@@ -172,6 +275,7 @@ export class FseClotureComponent implements OnInit {
   successMsg = '';
   errorMsg = '';
   showCodeErreur = false;
+  showChecklist = true;
 
   form = {
     actionsEffectuees: '',
@@ -181,11 +285,11 @@ export class FseClotureComponent implements OnInit {
     responsableClient: ''
   };
 
-  codeErreur = {
-    code: '',
-    symptomes: '',
-    solution: ''
-  };
+  codeErreur = { code: '', symptomes: '', solution: '' };
+
+  checklistInfos = { versionLogiciel: '', numeroOrdreService: '' };
+
+  checklistItems: any[] = [];
 
   constructor(
     private http: HttpClient,
@@ -198,12 +302,41 @@ export class FseClotureComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.http.get<any>(`${environment.apiUrl}/interventions/${id}`).subscribe({
-        next: (data) => { this.intervention = data; this.isLoading = false; this.cdr.detectChanges(); }
+        next: (data) => {
+          this.intervention = data;
+          this.isLoading = false;
+          this.initChecklist();
+          this.cdr.detectChanges();
+        }
       });
     }
     this.http.get<any[]>(`${environment.apiUrl}/pieces`).subscribe({
       next: (data) => { this.piecesDisponibles = data; }
     });
+  }
+
+  initChecklist(): void {
+    this.checklistItems = [
+      { element: 'Tension secteur (V)', categorie: 'SECURITE_ELECTRIQUE', statut: '', remarque: '' },
+      { element: 'Auto-test', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Filtre à air / Cache poussière', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Moniteur / Écran', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Trackball', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Panneau de commande', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Câble alimentation / Disjoncteur', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Roulettes', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Ports USB / Réseau', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'ECG', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Sécurité mécanique', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
+      { element: 'Sonde 1', categorie: 'SONDES', statut: '', remarque: '' },
+      { element: 'Sonde 2', categorie: 'SONDES', statut: '', remarque: '' },
+      { element: 'Sonde 3', categorie: 'SONDES', statut: '', remarque: '' },
+      { element: 'Sonde 4', categorie: 'SONDES', statut: '', remarque: '' },
+    ];
+  }
+
+  getItemsByCategory(categorie: string): any[] {
+    return this.checklistItems.filter(i => i.categorie === categorie);
   }
 
   ajouterPiece(): void { this.piecesUtilisees.push({ pieceId: null, quantite: 1 }); }
@@ -243,6 +376,18 @@ export class FseClotureComponent implements OnInit {
           }));
           this.http.post(`${environment.apiUrl}/intervention-pieces/bulk`, piecesPayload).subscribe();
         }
+
+        // Sauvegarder checklist si PREVENTIF
+        if (this.intervention.type === 'PREVENTIF' && this.checklistItems.length > 0) {
+          const checklistPayload = this.checklistItems.map(item => ({
+            element: item.element,
+            categorie: item.categorie,
+            statut: item.statut || 'NA',
+            remarque: item.remarque || ''
+          }));
+          this.http.post(`${environment.apiUrl}/checklist/intervention/${this.intervention.id}/bulk`, checklistPayload).subscribe();
+        }
+
         if (this.codeErreur.code && this.codeErreur.symptomes) {
           const codePayload = {
             code: this.codeErreur.code,
@@ -251,10 +396,17 @@ export class FseClotureComponent implements OnInit {
             causesProbables: 'Signalé par FSE — à vérifier',
             interventionId: this.intervention.id
           };
-          this.http.post(`${environment.apiUrl}/codes-erreur/signalement`, codePayload).subscribe({
-            error: () => {}
-          });
+          this.http.post(`${environment.apiUrl}/codes-erreur/signalement`, codePayload).subscribe({ error: () => {} });
         }
+
+        // Générer PDF Fiche 34
+        this.genererFiche34();
+
+        // Générer PDF checklist si PREVENTIF
+        if (this.intervention.type === 'PREVENTIF') {
+          this.genererChecklistPDF();
+        }
+
         this.isSaving = false;
         this.successMsg = '✅ Intervention clôturée avec succès !';
         this.cdr.detectChanges();
@@ -266,6 +418,167 @@ export class FseClotureComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  async genererFiche34(): Promise<void> {
+    const { default: jsPDF } = await import('jspdf');
+    const inv = this.intervention;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210;
+    doc.setFillColor(28, 43, 90); doc.rect(0, 0, W, 35, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+    doc.text('SCRIM', 20, 20);
+    doc.setFontSize(14); doc.text('Rapport d\'Intervention — Fiche 34', W/2, 18, { align: 'center' });
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+    doc.text('Format officiel SCRIM', W/2, 27, { align: 'center' });
+    let y = 45;
+    const infos = [
+      ['Equipement', inv.equipement?.nom || '—'],
+      ['Site / Parc', inv.equipement?.parc || '—'],
+      ['Type', inv.type || '—'],
+      ['Date', new Date(inv.dateIntervention).toLocaleDateString('fr-FR')],
+      ['FSE', inv.nomFse || '—'],
+      ['Duree', this.form.duree ? this.form.duree + 'h' : '—'],
+      ['Cout total', this.form.coutTotal ? this.form.coutTotal + ' DH' : '—'],
+      ['Statut', this.form.resultat || '—'],
+      ['Responsable client', this.form.responsableClient || '—'],
+    ];
+    doc.setTextColor(0,0,0);
+    infos.forEach((info, idx) => {
+      if (idx % 2 === 0) doc.setFillColor(245,247,250); else doc.setFillColor(255,255,255);
+      doc.rect(10, y-3, W-20, 8, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(28,43,90);
+      doc.text(info[0] + ' :', 14, y+2);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(51,51,51);
+      doc.text(info[1], 70, y+2);
+      y += 9;
+    });
+    if (this.form.actionsEffectuees) {
+      y += 6;
+      doc.setFillColor(28,43,90); doc.rect(10, y, W-20, 7, 'F');
+      doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+      doc.text('Actions effectuées', 14, y+5);
+      y += 10;
+      doc.setFillColor(245,247,250); doc.rect(10, y, W-20, 20, 'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(51,51,51);
+      const lines = doc.splitTextToSize(this.form.actionsEffectuees, W-28);
+      doc.text(lines, 14, y+6);
+    }
+    doc.setFillColor(28,43,90); doc.rect(0, 287, W, 10, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+    doc.text('SCRIM | Confidentiel', 14, 293);
+    doc.text('Genere le ' + new Date().toLocaleDateString('fr-FR'), W/2, 293, { align: 'center' });
+    doc.save('Fiche34_' + (inv.equipement?.nom || 'Equipement') + '_' + inv.dateIntervention + '.pdf');
+  }
+
+  async genererChecklistPDF(): Promise<void> {
+    const { default: jsPDF } = await import('jspdf');
+    const autoTable = (await import('jspdf-autotable')).default;
+    const inv = this.intervention;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210;
+    const margin = 14;
+
+    // EN-TÊTE
+    doc.setFillColor(28, 43, 90); doc.rect(0, 0, W, 30, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+    doc.text('CHECK-LIST DE MAINTENANCE — ÉCHOGRAPHE', W/2, 14, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+    doc.text('SCRIM | Service Après Vente', W/2, 22, { align: 'center' });
+
+    // INFOS
+    doc.setTextColor(0,0,0); doc.setFontSize(9);
+    let y = 36;
+    doc.setFont('helvetica', 'bold'); doc.text('Équipement :', margin, y);
+    doc.setFont('helvetica', 'normal'); doc.text(inv.equipement?.nom || '—', margin + 28, y);
+    doc.setFont('helvetica', 'bold'); doc.text('Site :', W/2, y);
+    doc.setFont('helvetica', 'normal'); doc.text(inv.equipement?.parc || '—', W/2 + 12, y);
+    y += 6;
+    doc.setFont('helvetica', 'bold'); doc.text('N° Série :', margin, y);
+    doc.setFont('helvetica', 'normal'); doc.text(inv.equipement?.numeroSerie || '—', margin + 22, y);
+    doc.setFont('helvetica', 'bold'); doc.text('Date :', W/2, y);
+    doc.setFont('helvetica', 'normal'); doc.text(new Date(inv.dateIntervention).toLocaleDateString('fr-FR'), W/2 + 14, y);
+    y += 6;
+    if (this.checklistInfos.versionLogiciel) {
+      doc.setFont('helvetica', 'bold'); doc.text('Version logiciel :', margin, y);
+      doc.setFont('helvetica', 'normal'); doc.text(this.checklistInfos.versionLogiciel, margin + 36, y);
+    }
+    if (this.checklistInfos.numeroOrdreService) {
+      doc.setFont('helvetica', 'bold'); doc.text('N° OS :', W/2, y);
+      doc.setFont('helvetica', 'normal'); doc.text(this.checklistInfos.numeroOrdreService, W/2 + 16, y);
+    }
+
+    // TABLEAU
+    const categories = ['SECURITE_ELECTRIQUE', 'CONTROLE_FONCTIONNEL', 'SONDES'];
+    const catLabels: {[key: string]: string} = {
+      'SECURITE_ELECTRIQUE': 'Sécurité électrique',
+      'CONTROLE_FONCTIONNEL': 'Contrôle fonctionnel / Mécanique',
+      'SONDES': 'Sondes'
+    };
+
+    const body: any[] = [];
+    categories.forEach(cat => {
+      body.push([{ content: catLabels[cat], colSpan: 4, styles: { fillColor: [28, 43, 90], textColor: [255,255,255], fontStyle: 'bold', halign: 'left' as const } }]);
+      this.getItemsByCategory(cat).forEach(item => {
+        const isConforme = item.statut === 'CONFORME';
+        const isNA = item.statut === 'NA';
+        const isSonde = cat === 'SONDES';
+        body.push([
+          item.element,
+          isSonde ? '—' : (isConforme ? '✓' : ''),
+          isSonde ? '—' : (isNA ? '✓' : ''),
+          item.remarque || ''
+        ]);
+      });
+    });
+
+    autoTable(doc, {
+      head: [['Élément à vérifier', 'Conforme', 'N/A', 'Remarques']],
+      body: body,
+      startY: y + 8,
+      margin: { left: margin, right: margin },
+      styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 3, lineColor: [0,0,0], lineWidth: 0.2 },
+      headStyles: { fillColor: [28, 43, 90], textColor: [255,255,255], fontStyle: 'bold', halign: 'center' as const },
+      columnStyles: {
+        0: { cellWidth: 80 },
+        1: { cellWidth: 22, halign: 'center' as const },
+        2: { cellWidth: 22, halign: 'center' as const },
+        3: { cellWidth: 58 }
+      },
+      alternateRowStyles: { fillColor: [248, 249, 252] },
+    });
+
+    // SIGNATURES
+    const finalY = (doc as any).lastAutoTable?.finalY + 12 || 230;
+    doc.setLineWidth(0.3); doc.setDrawColor(0,0,0);
+
+    // Ligne séparatrice
+    doc.line(margin, finalY, W - margin, finalY);
+
+    // Bloc technicien
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0,0,0);
+    doc.text('Technicien SAV :', margin, finalY + 8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(inv.nomFse || '—', margin + 32, finalY + 8);
+    doc.text('Date : ' + new Date(inv.dateIntervention).toLocaleDateString('fr-FR'), margin, finalY + 14);
+    doc.text('Signature :', margin, finalY + 20);
+    doc.rect(margin, finalY + 23, 75, 25);
+
+    // Bloc client
+    doc.setFont('helvetica', 'bold');
+    doc.text('Représentant du client :', W/2 + 5, finalY + 8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(inv.equipement?.parc || '—', W/2 + 5, finalY + 14);
+    doc.text('Date :', W/2 + 5, finalY + 20);
+    doc.rect(W/2 + 5, finalY + 23, 75, 25);
+
+    // Pied de page
+    doc.setFillColor(28,43,90); doc.rect(0, 287, W, 10, 'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(7.5); doc.setFont('helvetica', 'normal');
+    doc.text('SCRIM | sav@scrim.ma | N°Eco : 0802 000 089', margin, 293);
+    doc.text('Généré le ' + new Date().toLocaleDateString('fr-FR'), W - margin, 293, { align: 'right' });
+
+    doc.save('Checklist_' + (inv.equipement?.nom || 'Equipement') + '_' + inv.dateIntervention + '.pdf');
   }
 
   goBack(): void { this.router.navigate(['/fse/interventions']); }
