@@ -148,6 +148,48 @@ export class InterventionList implements OnInit {
   goToNew(): void { this.router.navigate(['/interventions/new']); }
   goBack(): void { this.router.navigate(['/dashboard']); }
 
+  async telechargerFiche34(row: any, event: Event): Promise<void> {
+    event.stopPropagation();
+    const { default: jsPDF } = await import('jspdf');
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210; const margin = 15;
+    doc.setFillColor(28,43,90); doc.rect(0,0,W,30,'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(20);
+    doc.text('SCRIM', margin, 18);
+    doc.setFontSize(14); doc.text('Fiche 34 — Rapport d\'Intervention', W/2, 18, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    doc.text('N° Éco 0802 000 089 | sav@scrim.ma', W-margin, 20, {align:'right'});
+    let y = 36;
+    doc.setTextColor(0,0,0); doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    doc.rect(margin, y, W-margin*2, 10);
+    doc.text('Rapport d\'intervention', margin+4, y+7);
+    doc.setTextColor(200,0,0);
+    doc.text('N°  ' + String(row.id).padStart(6,'0'), W-margin-35, y+7);
+    y += 14;
+    const infos = [
+      ['Client', row.equipement?.parc || '—'],
+      ['Date', row.date ? new Date(row.date).toLocaleDateString('fr-FR') : '—'],
+      ['Équipement', row.equipement?.nom || '—'],
+      ['Type', row.type || '—'],
+      ['FSE', row.technicien || '—'],
+      ['Statut', row.statut || '—'],
+    ];
+    doc.setTextColor(0,0,0); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    infos.forEach((info, idx) => {
+      if (idx % 2 === 0) doc.setFillColor(245,247,250); else doc.setFillColor(255,255,255);
+      doc.rect(10, y-3, W-20, 8, 'F');
+      doc.setFont('helvetica','bold'); doc.setTextColor(28,43,90);
+      doc.text(info[0] + ' :', 14, y+2);
+      doc.setFont('helvetica','normal'); doc.setTextColor(51,51,51);
+      doc.text(info[1], 70, y+2);
+      y += 9;
+    });
+    doc.setFillColor(28,43,90); doc.rect(0, 287, W, 10, 'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(7.5);
+    doc.text('Avenue Mohamed Elyazidi, Villa N° 7, Bloc D, Secteur 9, Hay Riad - RABAT | www.scrim.ma', W/2, 293, {align:'center'});
+    doc.save('Fiche34_N' + String(row.id).padStart(6,'0') + '.pdf');
+  }
+
   getStatutClass(statut: string): string {
     switch (statut) {
       case 'TERMINEE': return 'statut-termine';

@@ -78,9 +78,6 @@
 
     <div class="tables-grid">
 
-
-      </div>
-
       <div class="table-card">
         <div class="table-header orange-header">
           <div class="header-left">
@@ -142,15 +139,6 @@
 
     </div>
 
-  </div>
-        </div>
-        <div class="val-right">
-          <span class="val-date">{{ inv.dateIntervention | date:"dd/MM/yyyy" }}</span>
-          <button class="btn-valider" (click)="validerIntervention(inv.id)">✅ Valider</button>
-          <button class="btn-rejeter" (click)="rejeterIntervention(inv.id)">❌ Rejeter</button>
-        </div>
-      </div>
-    </div>
 
     <div class="pieces-section" *ngIf="piecesACommander.length > 0">
       <div class="pieces-header">
