@@ -442,40 +442,29 @@ export class BackofficePlanningComponent implements OnInit {
 
     // PÉRIODES
     const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('fr-FR') : null;
-    const visites = [
-      this.pdfForm.date1debut && this.pdfForm.date1fin
-        ? "Entre le " + formatDate(this.pdfForm.date1debut) + " et le " + formatDate(this.pdfForm.date1fin)
-        : "Entre le 02 et le 31/03/" + annee,
-      this.pdfForm.date2debut && this.pdfForm.date2fin
-        ? "Entre le " + formatDate(this.pdfForm.date2debut) + " et le " + formatDate(this.pdfForm.date2fin)
-        : "Entre le 01 et le 30/06/" + annee,
-      this.pdfForm.date3debut && this.pdfForm.date3fin
-        ? "Entre le " + formatDate(this.pdfForm.date3debut) + " et le " + formatDate(this.pdfForm.date3fin)
-        : "Entre le 01 et le 30/09/" + annee,
-      this.pdfForm.date4debut && this.pdfForm.date4fin
-        ? "Entre le " + formatDate(this.pdfForm.date4debut) + " et le " + formatDate(this.pdfForm.date4fin)
-        : "Entre le 01 et le 31/12/" + annee,
-    ];
+    const visitesRaw = [
+      { label: '1ère Visite', val: this.pdfForm.date1debut && this.pdfForm.date1fin ? "Entre le " + formatDate(this.pdfForm.date1debut) + " et le " + formatDate(this.pdfForm.date1fin) : null },
+      { label: '2ème Visite', val: this.pdfForm.date2debut && this.pdfForm.date2fin ? "Entre le " + formatDate(this.pdfForm.date2debut) + " et le " + formatDate(this.pdfForm.date2fin) : null },
+      { label: '3ème Visite', val: this.pdfForm.date3debut && this.pdfForm.date3fin ? "Entre le " + formatDate(this.pdfForm.date3debut) + " et le " + formatDate(this.pdfForm.date3fin) : null },
+      { label: '4ème Visite', val: this.pdfForm.date4debut && this.pdfForm.date4fin ? "Entre le " + formatDate(this.pdfForm.date4debut) + " et le " + formatDate(this.pdfForm.date4fin) : null },
+    ].filter(v => v.val !== null);
+    const visites = visitesRaw.map(v => v.val as string);
 
     // TABLEAU
+    const visiteHeaders = visitesRaw.map(v => ({ content: v.label + "\n" + v.val, styles: { halign: "center" as const } }));
     const head = [[
       { content: "Désignation Appareil", styles: { halign: "center" as const } },
       { content: "N° Série", styles: { halign: "center" as const } },
       { content: "N° Inventaire", styles: { halign: "center" as const } },
-      { content: "1ère Visite\n" + visites[0], styles: { halign: "center" as const } },
-      { content: "2ème Visite\n" + visites[1], styles: { halign: "center" as const } },
-      { content: "3ème Visite\n" + visites[2], styles: { halign: "center" as const } },
-      { content: "4ème Visite\n" + visites[3], styles: { halign: "center" as const } },
+      ...visiteHeaders
     ]];
 
+    const emptyCells = visitesRaw.map(() => ({ content: "", styles: { halign: "center" as const } }));
     const body = selectedEquipements.map(e => [
       { content: (e.nom || "").toUpperCase() + "\nModèle : " + (e.modele || "—") + "\nMarque : PHILIPS MEDICAL SYSTEMS", styles: { halign: "left" as const } },
       { content: e.numeroSerie || "—", styles: { halign: "center" as const } },
       { content: e.numInventaire || "—", styles: { halign: "center" as const } },
-      { content: "", styles: { halign: "center" as const } },
-      { content: "", styles: { halign: "center" as const } },
-      { content: "", styles: { halign: "center" as const } },
-      { content: "", styles: { halign: "center" as const } },
+      ...emptyCells
     ]);
 
     autoTable(doc, {
@@ -486,15 +475,12 @@ export class BackofficePlanningComponent implements OnInit {
       styles: { font: "helvetica", fontSize: 8, cellPadding: 3, valign: "middle", lineColor: [0, 0, 0], lineWidth: 0.3 },
       headStyles: { fillColor: [28, 43, 90], textColor: [255, 255, 255], fontStyle: "bold", halign: "center", valign: "middle" },
       alternateRowStyles: { fillColor: [245, 247, 250] },
-      columnStyles: {
-        0: { cellWidth: 55 },
-        1: { cellWidth: 22 },
-        2: { cellWidth: 22 },
-        3: { cellWidth: 25 },
-        4: { cellWidth: 25 },
-        5: { cellWidth: 25 },
-        6: { cellWidth: 25 },
-      },
+      columnStyles: (() => {
+        const cols: any = { 0: { cellWidth: 55 }, 1: { cellWidth: 22 }, 2: { cellWidth: 22 } };
+        const visiteCellWidth = visitesRaw.length > 0 ? Math.floor((210 - 14*2 - 55 - 22 - 22) / visitesRaw.length) : 25;
+        visitesRaw.forEach((_, idx) => { cols[idx + 3] = { cellWidth: visiteCellWidth }; });
+        return cols;
+      })(),
       didDrawPage: (data: any) => {
         doc.setFontSize(8);
         doc.setTextColor(150);
