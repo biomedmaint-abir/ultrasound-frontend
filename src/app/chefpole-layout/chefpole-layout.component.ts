@@ -68,6 +68,8 @@ export class ChefPoleLayoutComponent {
   navItems = [
     { path: '/chefpole/planning', icon: '📅', label: 'Mon Planning' },
     { path: '/chefpole/disponibilite', icon: '👥', label: 'Disponibilité équipe' },
+    { path: '/chefpole/performance', icon: '📊', label: 'Performance équipe' },
+    { path: '/chefpole/performance', icon: '📊', label: 'Performance équipe' },
     { path: '/chefpole/profil', icon: '◉', label: 'Mon Profil' },
   ];
 

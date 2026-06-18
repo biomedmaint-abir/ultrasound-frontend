@@ -77,6 +77,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'planning', pathMatch: 'full' },
       { path: 'planning', loadComponent: () => import('./chefpole/chefpole-planning/chefpole-planning.component').then(m => m.ChefPolePlanningComponent) },
       { path: 'disponibilite', loadComponent: () => import('./chefpole/chefpole-disponibilite/chefpole-disponibilite.component').then(m => m.ChefPoleDisponibiliteComponent) },
+      { path: 'performance', loadComponent: () => import('./chefpole/chefpole-performance/chefpole-performance.component').then(m => m.ChefPolePerformanceComponent) },
+      { path: 'performance', loadComponent: () => import('./chefpole/chefpole-performance/chefpole-performance.component').then(m => m.ChefPolePerformanceComponent) },
       { path: 'profil', loadComponent: () => import('./chefpole/chefpole-profil/chefpole-profil.component').then(m => m.ChefPoleProfilComponent) },
     ]
   },
