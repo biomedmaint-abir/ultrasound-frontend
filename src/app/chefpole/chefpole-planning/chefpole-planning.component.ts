@@ -133,6 +133,10 @@ import { environment } from '../../../environments/environment';
 .bloquee-fse{font-size:12px;color:#6b7280}
 .bloquee-card-bottom{display:flex;justify-content:flex-end;margin-top:8px}
 .btn-reassigner{background:#1C2B5A;color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer}
+.fse-selector{display:flex;flex-direction:column;gap:8px;width:100%}
+.fse-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.btn-cancel-small{background:white;border:1.5px solid #e2e6f0;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:#6b7280;cursor:pointer}
+.btn-confirmer{background:#1C2B5A;color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer}
 .alert-section{background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:24px;border-left:4px solid #DC2626}
 .alert-header{display:flex;align-items:center;gap:12px;padding:16px 20px;background:#FEF2F2;border-bottom:1px solid #f1f3f5;h2{margin:0;font-size:16px;font-weight:700;color:#0d1340;flex:1}.alert-count{background:#DC2626;color:white;padding:2px 12px;border-radius:20px;font-size:13px;font-weight:700}}
 .alert-row{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #f1f3f5;&:last-child{border-bottom:none}}
@@ -168,7 +172,9 @@ export class ChefPolePlanningComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadData();
-    this.refreshSub = interval(30000).subscribe(() => this.loadData());
+    this.refreshSub = interval(30000).subscribe(() => {
+      if (Object.values(this.showSelectFse).every(v => !v)) this.loadData();
+    });
     this.http.get<any[]>(`${environment.apiUrl}/utilisateurs/fse-disponibles`).subscribe({
       next: (data) => { this.fseList = data; this.cdr.detectChanges(); }
     });
