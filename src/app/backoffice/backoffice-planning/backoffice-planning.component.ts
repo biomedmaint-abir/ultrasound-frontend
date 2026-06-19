@@ -269,8 +269,12 @@ import { environment } from '../../../environments/environment';
 .pdf-form{display:flex;flex-direction:column;gap:16px}
 .equipements-checkboxes{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
 .visites-grid{display:flex;flex-direction:column;gap:8px;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
-.visites-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
-.visite-check-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#0d1340;cursor:pointer;padding:6px;border-radius:8px;&:hover{background:#EFF6FF}input[type=checkbox]{width:16px;height:16px;accent-color:#1C2B5A;cursor:pointer}}
+.visites-check-grid{display:flex;flex-direction:column;gap:8px;background:#f8f9fc;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px}
+.visite-block{display:flex;flex-direction:column;gap:6px}
+.visite-check-item{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;input[type=checkbox]{width:16px;height:16px;accent-color:#1C2B5A;cursor:pointer}}
+.visite-check-label{font-size:13px;font-weight:600;color:#0d1340}
+.visite-dates{display:flex;align-items:center;gap:8px;margin-left:24px}
+.date-label{font-size:12px;color:#6b7280;white-space:nowrap}
 .visite-row{display:flex;align-items:center;gap:8px}
 .visite-label{font-size:12px;font-weight:600;color:#1C2B5A;width:80px;flex-shrink:0}
 .small-date{padding:8px 10px!important;font-size:12px!important;flex:1}
@@ -309,10 +313,10 @@ export class BackofficePlanningComponent implements OnInit {
   };
 
   visitesCochees = [
-    { num: 1, label: "1ère visite", date: "", checked: true },
-    { num: 2, label: "2ème visite", date: "", checked: true },
-    { num: 3, label: "3ème visite", date: "", checked: true },
-    { num: 4, label: "4ème visite", date: "", checked: true },
+    { num: 1, label: "1ère visite", date: "", dateDebut: "", dateFin: "", checked: true },
+    { num: 2, label: "2ème visite", date: "", dateDebut: "", dateFin: "", checked: true },
+    { num: 3, label: "3ème visite", date: "", dateDebut: "", dateFin: "", checked: true },
+    { num: 4, label: "4ème visite", date: "", dateDebut: "", dateFin: "", checked: true },
   ];
 
   moisList = [
@@ -352,6 +356,10 @@ export class BackofficePlanningComponent implements OnInit {
     this.visitesCochees[1].date = annee + "-06-15";
     this.visitesCochees[2].date = annee + "-09-15";
     this.visitesCochees[3].date = annee + "-12-15";
+    this.visitesCochees[0].dateDebut = ""; this.visitesCochees[0].dateFin = "";
+    this.visitesCochees[1].dateDebut = ""; this.visitesCochees[1].dateFin = "";
+    this.visitesCochees[2].dateDebut = ""; this.visitesCochees[2].dateFin = "";
+    this.visitesCochees[3].dateDebut = ""; this.visitesCochees[3].dateFin = "";
   }
 
   onParcChange(): void {
@@ -468,14 +476,16 @@ export class BackofficePlanningComponent implements OnInit {
     doc.line(W / 2 - titreWidth / 2, 53, W / 2 + titreWidth / 2, 53);
 
     // PÉRIODES
-    const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('fr-FR') : null;
-    const visitesRaw = [
-      { label: '1ère Visite', val: this.pdfForm.date1debut && this.pdfForm.date1fin ? "Entre le " + formatDate(this.pdfForm.date1debut) + " et le " + formatDate(this.pdfForm.date1fin) : null },
-      { label: '2ème Visite', val: this.pdfForm.date2debut && this.pdfForm.date2fin ? "Entre le " + formatDate(this.pdfForm.date2debut) + " et le " + formatDate(this.pdfForm.date2fin) : null },
-      { label: '3ème Visite', val: this.pdfForm.date3debut && this.pdfForm.date3fin ? "Entre le " + formatDate(this.pdfForm.date3debut) + " et le " + formatDate(this.pdfForm.date3fin) : null },
-      { label: '4ème Visite', val: this.pdfForm.date4debut && this.pdfForm.date4fin ? "Entre le " + formatDate(this.pdfForm.date4debut) + " et le " + formatDate(this.pdfForm.date4fin) : null },
-    ].filter(v => v.val !== null);
-    const visites = visitesRaw.map(v => v.val as string);
+    const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('fr-FR') : '';
+    const visitesRaw = this.visitesCochees
+      .filter(v => v.checked)
+      .map(v => ({
+        label: v.label,
+        val: v.dateDebut && v.dateFin
+          ? "Entre le " + formatDate(v.dateDebut) + " et le " + formatDate(v.dateFin)
+          : "Entre le 01/" + String(v.num * 3).padStart(2,'0') + "/" + annee + " et le 31/" + String(v.num * 3).padStart(2,'0') + "/" + annee
+      }));
+    const visites = visitesRaw.map(v => v.val);
 
     // TABLEAU
     const visiteHeaders = visitesRaw.map(v => ({ content: v.label + "\n" + v.val, styles: { halign: "center" as const } }));
@@ -543,7 +553,7 @@ export class BackofficePlanningComponent implements OnInit {
 
     // Créer les interventions en base
     const equipementsCoches = this.equipementsParc.filter(e => e.selected).map(e => ({ id: e.id, nom: e.nom }));
-    const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.date);
+    const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.dateDebut || v.date);
     this.http.post(`${environment.apiUrl}/interventions/generer-planning`, {
       annee: annee,
       equipements: equipementsCoches,
