@@ -186,7 +186,7 @@ import { environment } from '../../../environments/environment';
         <div class="visites-check-grid">
           <label class="visite-check-item" *ngFor="let v of visitesCochees">
             <input type="checkbox" [(ngModel)]="v.checked">
-            <span>{{ v.label }} — {{ v.date | date:'dd/MM/yyyy' }}</span>
+            <span>{{ v.label }}</span>
           </label>
         </div>
       </div>
@@ -543,7 +543,7 @@ export class BackofficePlanningComponent implements OnInit {
 
     // Créer les interventions en base
     const equipementsCoches = this.equipementsParc.filter(e => e.selected).map(e => ({ id: e.id, nom: e.nom }));
-    const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.dateDebut || v.date);
+    const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.dateDebut);
     this.http.post(`${environment.apiUrl}/interventions/generer-planning`, {
       annee: annee,
       equipements: equipementsCoches,
