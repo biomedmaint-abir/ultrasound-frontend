@@ -382,7 +382,7 @@ export class BackofficePlanningComponent implements OnInit {
   creer(): void {
     if (!this.form.equipementId || !this.form.type || !this.form.date) { this.errorMsg = "Champs obligatoires manquants."; return; }
     this.isSaving = true;
-    const payload = { dateIntervention: this.form.date, type: this.form.type, statut: "EN_COURS", descriptionPanne: this.form.description, equipement: { id: this.form.equipementId } };
+    const payload = { dateIntervention: this.form.date, type: this.form.type, statut: "EN_ATTENTE", descriptionPanne: this.form.description, equipement: { id: this.form.equipementId } };
     this.http.post(`${environment.apiUrl}/interventions`, payload).subscribe({
       next: (data: any) => {
         this.interventions.unshift(data); this.filtered = [...this.interventions];
