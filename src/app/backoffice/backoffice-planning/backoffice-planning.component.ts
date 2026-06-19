@@ -313,10 +313,10 @@ export class BackofficePlanningComponent implements OnInit {
   };
 
   visitesCochees = [
-    { num: 1, label: "1ère visite", date: "", dateDebut: "", dateFin: "", checked: true },
-    { num: 2, label: "2ème visite", date: "", dateDebut: "", dateFin: "", checked: true },
-    { num: 3, label: "3ème visite", date: "", dateDebut: "", dateFin: "", checked: true },
-    { num: 4, label: "4ème visite", date: "", dateDebut: "", dateFin: "", checked: true },
+    { num: 1, label: "1ère visite", dateDebut: "", dateFin: "", checked: false },
+    { num: 2, label: "2ème visite", dateDebut: "", dateFin: "", checked: false },
+    { num: 3, label: "3ème visite", dateDebut: "", dateFin: "", checked: false },
+    { num: 4, label: "4ème visite", dateDebut: "", dateFin: "", checked: false },
   ];
 
   moisList = [
@@ -333,7 +333,7 @@ export class BackofficePlanningComponent implements OnInit {
   ngOnInit(): void {
     const currentYear = new Date().getFullYear();
     this.anneesList = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
-    this.updateVisitesDates();
+
 
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => { this.interventions = data; this.filtered = [...data]; this.isLoading = false; this.cdr.detectChanges(); }
@@ -350,17 +350,7 @@ export class BackofficePlanningComponent implements OnInit {
     });
   }
 
-  updateVisitesDates(): void {
-    const annee = this.pdfForm.annee;
-    this.visitesCochees[0].date = annee + "-03-15";
-    this.visitesCochees[1].date = annee + "-06-15";
-    this.visitesCochees[2].date = annee + "-09-15";
-    this.visitesCochees[3].date = annee + "-12-15";
-    this.visitesCochees[0].dateDebut = ""; this.visitesCochees[0].dateFin = "";
-    this.visitesCochees[1].dateDebut = ""; this.visitesCochees[1].dateFin = "";
-    this.visitesCochees[2].dateDebut = ""; this.visitesCochees[2].dateFin = "";
-    this.visitesCochees[3].dateDebut = ""; this.visitesCochees[3].dateFin = "";
-  }
+
 
   onParcChange(): void {
     this.equipementsParc = this.equipements
