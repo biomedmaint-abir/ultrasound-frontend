@@ -553,7 +553,9 @@ export class BackofficePlanningComponent implements OnInit {
 
     // Créer les interventions en base
     const equipementsCoches = this.equipementsParc.filter(e => e.selected).map(e => ({ id: e.id, nom: e.nom }));
-    const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.dateDebut);
+    const anneeStr = String(annee);
+    const defaultDates: {[key:number]:string} = {1: anneeStr+'-03-15', 2: anneeStr+'-06-15', 3: anneeStr+'-09-15', 4: anneeStr+'-12-15'};
+    const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.dateDebut || defaultDates[v.num]);
     this.http.post(`${environment.apiUrl}/interventions/generer-planning`, {
       annee: annee,
       equipements: equipementsCoches,
