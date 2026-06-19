@@ -352,7 +352,17 @@ export class BackofficePlanningComponent implements OnInit {
 
 
 
+  resetVisites(): void {
+    this.visitesCochees = [
+      { num: 1, label: "1ère visite", dateDebut: "", dateFin: "", checked: false },
+      { num: 2, label: "2ème visite", dateDebut: "", dateFin: "", checked: false },
+      { num: 3, label: "3ème visite", dateDebut: "", dateFin: "", checked: false },
+      { num: 4, label: "4ème visite", dateDebut: "", dateFin: "", checked: false },
+    ];
+  }
+
   onParcChange(): void {
+    this.resetVisites();
     this.equipementsParc = this.equipements
       .filter(e => e.parc === this.pdfForm.parc)
       .map(e => ({ ...e, selected: true }));
