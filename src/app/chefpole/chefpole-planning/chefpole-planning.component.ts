@@ -81,7 +81,6 @@ import { environment } from '../../../environments/environment';
       </div>
       <div class="inv-actions">
         <select [(ngModel)]="selectedFse[inv.id]" class="fse-select">
-          <option [ngValue]="null">-- Sélectionner FSE --</option>
           <option *ngFor="let fse of fseList" [ngValue]="fse.id">{{ fse.prenom }} {{ fse.nom }}</option>
         </select>
         <button class="btn-assigner" (click)="assignerFse(inv)" [disabled]="!selectedFse[inv.id]">
