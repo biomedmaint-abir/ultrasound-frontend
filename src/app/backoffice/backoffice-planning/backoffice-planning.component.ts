@@ -184,41 +184,19 @@ import { environment } from '../../../environments/environment';
       <div class="field-wrapper" *ngIf="pdfForm.parc && equipementsParc.length > 0">
         <label>📅 Visites à inclure</label>
         <div class="visites-check-grid">
-          <label class="visite-check-item" *ngFor="let v of visitesCochees">
-            <input type="checkbox" [(ngModel)]="v.checked">
-            <span>{{ v.label }}</span>
-          </label>
-        </div>
-      </div>
-      <div class="field-wrapper" *ngIf="pdfForm.parc">
-        <label>📅 Dates des visites (optionnel — sinon calculées automatiquement)</label>
-        <div class="visites-grid">
-          <div class="visite-row">
-            <span class="visite-label">1ère visite</span>
-            <input type="date" [(ngModel)]="pdfForm.date1debut" class="form-input small-date" placeholder="Début">
-            <span>→</span>
-            <input type="date" [(ngModel)]="pdfForm.date1fin" class="form-input small-date" placeholder="Fin">
-          </div>
-          <div class="visite-row">
-            <span class="visite-label">2ème visite</span>
-            <input type="date" [(ngModel)]="pdfForm.date2debut" class="form-input small-date">
-            <span>→</span>
-            <input type="date" [(ngModel)]="pdfForm.date2fin" class="form-input small-date">
-          </div>
-          <div class="visite-row">
-            <span class="visite-label">3ème visite</span>
-            <input type="date" [(ngModel)]="pdfForm.date3debut" class="form-input small-date">
-            <span>→</span>
-            <input type="date" [(ngModel)]="pdfForm.date3fin" class="form-input small-date">
-          </div>
-          <div class="visite-row">
-            <span class="visite-label">4ème visite</span>
-            <input type="date" [(ngModel)]="pdfForm.date4debut" class="form-input small-date">
-            <span>→</span>
-            <input type="date" [(ngModel)]="pdfForm.date4fin" class="form-input small-date">
+          <div *ngFor="let v of visitesCochees" class="visite-block">
+            <label class="visite-check-item">
+              <input type="checkbox" [(ngModel)]="v.checked">
+              <span class="visite-check-label">{{ v.label }}</span>
+            </label>
+            <div class="visite-dates" *ngIf="v.checked">
+              <span class="date-label">Entre le</span>
+              <input type="date" [(ngModel)]="v.dateDebut" class="form-input small-date">
+              <span class="date-label">et le</span>
+              <input type="date" [(ngModel)]="v.dateFin" class="form-input small-date">
+            </div>
           </div>
         </div>
-      </div>
     </div>
     <div class="form-actions" style="margin-top:20px">
       <button class="btn-cancel" (click)="showPdfModal = false">Annuler</button>
@@ -553,6 +531,7 @@ export class BackofficePlanningComponent implements OnInit {
 
     // Créer les interventions en base
     const equipementsCoches = this.equipementsParc.filter(e => e.selected).map(e => ({ id: e.id, nom: e.nom }));
+    console.log('VISITES:', JSON.stringify(this.visitesCochees));
     const anneeStr = String(annee);
     const defaultDates: {[key:number]:string} = {1: anneeStr+'-03-15', 2: anneeStr+'-06-15', 3: anneeStr+'-09-15', 4: anneeStr+'-12-15'};
     const visitesDates = this.visitesCochees.filter(v => v.checked).map(v => v.dateDebut || defaultDates[v.num]);
