@@ -17,7 +17,7 @@ export class HistoriqueComponent implements OnInit {
   isLoading = true;
   searchText = '';
   filterType = '';
-  filterStatut = '';
+  filterStatut = 'TERMINEE';
   filterFse = '';
   filterPeriode = '';
   fseList: string[] = [];
@@ -31,10 +31,10 @@ export class HistoriqueComponent implements OnInit {
     this.loadFseList();
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
-        this.interventions = data.sort((a, b) =>
+        this.interventions = data.sort((a: any, b: any) =>
           new Date(b.dateIntervention).getTime() - new Date(a.dateIntervention).getTime()
         );
-        this.filtered = [...this.interventions];
+        this.filtered = this.interventions.filter((i: any) => i.statut === 'TERMINEE');
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -51,12 +51,14 @@ export class HistoriqueComponent implements OnInit {
   }
 
   applyFilter(): void {
+    const today = new Date();
     this.filtered = this.interventions.filter(i => {
       const matchSearch = !this.searchText ||
         i.descriptionPanne?.toLowerCase().includes(this.searchText.toLowerCase()) ||
         i.equipement?.nom?.toLowerCase().includes(this.searchText.toLowerCase());
       const matchType = !this.filterType || i.type === this.filterType;
       const matchStatut = !this.filterStatut || i.statut === this.filterStatut;
+      const matchPasse = this.filterPeriode !== 'passe' || new Date(i.dateIntervention) <= today;
       const matchFse = !this.filterFse || i.nomFse === this.filterFse;
       const now = new Date();
       let matchPeriode = true;
@@ -65,7 +67,7 @@ export class HistoriqueComponent implements OnInit {
         const limit = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
         matchPeriode = new Date(i.dateIntervention) >= limit;
       }
-      return matchSearch && matchType && matchStatut && matchFse && matchPeriode;
+      return matchSearch && matchType && matchStatut && matchFse && matchPeriode && matchPasse;
     });
     this.cdr.detectChanges();
   }
@@ -76,6 +78,7 @@ export class HistoriqueComponent implements OnInit {
     this.filterStatut = '';
     this.filterFse = '';
     this.filterPeriode = '';
+    this.filterStatut = 'TERMINEE';
     this.filtered = [...this.interventions];
     this.cdr.detectChanges();
   }

@@ -21,6 +21,7 @@
       <option *ngFor="let f of fseList" [value]="f">{{ f }}</option>
     </select>
     <select [(ngModel)]="filterPeriode" (ngModelChange)="applyFilter()" class="filter-select">
+      <option value="passe">Interventions passées</option>
       <option value="">Toutes les périodes</option>
       <option value="7">7 derniers jours</option>
       <option value="30">30 derniers jours</option>
@@ -64,7 +65,9 @@
           <p class="description">{{ inv.descriptionPanne || '—' }}</p>
           <div class="card-meta">
             <span *ngIf="inv.equipement">{{ inv.equipement.nom }}</span>
-            <span class="meta-sep" *ngIf="inv.equipement && inv.dureeHeures">|</span>
+            <span class="meta-sep" *ngIf="inv.equipement && inv.nomFse">|</span>
+            <span *ngIf="inv.nomFse">👤 {{ inv.nomFse }}</span>
+            <span class="meta-sep" *ngIf="inv.dureeHeures">|</span>
             <span *ngIf="inv.dureeHeures">⏱ {{ inv.dureeHeures }}h</span>
           </div>
         </div>
