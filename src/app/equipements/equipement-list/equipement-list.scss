@@ -154,7 +154,7 @@ table {
   transition: all 0.2s;
   &:hover:not(:disabled) { background: #f0f4ff; border-color: #1a2eff; }
   &:disabled { opacity: 0.4; cursor: not-allowed; }
-  &.active { background: #1a2eff; color: white; border-color: #1a2eff; }
+  &.active { background: #1C2B5A !important; color: white !important; border-color: #1C2B5A !important; font-weight: 700; }
 }
 
 .page-dots { padding: 0 4px; color: #6b7280; }
