@@ -44,11 +44,14 @@
             <td>{{ row.dateDebut | date:'dd/MM/yyyy' }}</td>
             <td>
               {{ row.dateFin | date:'dd/MM/yyyy' }}
+
+            </td>
+            <td>{{ row.montant | number:'1.0-0' }} DH</td>
+            <td>
+              <span class="statut-badge" [ngClass]="getStatutClass(row.statut)"><span class="statut-dot"></span>{{ row.statut }}</span>
               <span *ngIf="isExpire(row.dateFin)" class="badge-expire">🔴 Expiré</span>
               <span *ngIf="!isExpire(row.dateFin) && expireBientot(row.dateFin)" class="badge-expire-soon">🟠 Expire bientôt</span>
             </td>
-            <td>{{ row.montant | number:'1.0-0' }} DH</td>
-            <td><span class="statut-badge" [ngClass]="getStatutClass(row.statut)"><span class="statut-dot"></span>{{ row.statut }}</span></td>
             <td class="actions-cell" (click)="$event.stopPropagation()">
               <button class="btn-view" (click)="goToDetail(row.id)">👁️</button>
               <button class="btn-edit" (click)="goToEdit(row.id, $event)">✏️</button>
