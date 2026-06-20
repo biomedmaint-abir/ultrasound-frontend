@@ -66,7 +66,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   get interventionsNonTerminees(): any[] {
     return this.interventionsData
-      .filter(i => i.statut && i.statut !== 'TERMINEE')
+      .filter(i => i.statut === 'EN_COURS')
       .sort((a, b) => new Date(b.dateIntervention || 0).getTime() - new Date(a.dateIntervention || 0).getTime());
   }
 
