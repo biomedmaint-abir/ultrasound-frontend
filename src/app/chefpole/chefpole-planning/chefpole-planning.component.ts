@@ -186,7 +186,7 @@ export class ChefPolePlanningComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
-        this.interventions = data;
+        this.interventions = data.sort((a: any, b: any) => new Date(a.dateIntervention).getTime() - new Date(b.dateIntervention).getTime());
         this.nonAssignees = data.filter((i: any) => !i.nomFse && !i.technicien);
         this.interventionsBloquees = data.filter((i: any) => i.commentaireRejet && i.commentaireRejet.startsWith('BLOCAGE FSE:') && i.statut !== 'TERMINEE');
         this.isLoading = false;
