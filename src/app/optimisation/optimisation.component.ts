@@ -58,6 +58,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.interventions = data;
         this.calculateStats();
+        if (this.contrats.length > 0) this.calculateROI();
 
         // Générer les années dynamiquement depuis les interventions réelles
         const anneesInterventions = data
@@ -80,8 +81,10 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
       next: (data) => {
         this.equipements = data;
-        const enService = data.filter((e: any) => e.statut === 'EN_SERVICE').length;
-        this.stats.tauxDisponibilite = data.length > 0 ? Math.round((enService / data.length) * 100) : 0;
+        // Equipement indisponible seulement si EN_COURS (pas EN_ATTENTE)
+        const equipsEnCours = new Set(this.interventions.filter((i: any) => i.statut === 'EN_COURS').map((i: any) => i.equipement?.id).filter(Boolean));
+        const disponibles = data.filter((e: any) => !equipsEnCours.has(e.id)).length;
+        this.stats.tauxDisponibilite = data.length > 0 ? Math.round((disponibles / data.length) * 100) : 0;
         this.stats.equipementsEnPanne = data.filter((e: any) => e.statut === 'EN_PANNE').length;
         this.cdr.detectChanges();
       }
@@ -91,7 +94,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.contrats = data;
         this.isLoading = false;
-        this.calculateROI();
+        if (this.interventions.length > 0) this.calculateROI();
         this.cdr.detectChanges();
       }
     });
