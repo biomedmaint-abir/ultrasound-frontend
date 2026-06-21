@@ -148,6 +148,23 @@ export class InterventionList implements OnInit {
   goToNew(): void { this.router.navigate(['/interventions/new']); }
   goBack(): void { this.router.navigate(['/dashboard']); }
 
+  getDureeClass(date: string): string {
+    if (!date) return '';
+    const hours = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60);
+    if (hours < 24) return 'duree-vert';
+    if (hours < 72) return 'duree-orange';
+    return 'duree-rouge';
+  }
+
+  getDureeLabel(date: string): string {
+    if (!date) return '—';
+    const hours = Math.floor((new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
+    if (hours < 1) return '< 1h';
+    if (hours < 24) return hours + 'h';
+    const days = Math.floor(hours / 24);
+    return days + 'j ' + (hours % 24) + 'h';
+  }
+
   async telechargerFiche34(row: any, event: Event): Promise<void> {
     event.stopPropagation();
     const { default: jsPDF } = await import('jspdf');

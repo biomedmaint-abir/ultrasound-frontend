@@ -63,6 +63,7 @@
             <th>Équipement</th>
             <th>FSE</th>
             <th>Statut</th>
+            <th>Durée EN_COURS</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -84,6 +85,12 @@
               <span class="statut-badge" [ngClass]="getStatutClass(row.statut)">
                 {{ row.statut === 'EN_COURS' ? 'EN COURS' : row.statut === 'TERMINEE' ? 'TERMINÉE' : row.statut }}
               </span>
+            </td>
+            <td>
+              <span *ngIf="row.statut === 'EN_COURS'" class="duree-badge" [ngClass]="getDureeClass(row.date)">
+                {{ getDureeLabel(row.date) }}
+              </span>
+              <span *ngIf="row.statut !== 'EN_COURS'" class="text-muted">—</span>
             </td>
             <td class="actions-cell" (click)="$event.stopPropagation()">
               <button class="btn-pdf-dl" (click)="telechargerFiche34(row, $event)" title="Télécharger Fiche 34">📄</button>
