@@ -40,7 +40,7 @@
             <td>{{ row.id }}</td>
             <td><strong>{{ row.reference }}</strong></td>
             <td>{{ row.parc || row.client || "—" }}</td>
-            <td>{{ row.type }}</td>
+            <td>{{ row.type === "TOTAL" ? "FULL RISK" : row.type }}</td>
             <td>{{ row.dateDebut | date:'dd/MM/yyyy' }}</td>
             <td>
               {{ row.dateFin | date:'dd/MM/yyyy' }}
