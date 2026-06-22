@@ -382,8 +382,21 @@ export class BackofficePlanningComponent implements OnInit {
   }
 
   marquerCommandee(id: number): void {
-    this.piecesACommander = this.piecesACommander.filter((i: any) => i.id !== id);
-    this.cdr.detectChanges();
+    const inv = this.piecesACommander.find((i: any) => i.id === id);
+    if (!inv) return;
+    const payload = {
+      id: inv.id, dateIntervention: inv.dateIntervention, type: inv.type,
+      statut: 'EN_COURS', descriptionPanne: inv.descriptionPanne,
+      nomFse: inv.nomFse, actionsEffectuees: inv.actionsEffectuees,
+      equipement: inv.equipement ? { id: inv.equipement.id } : null,
+      technicien: inv.technicien ? { id: inv.technicien.id } : null
+    };
+    this.http.put(`${environment.apiUrl}/interventions/${id}`, payload).subscribe({
+      next: () => {
+        this.piecesACommander = this.piecesACommander.filter((i: any) => i.id !== id);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   onParcChange(): void {
