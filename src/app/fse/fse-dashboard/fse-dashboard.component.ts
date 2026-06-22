@@ -154,10 +154,10 @@ h2{margin:0;font-size:15px;font-weight:700;color:#0d1340}
   `]
 })
 export class FseDashboardComponent implements OnInit {
-  email = localStorage.getItem('email') || '';
-  nom = localStorage.getItem('nom') || '';
-  prenom = localStorage.getItem('prenom') || '';
-  userId = Number(localStorage.getItem('userId')) || 0;
+  email = '';
+  nom = '';
+  prenom = '';
+  userId = 0;
   today = new Date();
   mesInterventions: any[] = [];
   interventionsAujourdhui: any[] = [];
@@ -166,6 +166,10 @@ export class FseDashboardComponent implements OnInit {
   constructor(private http: HttpClient, public router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
+    this.email = localStorage.getItem('email') || '';
+    this.nom = localStorage.getItem('nom') || '';
+    this.prenom = localStorage.getItem('prenom') || '';
+    this.userId = Number(localStorage.getItem('userId')) || 0;
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
         this.mesInterventions = data.filter(i =>
