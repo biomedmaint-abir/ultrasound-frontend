@@ -476,7 +476,8 @@ async genererFiche34(): Promise<void> {
     doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(28,43,90);
     doc.text('Utilisation conforme :', col2x, y);
     doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
-    doc.text('☑ Oui  ☐ Non', col2x+38, y);
+    doc.rect(col2x+38, y-3, 3, 3, 'F'); doc.text('Oui', col2x+42, y);
+    doc.rect(col2x+52, y-3, 3, 3, 'S'); doc.text('Non', col2x+56, y);
     y+=6;
     drawInfoBlock(col1x, 'N° Série', inv.equipement?.numeroSerie || '—', y);
 
@@ -548,17 +549,18 @@ async genererFiche34(): Promise<void> {
     doc.rect(margin+col3W*2, y, col3W, 28);
 
     doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(0,0,0);
-    doc.text('☐ Installation / Mise en service', margin+2, y+6);
-    doc.text('☐ Formation', margin+2, y+12);
-    doc.text('☐ Garantie', margin+2, y+18);
+    doc.rect(margin+2, y+3, 3, 3, 'S'); doc.text('Installation / Mise en service', margin+6, y+6);
+    doc.rect(margin+2, y+9, 3, 3, 'S'); doc.text('Formation', margin+6, y+12);
+    doc.rect(margin+2, y+15, 3, 3, 'S'); doc.text('Garantie', margin+6, y+18);
 
     doc.text('Contrat N° : '+numContrat, margin+col3W+2, y+6);
-    doc.text((isPreventif?'☑':'☐')+' Maintenance préventive', margin+col3W+2, y+12);
-    doc.text((isCorrectif?'☑':'☐')+' Maintenance corrective', margin+col3W+2, y+18);
-    doc.text('☐ Intervention facturable', margin+col3W+2, y+24);
+    doc.rect(margin+col3W+2, y+9, 3, 3, isPreventif?'F':'S'); doc.text('Maintenance préventive', margin+col3W+6, y+12);
+    doc.rect(margin+col3W+2, y+15, 3, 3, isCorrectif?'F':'S'); doc.text('Maintenance corrective', margin+col3W+6, y+18);
+    doc.rect(margin+col3W+2, y+21, 3, 3, 'S'); doc.text('Intervention facturable', margin+col3W+6, y+24);
 
     doc.text('Intervention achevée :', margin+col3W*2+2, y+6);
-    doc.text((isTerminee?'☑':'☐')+' Oui  '+(isTerminee?'☐':'☑')+' Non', margin+col3W*2+2, y+12);
+    doc.rect(margin+col3W*2+2, y+9, 3, 3, isTerminee?'F':'S'); doc.text('Oui', margin+col3W*2+6, y+12);
+    doc.rect(margin+col3W*2+16, y+9, 3, 3, isTerminee?'S':'F'); doc.text('Non', margin+col3W*2+20, y+12);
 
     // ── SIGNATURES ──
     y += 32;
