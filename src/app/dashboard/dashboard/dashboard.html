@@ -51,31 +51,6 @@
       </div>
     </div>
 
-    <div class="pieces-section" *ngIf="piecesACommander.length > 0">
-      <div class="pieces-header">
-        <div class="pieces-icon">🔩</div>
-        <div>
-          <h2>Alertes pièces manquantes</h2>
-          <p>Interventions en attente de pièce — traitement par le back-office</p>
-        </div>
-        <span class="pieces-count">{{ piecesACommander.length }}</span>
-      </div>
-      <div *ngFor="let inv of piecesACommander" class="pieces-row">
-        <div class="val-left">
-          <span class="type-chip type-{{ inv.type?.toLowerCase() }}">{{ inv.type }}</span>
-          <div>
-            <div class="val-equip">{{ inv.equipement?.nom || "—" }}</div>
-            <div class="val-info">{{ inv.equipement?.parc }} — FSE : {{ inv.nomFse }}</div>
-            <div class="val-info" *ngIf="inv.actionsEffectuees">📝 {{ inv.actionsEffectuees }}</div>
-          </div>
-        </div>
-        <div class="val-right">
-          <span class="val-date">{{ inv.dateIntervention | date:"dd/MM/yyyy" }}</span>
-          <span class="badge-backoffice">⏳ En attente de traitement par le back-office</span>
-        </div>
-      </div>
-    </div>
-
     <div class="tables-grid">
 
       <div class="table-card">
@@ -139,31 +114,6 @@
 
     </div>
 
-
-    <div class="pieces-section" *ngIf="piecesACommander.length > 0">
-      <div class="pieces-header">
-        <div class="pieces-icon">🔩</div>
-        <div>
-          <h2>Pièces à commander</h2>
-          <p>Des FSE attendent des pièces pour terminer leurs interventions</p>
-        </div>
-        <span class="pieces-count">{{ piecesACommander.length }}</span>
-      </div>
-      <div *ngFor="let inv of piecesACommander" class="pieces-row">
-        <div class="val-left">
-          <span class="type-chip type-correctif">EN_ATTENTE_PIECE</span>
-          <div>
-            <div class="val-equip">{{ inv.equipement?.nom || "—" }}</div>
-            <div class="val-info">{{ inv.equipement?.parc }} — FSE : {{ inv.nomFse }}</div>
-            <div class="val-info" *ngIf="inv.actionsEffectuees">📝 {{ inv.actionsEffectuees }}</div>
-          </div>
-        </div>
-        <div class="val-right">
-          <span class="val-date">{{ inv.dateIntervention | date:"dd/MM/yyyy" }}</span>
-          <button class="btn-traiter" (click)="marquerTraitee(inv.id)">✅ Traitée</button>
-        </div>
-      </div>
-    </div>
 
     <div class="dashboard-footer">
       <span>MaintManager v1.0 — SCRIM © 2026</span>

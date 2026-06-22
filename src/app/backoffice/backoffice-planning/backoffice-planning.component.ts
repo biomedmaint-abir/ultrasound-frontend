@@ -58,6 +58,35 @@ import { environment } from '../../../environments/environment';
     </div>
   </div>
 
+  <!-- Section Pièces à commander -->
+  <div class="pieces-alerte-section" *ngIf="piecesACommander.length > 0">
+    <div class="pieces-alerte-header">
+      <span class="pieces-alerte-icon">🔩</span>
+      <div>
+        <h2>Pièces à commander</h2>
+        <p>Interventions en attente de pièces — contacter Philips</p>
+      </div>
+      <span class="pieces-alerte-count">{{ piecesACommander.length }}</span>
+    </div>
+    <div *ngFor="let inv of piecesACommander" class="pieces-alerte-row">
+      <div class="pieces-alerte-left">
+        <span class="type-badge-orange">EN_ATTENTE_PIECE</span>
+        <div>
+          <div class="pieces-alerte-equip">{{ inv.equipement?.nom || "—" }}</div>
+          <div class="pieces-alerte-info">🏥 {{ inv.equipement?.parc || "—" }} — 👤 {{ inv.nomFse || "—" }}</div>
+          <div class="pieces-alerte-desc" *ngIf="inv.actionsEffectuees">📝 {{ inv.actionsEffectuees }}</div>
+        </div>
+      </div>
+      <div class="pieces-alerte-right">
+        <span class="pieces-alerte-date">{{ inv.dateIntervention | date:"dd/MM/yyyy" }}</span>
+        <button class="btn-commande" (click)="marquerCommandee(inv.id)">✅ Marquer comme commandée</button>
+      </div>
+    </div>
+  </div>
+  <div class="pieces-alerte-empty" *ngIf="piecesACommander.length === 0 && !isLoading">
+    <p>✅ Aucune pièce en attente de commande</p>
+  </div>
+
   <div *ngIf="successMsg" class="success-banner" style="margin-bottom:16px">{{ successMsg }}</div>
 
   <!-- Filtres -->
@@ -258,12 +287,25 @@ import { environment } from '../../../environments/environment';
 .small-date{padding:8px 10px!important;font-size:12px!important;flex:1}
 .checkbox-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;font-size:13px;color:#0d1340;&:hover{background:#f8f9fc}input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#1C2B5A}}
 .success-banner{background:#DCFCE7;color:#16A34A;padding:12px 16px;border-radius:10px;margin-bottom:16px}
+.pieces-alerte-section{background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:24px;border-left:4px solid #f97316}
+.pieces-alerte-header{display:flex;align-items:center;gap:14px;padding:16px 20px;background:#FFF7ED;border-bottom:1px solid #FED7AA;.pieces-alerte-icon{font-size:24px}h2{margin:0;font-size:16px;font-weight:700;color:#0d1340}p{margin:4px 0 0;font-size:12px;color:#6b7280}.pieces-alerte-count{margin-left:auto;background:#f97316;color:white;padding:4px 14px;border-radius:20px;font-size:14px;font-weight:700}}
+.pieces-alerte-row{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #f1f3f5;&:last-child{border-bottom:none}}
+.pieces-alerte-left{display:flex;align-items:flex-start;gap:12px;flex:1}
+.pieces-alerte-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.type-badge-orange{background:#FFF7ED;color:#f97316;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.pieces-alerte-equip{font-size:14px;font-weight:700;color:#0d1340}
+.pieces-alerte-info{font-size:12px;color:#6b7280;margin-top:2px}
+.pieces-alerte-desc{font-size:12px;color:#9CA3AF;margin-top:2px}
+.pieces-alerte-date{font-size:12px;color:#6b7280}
+.btn-commande{background:#16A34A;color:white;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer}
+.pieces-alerte-empty{background:white;border-radius:16px;padding:16px 20px;text-align:center;color:#16A34A;font-size:13px;font-weight:600;margin-bottom:24px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
 .error-banner{background:#FEE2E2;color:#DC2626;padding:12px 16px;border-radius:10px;margin-bottom:16px}
 .empty-state,.center-state{text-align:center;padding:48px;color:#9CA3AF;background:white;border-radius:16px}
   `]
 })
 export class BackofficePlanningComponent implements OnInit {
   interventions: any[] = [];
+  piecesACommander: any[] = [];
   filtered: any[] = [];
   equipements: any[] = [];
   contrats: any[] = [];
@@ -314,7 +356,7 @@ export class BackofficePlanningComponent implements OnInit {
 
 
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
-      next: (data) => { this.interventions = data; this.filtered = [...data]; this.isLoading = false; this.cdr.detectChanges(); }
+      next: (data) => { this.interventions = data; this.filtered = [...data]; this.piecesACommander = data.filter((i: any) => i.statut === 'EN_ATTENTE_PIECE'); this.isLoading = false; this.cdr.detectChanges(); }
     });
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
       next: (data) => {
@@ -337,6 +379,11 @@ export class BackofficePlanningComponent implements OnInit {
       { num: 3, label: "3ème visite", dateDebut: "", dateFin: "", checked: false },
       { num: 4, label: "4ème visite", dateDebut: "", dateFin: "", checked: false },
     ];
+  }
+
+  marquerCommandee(id: number): void {
+    this.piecesACommander = this.piecesACommander.filter((i: any) => i.id !== id);
+    this.cdr.detectChanges();
   }
 
   onParcChange(): void {
