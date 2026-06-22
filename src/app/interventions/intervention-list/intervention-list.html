@@ -68,8 +68,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of pagedData" (click)="goToDetail(row.id)" class="clickable-row">
-            <td>{{ row.id }}</td>
+          <tr *ngFor="let row of pagedData; let i = index" (click)="goToDetail(row.id)" class="clickable-row">
+            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
             <td>{{ row.date | date:'dd/MM/yyyy' }}</td>
             <td>
               <span class="type-badge"
