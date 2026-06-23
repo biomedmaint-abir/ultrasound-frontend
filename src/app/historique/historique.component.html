@@ -41,7 +41,7 @@
       <p>Aucune intervention trouvée.</p>
     </div>
 
-    <div *ngFor="let inv of filtered" class="timeline-item">
+    <div *ngFor="let inv of filtered; let i = index" class="timeline-item">
       <div class="timeline-left">
         <div class="timeline-icon" [ngClass]="getTypeClass(inv.type)">
           {{ getTypeIcon(inv.type) }}
@@ -52,7 +52,7 @@
       <div class="timeline-card">
         <div class="card-header">
           <div class="card-left">
-            <span class="inv-id">#{{ inv.id }}</span>
+            <span class="inv-id">#{{ i + 1 }}</span>
             <span class="badge type" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
             <span class="badge statut" [ngClass]="getStatutClass(inv.statut)">{{ inv.statut }}</span>
           </div>
