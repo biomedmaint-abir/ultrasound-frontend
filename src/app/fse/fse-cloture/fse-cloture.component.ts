@@ -130,18 +130,7 @@ import { environment } from '../../../environments/environment';
             </div>
           </div>
 
-          <!-- SONDES -->
-          <div class="checklist-category">
-            <div class="category-title">🔬 SONDES</div>
-            <div *ngFor="let item of getItemsByCategory('SONDES')" class="checklist-item">
-              <div class="item-info">
-                <span class="item-name">{{ item.element }}</span>
-              </div>
-              <div class="item-controls">
-                <input type="text" [(ngModel)]="item.remarque" class="form-input" placeholder="Modèle de la sonde...">
-              </div>
-            </div>
-          </div>
+
 
         </div>
       </div>
@@ -326,10 +315,7 @@ export class FseClotureComponent implements OnInit {
       { element: 'Ports USB / Réseau', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
       { element: 'ECG', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
       { element: 'Sécurité mécanique', categorie: 'CONTROLE_FONCTIONNEL', statut: '', remarque: '' },
-      { element: 'Sonde 1', categorie: 'SONDES', statut: '', remarque: '' },
-      { element: 'Sonde 2', categorie: 'SONDES', statut: '', remarque: '' },
-      { element: 'Sonde 3', categorie: 'SONDES', statut: '', remarque: '' },
-      { element: 'Sonde 4', categorie: 'SONDES', statut: '', remarque: '' },
+
     ];
   }
 
@@ -654,11 +640,11 @@ async genererFiche34(): Promise<void> {
     }
 
     // TABLEAU
-    const categories = ['SECURITE_ELECTRIQUE', 'CONTROLE_FONCTIONNEL', 'SONDES'];
+    const categories = ['SECURITE_ELECTRIQUE', 'CONTROLE_FONCTIONNEL'];
     const catLabels: {[key: string]: string} = {
       'SECURITE_ELECTRIQUE': 'Sécurité électrique',
       'CONTROLE_FONCTIONNEL': 'Contrôle fonctionnel / Mécanique',
-      'SONDES': 'Sondes'
+
     };
 
     const body: any[] = [];
