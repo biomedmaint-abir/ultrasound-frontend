@@ -187,7 +187,7 @@ import { environment } from '../../../environments/environment';
       <div class="form-actions">
         <button class="btn-cancel" (click)="goBack()">Annuler</button>
         <button class="btn-submit" (click)="soumettre()" [disabled]="isSaving">
-          📤 {{ isSaving ? 'Envoi...' : 'Terminer l\'intervention' }}
+          📤 {{ buttonText }}
         </button>
       </div>
     </div>
@@ -260,6 +260,10 @@ export class FseClotureComponent implements OnInit {
   piecesUtilisees: { pieceId: number | null, quantite: number }[] = [];
   isLoading = true;
   isSaving = false;
+
+  get buttonText(): string { return this.isSaving ? 'Envoi...' : "Terminer l'intervention"; }
+
+  get buttonText(): string { return this.isSaving ? 'Envoi...' : "Terminer l'intervention"; }
   successMsg = '';
   errorMsg = '';
   showCodeErreur = false;
