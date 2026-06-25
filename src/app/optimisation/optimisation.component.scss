@@ -153,3 +153,22 @@
 ::ng-deep .filter-field .mat-mdc-select-arrow { color: #1C2B5A !important; }
 ::ng-deep .mat-mdc-select-panel { background: #F0F4FF !important; border-radius: 12px !important; }
 ::ng-deep .mat-mdc-option { color: #1C2B5A !important; font-weight: 500 !important; }
+
+.fiabilite-section { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,.06); margin-bottom: 24px; }
+.fiabilite-table { width: 100%; border-collapse: collapse;
+  th { background: #f8f9fc; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e2e6f0; }
+  td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f1f3f5; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+}
+.score-bar { display: flex; align-items: center; gap: 8px; background: #f1f3f5; border-radius: 20px; height: 8px; width: 100px; position: relative;
+  .score-fill { height: 100%; border-radius: 20px; }
+  span { position: absolute; right: -45px; font-size: 12px; font-weight: 600; color: #0d1340; }
+}
+.score-vert { background: #16A34A; }
+.score-orange { background: #f97316; }
+.score-rouge { background: #DC2626; }
+.badge-niveau { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.niveau-vert { background: #DCFCE7; color: #16A34A; }
+.niveau-orange { background: #FFF7ED; color: #f97316; }
+.niveau-rouge { background: #FEE2E2; color: #DC2626; }
+.recommandation { font-size: 12px; color: #6b7280; max-width: 200px; }

@@ -21,6 +21,7 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
   interventions: any[] = [];
   equipements: any[] = [];
   contrats: any[] = [];
+  scoreFiabilite: any[] = [];
   piecesParParc: any[] = [];
   parcsList: string[] = [];
   parcsAffiches: string[] = [];
@@ -100,6 +101,9 @@ export class OptimisationComponent implements OnInit, AfterViewInit {
     });
 
     this.loadPiecesParParc();
+    this.http.get<any[]>(`${environment.apiUrl}/optimisation/score-fiabilite`).subscribe({
+      next: (data) => { this.scoreFiabilite = data; this.cdr.detectChanges(); }
+    });
   }
 
   calculateStats(): void {
