@@ -46,8 +46,7 @@ import { environment } from '../../../environments/environment';
           <input type="number" [(ngModel)]="form.duree" class="form-input" placeholder="Ex: 2">
         </div>
         <div class="field-wrapper">
-          <label>Coût total (DH)</label>
-          <input type="number" [(ngModel)]="form.coutTotal" class="form-input" placeholder="Ex: 1500">
+
         </div>
         <div class="field-wrapper full-width">
           <label>Résultat</label>
@@ -280,7 +279,6 @@ export class FseClotureComponent implements OnInit {
   form = {
     actionsEffectuees: '',
     duree: null as number | null,
-    coutTotal: null as number | null,
     resultat: '',
     responsableClient: ''
   };
@@ -358,7 +356,6 @@ export class FseClotureComponent implements OnInit {
       descriptionPanne: this.intervention.descriptionPanne,
       actionsEffectuees: this.form.actionsEffectuees + (this.form.responsableClient ? ' | Responsable client: ' + this.form.responsableClient : ''),
       dureeHeures: this.form.duree,
-      coutTotal: this.form.coutTotal,
       nomFse: this.intervention.nomFse,
       equipement: this.intervention.equipement ? { id: this.intervention.equipement.id } : null,
       technicien: this.intervention.technicien ? { id: this.intervention.technicien.id } : null
