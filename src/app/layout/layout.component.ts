@@ -28,7 +28,6 @@ export class LayoutComponent {
       { path: '/contrats',      icon: '≡', label: 'Contrats' },
       { path: '/optimisation',  icon: '⚡', label: 'Optimisation' },
       { path: '/historique',    icon: '◷', label: 'Historique' },
-      { path: '/assistant-ia',  icon: '◻', label: 'Assistant IA' },
     ];
     if (isAdmin) {
       items.splice(8, 0, { path: '/utilisateurs', icon: '⊹', label: 'Utilisateurs' });
