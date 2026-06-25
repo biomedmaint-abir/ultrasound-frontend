@@ -262,8 +262,6 @@ export class FseClotureComponent implements OnInit {
   isSaving = false;
 
   get buttonText(): string { return this.isSaving ? 'Envoi...' : "Terminer l'intervention"; }
-
-  get buttonText(): string { return this.isSaving ? 'Envoi...' : "Terminer l'intervention"; }
   successMsg = '';
   errorMsg = '';
   showCodeErreur = false;
