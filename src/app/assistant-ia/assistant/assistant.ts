@@ -28,7 +28,7 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   searchCode = '';
-  isAdmin = localStorage.getItem('role') === 'ADMIN';
+  isAdmin = false;
   showAddCode = false;
   showCodesPanel = false;
   newCode = {
@@ -61,6 +61,7 @@ export class AssistantComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
+    this.isAdmin = localStorage.getItem('role') === 'ADMIN';
     this.assistantService.getAll().subscribe({
       next: (data: any[]) => { this.allCodes = data; this.cdr.detectChanges(); },
       error: () => {}
