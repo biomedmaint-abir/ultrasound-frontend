@@ -27,6 +27,7 @@ export class LayoutComponent {
       { path: '/equipements',   icon: '⊡', label: 'Équipements' },
       { path: '/contrats',      icon: '≡', label: 'Contrats' },
       { path: '/optimisation',  icon: '⚡', label: 'Optimisation' },
+      { path: '/analyse-predictive', icon: '🔮', label: 'Analyse Prédictive' },
       { path: '/historique',    icon: '◷', label: 'Historique' },
     ];
     if (isAdmin) {
