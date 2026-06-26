@@ -29,6 +29,7 @@ export class FseLayoutComponent {
     { path: '/fse/rapports',      icon: '⊿', label: 'Mes Rapports' },
     { path: '/fse/historique',    icon: '◷', label: 'Mon Historique' },
     { path: '/fse/assistant-ia',  icon: '◻', label: 'Assistant IA' },
+    { path: '/fse/analyse-predictive', icon: '🔮', label: 'Analyse Prédictive' },
     { path: '/fse/profil',        icon: '◉', label: 'Mon Profil' },
   ];
 
