@@ -68,7 +68,7 @@ import { environment } from '../../../environments/environment';
   </div>
 
   <div class="timeline" *ngIf="!isLoading">
-    <div *ngFor="let inv of filtered" class="timeline-item">
+    <div *ngFor="let inv of filtered; let i = index" class="timeline-item">
       <div class="timeline-left">
         <div class="timeline-icon" [ngClass]="getTypeClass(inv.type)">🔧</div>
         <div class="timeline-dot" [ngClass]="getTypeClass(inv.type)"></div>
@@ -77,7 +77,7 @@ import { environment } from '../../../environments/environment';
       <div class="timeline-card">
         <div class="card-header">
           <div class="card-left">
-            <span class="inv-id">#{{ inv.id }}</span>
+            <span class="inv-id">#{{ i + 1 }}</span>
             <span class="type-badge" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
             <span class="statut-badge" [ngClass]="getStatutClass(inv.statut)">
               <span class="dot"></span>{{ inv.statut }}

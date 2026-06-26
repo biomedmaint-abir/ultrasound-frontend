@@ -22,6 +22,12 @@ import jsPDF from 'jspdf';
       <input type="text" [(ngModel)]="search" (input)="applyFilter()"
         placeholder="Rechercher par équipement ou date..." class="search-input">
     </div>
+    <select [(ngModel)]="filterParc" (ngModelChange)="applyFilter()" class="filter-select">
+      <option value="">Tous les parcs</option>
+      <option *ngFor="let p of parcs" [value]="p">{{ p }}</option>
+    </select>
+    <input type="date" [(ngModel)]="filterDateDu" (change)="applyFilter()" class="filter-select" placeholder="Du">
+    <input type="date" [(ngModel)]="filterDateAu" (change)="applyFilter()" class="filter-select" placeholder="Au">
   </div>
 
   <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
@@ -105,6 +111,10 @@ export class FseRapportsComponent implements OnInit {
   rapports: any[] = [];
   filtered: any[] = [];
   search = '';
+  filterParc = '';
+  filterDateDu = '';
+  filterDateAu = '';
+  parcs: string[] = [];
   isLoading = true;
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}

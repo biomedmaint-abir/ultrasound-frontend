@@ -30,10 +30,7 @@ import { environment } from '../../../environments/environment';
       <div class="kpi-icon">✅</div>
       <div><div class="kpi-value">{{ getCount('TERMINEE') }}</div><div class="kpi-label">Terminées</div></div>
     </div>
-    <div class="kpi-card purple">
-      <div class="kpi-icon">⏳</div>
-      <div><div class="kpi-value">{{ getCount('EN_ATTENTE_VALIDATION') }}</div><div class="kpi-label">En validation</div></div>
-    </div>
+
   </div>
 
   <!-- Interventions urgentes -->
@@ -83,29 +80,7 @@ import { environment } from '../../../environments/environment';
       </div>
     </div>
 
-    <!-- Interventions récentes -->
-    <div class="section-card">
-      <div class="section-header">
-        <div class="section-icon blue">🔧</div>
-        <h2>Mes interventions récentes</h2>
-        <span class="count-badge">{{ mesInterventions.slice(0,5).length }}</span>
-      </div>
-      <div *ngIf="mesInterventions.length === 0" class="empty-state">
-        <p>Aucune intervention assignée</p>
-      </div>
-      <div *ngFor="let inv of mesInterventions.slice(0,5)" class="inv-item" (click)="router.navigate(['/fse/interventions'])">
-        <div class="inv-left">
-          <span class="type-badge" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
-          <div>
-            <div class="inv-equip">{{ inv.equipement?.nom || '—' }}</div>
-            <div class="inv-site">{{ formatDate(inv.dateIntervention) }}</div>
-          </div>
-        </div>
-        <span class="statut-badge" [ngClass]="getStatutClass(inv.statut)">
-          <span class="dot"></span>{{ inv.statut }}
-        </span>
-      </div>
-    </div>
+
   </div>
 </div>`,
   styles: [`
