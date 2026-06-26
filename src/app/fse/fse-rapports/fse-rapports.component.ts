@@ -26,8 +26,7 @@ import jsPDF from 'jspdf';
       <option value="">Tous les parcs</option>
       <option *ngFor="let p of parcs" [value]="p">{{ p }}</option>
     </select>
-    <input type="date" [(ngModel)]="filterDateDu" (change)="applyFilter()" class="filter-select" placeholder="Du">
-    <input type="date" [(ngModel)]="filterDateAu" (change)="applyFilter()" class="filter-select" placeholder="Au">
+    <input type="date" [(ngModel)]="filterDate" (change)="applyFilter()" class="filter-select">
   </div>
 
   <div *ngIf="isLoading" class="center-state"><p>Chargement...</p></div>
@@ -112,8 +111,7 @@ export class FseRapportsComponent implements OnInit {
   filtered: any[] = [];
   search = '';
   filterParc = '';
-  filterDateDu = '';
-  filterDateAu = '';
+  filterDate = '';
   parcs: string[] = [];
   isLoading = true;
 
@@ -134,6 +132,7 @@ export class FseRapportsComponent implements OnInit {
           .filter(i => i.statut === 'TERMINEE' || i.statut === 'EN_ATTENTE_VALIDATION' || i.statut === 'EN_ATTENTE_PIECE')
           .sort((a, b) => new Date(b.dateIntervention).getTime() - new Date(a.dateIntervention).getTime());
         this.filtered = [...this.rapports];
+        this.parcs = [...new Set(this.rapports.map((r: any) => r.equipement?.parc).filter(Boolean))] as string[];
         this.isLoading = false;
         this.cdr.detectChanges();
       }
