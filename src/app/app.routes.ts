@@ -48,6 +48,8 @@ export const routes: Routes = [
       { path: 'planning', loadComponent: () => import('./fse/fse-planning/fse-planning.component').then(m => m.FsePlanningComponent) },
       { path: 'rapports', loadComponent: () => import('./fse/fse-rapports/fse-rapports.component').then(m => m.FseRapportsComponent) },
       { path: 'historique', loadComponent: () => import('./fse/fse-historique/fse-historique.component').then(m => m.FseHistoriqueComponent) },
+      { path: 'analyse-predictive', loadComponent: () => import('./fse/fse-analyse-predictive/fse-analyse-predictive.component').then(m => m.FseAnalysePredictiveComponent) },
+      { path: 'analyse-predictive/:id', loadComponent: () => import('./fse/fse-analyse-predictive/fse-analyse-predictive.component').then(m => m.FseAnalysePredictiveComponent) },
       { path: 'assistant-ia', loadComponent: () => import('./fse/fse-assistant/fse-assistant.component').then(m => m.FseAssistantComponent) },
       { path: 'profil', loadComponent: () => import('./fse/fse-profil/fse-profil.component').then(m => m.FseProfilComponent) },
       { path: 'cloture/:id', loadComponent: () => import('./fse/fse-cloture/fse-cloture.component').then(m => m.FseClotureComponent) },
