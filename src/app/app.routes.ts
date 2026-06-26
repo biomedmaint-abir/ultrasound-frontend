@@ -29,6 +29,8 @@ export const routes: Routes = [
       { path: 'rapports', loadChildren: () => import('./rapports/rapports.module').then(m => m.RapportsModule) },
       { path: 'optimisation', loadChildren: () => import('./optimisation/optimisation.module').then(m => m.OptimisationModule) },
       { path: 'utilisateurs', loadChildren: () => import('./utilisateurs/utilisateurs.module').then(m => m.UtilisateursModule) },
+      { path: 'analyse-predictive', loadComponent: () => import('./analyse-predictive/analyse-predictive.component').then(m => m.AnalysePredictiveComponent) },
+      { path: 'analyse-predictive/:id', loadComponent: () => import('./analyse-predictive/analyse-predictive.component').then(m => m.AnalysePredictiveComponent) },
       { path: 'historique', loadChildren: () => import('./historique/historique.module').then(m => m.HistoriqueModule) },
       { path: 'profil', loadComponent: () => import('./profil/profil.component').then(m => m.ProfilComponent) },
     ]
