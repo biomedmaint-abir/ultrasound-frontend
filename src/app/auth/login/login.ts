@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
         const role = response.role;
         if (role === 'ADMIN') { this.router.navigate(['/dashboard']); }
         else if (role === 'BACK_OFFICE') { this.router.navigate(['/backoffice/planning']); }
-        else if (role === 'CHEF_POLE') { this.router.navigate(['/chefpole/planning']); }
+        else if (role === 'CHEF_POLE') { this.router.navigate(['/chefpole/dashboard']); }
         else { this.router.navigate(['/fse/dashboard']); }
       },
       error: () => {
