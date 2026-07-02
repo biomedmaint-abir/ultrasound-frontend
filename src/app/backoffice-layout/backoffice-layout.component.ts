@@ -68,6 +68,7 @@ export class BackofficeLayoutComponent {
   navItems = [
     { path: '/backoffice/planning', icon: '📅', label: 'Planning' },
     { path: '/backoffice/pieces', icon: '🔩', label: 'Pièces de rechange' },
+    { path: '/backoffice/utilisateurs', icon: '⊹', label: 'Utilisateurs' },
     { path: '/backoffice/profil', icon: '◉', label: 'Mon Profil' },
   ];
 

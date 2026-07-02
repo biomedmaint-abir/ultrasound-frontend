@@ -67,6 +67,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'planning', pathMatch: 'full' },
       { path: 'planning', loadComponent: () => import('./backoffice/backoffice-planning/backoffice-planning.component').then(m => m.BackofficePlanningComponent) },
       { path: 'pieces', loadChildren: () => import('./pieces/pieces-module').then(m => m.PiecesModule) },
+      { path: 'utilisateurs', loadChildren: () => import('./utilisateurs/utilisateurs.module').then(m => m.UtilisateursModule) },
       { path: 'profil', loadComponent: () => import('./backoffice/backoffice-profil/backoffice-profil.component').then(m => m.BackofficeProfilComponent) },
     ]
   },
@@ -78,6 +79,10 @@ export const routes: Routes = [
     canActivate: [ChefPoleGuard],
     children: [
       { path: '', redirectTo: 'planning', pathMatch: 'full' },
+      { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard/dashboard').then(m => m.DashboardComponent) },
+      { path: 'optimisation', loadComponent: () => import('./optimisation/optimisation.component').then(m => m.OptimisationComponent) },
+      { path: 'analyse-predictive', loadComponent: () => import('./analyse-predictive/analyse-predictive.component').then(m => m.AnalysePredictiveComponent) },
+      { path: 'analyse-predictive/:id', loadComponent: () => import('./analyse-predictive/analyse-predictive.component').then(m => m.AnalysePredictiveComponent) },
       { path: 'planning', loadComponent: () => import('./chefpole/chefpole-planning/chefpole-planning.component').then(m => m.ChefPolePlanningComponent) },
       { path: 'disponibilite', loadComponent: () => import('./chefpole/chefpole-disponibilite/chefpole-disponibilite.component').then(m => m.ChefPoleDisponibiliteComponent) },
       { path: 'performance', loadComponent: () => import('./chefpole/chefpole-performance/chefpole-performance.component').then(m => m.ChefPolePerformanceComponent) },

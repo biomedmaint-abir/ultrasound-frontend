@@ -66,9 +66,12 @@ export class ChefPoleLayoutComponent {
   currentRoute = '';
 
   navItems = [
+    { path: '/chefpole/dashboard', icon: '⊞', label: 'Tableau de bord' },
     { path: '/chefpole/planning', icon: '📅', label: 'Mon Planning' },
     { path: '/chefpole/disponibilite', icon: '👥', label: 'Disponibilité équipe' },
     { path: '/chefpole/performance', icon: '📊', label: 'Performance équipe' },
+    { path: '/chefpole/optimisation', icon: '⚡', label: 'Optimisation' },
+    { path: '/chefpole/analyse-predictive', icon: '📈', label: 'Analyse prédictive' },
     { path: '/chefpole/profil', icon: '◉', label: 'Mon Profil' },
   ];
 
