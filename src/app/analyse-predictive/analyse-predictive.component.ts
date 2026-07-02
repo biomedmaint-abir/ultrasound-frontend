@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -195,7 +195,7 @@ export class AnalysePredictiveComponent implements OnInit {
   get avertissements() { return this.equipements.filter(e => e.probabilite >= 50 && e.probabilite < 80).length; }
   get normaux() { return this.equipements.filter(e => e.probabilite < 50).length; }
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private cdr: ChangeDetectorRef, private zone: NgZone) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -212,7 +212,8 @@ export class AnalysePredictiveComponent implements OnInit {
   loadData(): void {
     this.isLoading = true;
     this.http.get<any[]>(`${environment.apiUrl}/analyse-predictive/scores?periode=${this.periode}`).subscribe({
-      next: (data) => { this.equipements = data; this.isLoading = false; this.cdr.detectChanges(); }
+      next: (data) => { this.zone.run(() => { this.equipements = data; this.isLoading = false; }); },
+      error: (err) => { console.error('ERREUR:', err); this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
 
