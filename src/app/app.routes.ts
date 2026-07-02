@@ -78,7 +78,7 @@ export const routes: Routes = [
     component: ChefPoleLayoutComponent,
     canActivate: [ChefPoleGuard],
     children: [
-      { path: '', redirectTo: 'planning', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard/dashboard').then(m => m.DashboardComponent) },
       { path: 'optimisation', loadComponent: () => import('./optimisation/optimisation.component').then(m => m.OptimisationComponent) },
       { path: 'analyse-predictive', loadComponent: () => import('./analyse-predictive/analyse-predictive.component').then(m => m.AnalysePredictiveComponent) },
