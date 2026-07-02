@@ -3,6 +3,7 @@ import { interval, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { CacheService } from '../../services/cache.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -167,7 +168,7 @@ export class ChefPolePlanningComponent implements OnInit, OnDestroy {
   private refreshSub: Subscription | null = null;
   isLoading = true;
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  constructor(private cache: CacheService, private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -183,9 +184,21 @@ export class ChefPolePlanningComponent implements OnInit, OnDestroy {
     this.refreshSub?.unsubscribe();
   }
 
+  processData(data: any[]): void {
+    this.interventions = data.sort((a: any, b: any) => new Date(a.dateIntervention).getTime() - new Date(b.dateIntervention).getTime());
+    this.nonAssignees = data.filter((i: any) => !i.nomFse && !i.technicien);
+    this.interventionsBloquees = data.filter((i: any) => i.commentaireRejet && i.commentaireRejet.startsWith('BLOCAGE FSE'));
+    this.cdr.detectChanges();
+  }
+
   loadData(): void {
+    const cached = this.cache.get('chefpole_interventions');
+    if (cached) {
+      this.processData(cached);
+    }
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
+        this.cache.set('chefpole_interventions', data);
         this.interventions = data.sort((a: any, b: any) => new Date(a.dateIntervention).getTime() - new Date(b.dateIntervention).getTime());
         this.nonAssignees = data.filter((i: any) => !i.nomFse && !i.technicien);
         this.interventionsBloquees = data.filter((i: any) => i.commentaireRejet && i.commentaireRejet.startsWith('BLOCAGE FSE:') && i.statut !== 'TERMINEE');

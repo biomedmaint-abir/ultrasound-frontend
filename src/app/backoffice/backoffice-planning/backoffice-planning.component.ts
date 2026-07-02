@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { CacheService } from '../../services/cache.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
@@ -348,15 +349,25 @@ export class BackofficePlanningComponent implements OnInit {
 
   form = { equipementId: null as number|null, type: "", date: "", description: "" };
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  constructor(private cache: CacheService, private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     const currentYear = new Date().getFullYear();
     this.anneesList = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
 
 
+    const cached = this.cache.get('backoffice_interventions');
+    if (cached) {
+      this.interventions = cached;
+      this.filtered = [...cached];
+      this.piecesACommander = cached.filter((i: any) => i.statut === 'EN_ATTENTE_PIECE');
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
-      next: (data) => { this.interventions = data; this.filtered = [...data]; this.piecesACommander = data.filter((i: any) => i.statut === 'EN_ATTENTE_PIECE'); this.isLoading = false; this.cdr.detectChanges(); }
+      next: (data) => {
+        this.cache.set('backoffice_interventions', data);
+        this.interventions = data; this.filtered = [...data]; this.piecesACommander = data.filter((i: any) => i.statut === 'EN_ATTENTE_PIECE'); this.isLoading = false; this.cdr.detectChanges(); }
     });
     this.http.get<any[]>(`${environment.apiUrl}/equipements`).subscribe({
       next: (data) => {

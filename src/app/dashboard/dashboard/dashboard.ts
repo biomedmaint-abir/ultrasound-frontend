@@ -91,6 +91,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef
   ) {}
 
+  processInterventions(data: any[]): void {
+    this.allInterventions = data;
+    this.interventionsData = data;
+    const t = data.filter((i: any) => i.statut === 'TERMINEE').length;
+    this.disponibilite = data.length > 0 ? Math.round((t / data.length) * 100) : 0;
+    const now = new Date();
+    this.coutTotalMois = data.filter((i: any) => {
+      const d = new Date(i.dateIntervention);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).reduce((sum: number, i: any) => sum + (i.coutTotal || 0), 0);
+    const fsesActifs = new Set(data.filter((i: any) => i.statut === 'EN_COURS' && i.nomFse).map((i: any) => i.nomFse));
+    this.fseActifsAujourdhui = fsesActifs.size;
+    this.piecesACommander = data.filter((i: any) => i.statut === 'EN_ATTENTE_PIECE');
+  }
+
   ngOnInit(): void {
     const token = localStorage.getItem('token');
     if (!token) { this.router.navigate(['/auth']); return; }
