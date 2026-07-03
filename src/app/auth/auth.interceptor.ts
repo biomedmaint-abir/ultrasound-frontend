@@ -21,7 +21,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                          req.url.includes('/interventions') ||
                          req.url.includes('/equipements') ||
                          req.url.includes('/pieces') ||
-                         req.url.includes('/intervention-pieces');
+                         req.url.includes('/intervention-pieces') ||
+                         req.url.includes('/analyse-predictive') ||
+                         req.url.includes('/optimisation');
 
       if (error.status === 401 && !isExcluded) {
         localStorage.removeItem('token');

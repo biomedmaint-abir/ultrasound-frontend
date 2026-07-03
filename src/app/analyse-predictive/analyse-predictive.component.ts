@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { CacheService } from '../services/cache.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../environments/environment';
 
@@ -195,7 +196,7 @@ export class AnalysePredictiveComponent implements OnInit {
   get avertissements() { return this.equipements.filter(e => e.probabilite >= 50 && e.probabilite < 80).length; }
   get normaux() { return this.equipements.filter(e => e.probabilite < 50).length; }
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private cdr: ChangeDetectorRef, private zone: NgZone) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private cdr: ChangeDetectorRef, private zone: NgZone, private cache: CacheService) {}
 
   ngOnInit(): void {
     this.detailMode = false;
@@ -213,9 +214,18 @@ export class AnalysePredictiveComponent implements OnInit {
   }
 
   loadData(): void {
+    const cacheKey = 'analyse_scores_' + this.periode;
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      this.equipements = cached;
+      this.isLoading = false;
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+      return;
+    }
     this.isLoading = true;
     this.http.get<any[]>(`${environment.apiUrl}/analyse-predictive/scores?periode=${this.periode}`).subscribe({
-      next: (data) => { this.equipements = data; this.isLoading = false; this.cdr.markForCheck(); this.cdr.detectChanges(); },
+      next: (data) => { this.cache.set('analyse_scores_' + this.periode, data); this.equipements = data; this.isLoading = false; this.cdr.markForCheck(); this.cdr.detectChanges(); },
       error: (err) => { console.error('ERREUR:', err); this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
