@@ -215,7 +215,7 @@ export class AnalysePredictiveComponent implements OnInit {
   loadData(): void {
     this.isLoading = true;
     this.http.get<any[]>(`${environment.apiUrl}/analyse-predictive/scores?periode=${this.periode}`).subscribe({
-      next: (data) => { setTimeout(() => { this.equipements = data; this.isLoading = false; }, 0); },
+      next: (data) => { this.equipements = data; this.isLoading = false; this.cdr.markForCheck(); this.cdr.detectChanges(); },
       error: (err) => { console.error('ERREUR:', err); this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
