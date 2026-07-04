@@ -16,7 +16,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.
       <div class="logo">
         <div class="logo-icon-box">🔷</div>
         <div class="logo-texts">
-          <span class="logo-text">MaintManager</span>
+          <span class="logo-text">UltrasoundTrack</span>
           <span class="logo-sub">by SCRIM</span>
         </div>
       </div>
