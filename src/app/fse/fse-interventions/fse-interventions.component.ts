@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { CacheService } from '../../services/cache.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
@@ -161,11 +162,30 @@ export class FseInterventionsComponent implements OnInit {
   isSavingMotif = false;
   motifSucces = '';
 
-  constructor(private http: HttpClient, public router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private cache: CacheService, private http: HttpClient, public router: Router, private cdr: ChangeDetectorRef) {}
+
+  processData(data: any[]): void {
+    this.interventions = data.filter((i: any) =>
+      i.technicien?.id === this.userId ||
+      i.nomFse === this.prenom ||
+      i.nomFse === this.nom ||
+      i.nomFse === this.email ||
+      i.nomFse === (this.prenom + ' ' + this.nom).trim() ||
+      i.nomFse === (this.nom + ' ' + this.prenom).trim()
+    ).sort((a: any, b: any) => new Date(b.dateIntervention).getTime() - new Date(a.dateIntervention).getTime());
+    this.filtered = [...this.interventions];
+    this.isLoading = false;
+    this.cdr.detectChanges();
+  }
 
   ngOnInit(): void {
+    const cached = this.cache.get('fse_interventions');
+    if (cached) {
+      this.processData(cached);
+    }
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
+        this.cache.set('fse_interventions', data);
         this.interventions = data.filter(i =>
           i.technicien?.id === this.userId ||
           i.nomFse === this.prenom ||

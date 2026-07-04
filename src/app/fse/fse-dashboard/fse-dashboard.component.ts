@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { CacheService } from '../../services/cache.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
@@ -138,13 +139,21 @@ export class FseDashboardComponent implements OnInit {
   interventionsAujourdhui: any[] = [];
   interventionsUrgentes: any[] = [];
 
-  constructor(private http: HttpClient, public router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private cache: CacheService, private http: HttpClient, public router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.email = localStorage.getItem('email') || '';
     this.nom = localStorage.getItem('nom') || '';
     this.prenom = localStorage.getItem('prenom') || '';
     this.userId = Number(localStorage.getItem('userId')) || 0;
+    const cached = this.cache.get('fse_interventions');
+    if (cached) {
+      this.mesInterventions = cached.filter((i: any) =>
+        i.technicien?.id === this.userId || i.nomFse === this.prenom ||
+        i.nomFse === this.nom || i.nomFse === (this.prenom + ' ' + this.nom).trim()
+      );
+      this.cdr.detectChanges();
+    }
     this.http.get<any[]>(`${environment.apiUrl}/interventions`).subscribe({
       next: (data) => {
         this.mesInterventions = data.filter(i =>
