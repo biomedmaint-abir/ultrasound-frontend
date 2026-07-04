@@ -14,7 +14,7 @@ import { environment } from '../../environments/environment';
 <div class="page">
   <div class="page-header">
     <div>
-      <h1>🔮 Analyse prédictive</h1>
+      <h1>📈 Analyse prédictive</h1>
       <p>Détection et prévention des anomalies basées sur l'historique des interventions</p>
     </div>
     <div class="header-right">
