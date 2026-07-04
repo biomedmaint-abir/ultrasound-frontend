@@ -11,7 +11,7 @@ import { environment } from '../../../environments/environment';
   template: `
 <ng-container *ngIf="!detailMode">
   <div class="list-page">
-    <div class="list-header"><h1>🔮 Analyse Prédictive</h1><p>Score de fiabilité de vos équipements assignés</p></div>
+    <div class="list-header"><h1>📈 Analyse Prédictive</h1><p>Score de fiabilité de vos équipements assignés</p></div>
     <div *ngIf="isLoading" class="loading">Chargement...</div>
     <div class="cards-grid" *ngIf="!isLoading">
       <div *ngFor="let eq of equipements" class="equip-card">
