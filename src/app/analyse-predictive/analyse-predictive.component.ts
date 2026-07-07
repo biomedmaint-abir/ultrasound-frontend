@@ -257,6 +257,6 @@ export class AnalysePredictiveComponent implements OnInit {
     }).join(' ');
   }
 
-  voirDetail(id: number): void { this.router.navigate(['/analyse-predictive', id]); }
-  retourListe(): void { this.router.navigate(['/analyse-predictive']); }
+  voirDetail(id: number): void { const base = this.router.url.includes('chefpole') ? '/chefpole/analyse-predictive' : '/analyse-predictive'; this.router.navigate([base, id]); }
+  retourListe(): void { const base = this.router.url.includes('chefpole') ? '/chefpole/analyse-predictive' : '/analyse-predictive'; this.router.navigate([base]); }
 }
