@@ -151,33 +151,7 @@ import { environment } from '../../../environments/environment';
         </div>
       </div>
 
-      <!-- Section code erreur non reconnu -->
-      <div class="code-erreur-section">
-        <div class="code-erreur-header" (click)="showCodeErreur = !showCodeErreur">
-          <div class="code-erreur-title">
-            <span>⚠️</span>
-            <h3>Code erreur non reconnu ? <span class="optionnel">(optionnel)</span></h3>
-          </div>
-          <span class="toggle-icon">{{ showCodeErreur ? '▲' : '▼' }}</span>
-        </div>
-        <div class="code-erreur-body" *ngIf="showCodeErreur">
-          <p class="code-erreur-desc">Si vous avez rencontré un code erreur absent de la base IA, signalez-le ici.</p>
-          <div class="form-grid">
-            <div class="field-wrapper">
-              <label>Code erreur</label>
-              <input type="text" [(ngModel)]="codeErreur.code" class="form-input" placeholder="Ex: E089, U034...">
-            </div>
-            <div class="field-wrapper">
-              <label>Symptômes observés</label>
-              <input type="text" [(ngModel)]="codeErreur.symptomes" class="form-input" placeholder="Ex: Écran noir...">
-            </div>
-            <div class="field-wrapper full-width">
-              <label>Solution appliquée</label>
-              <textarea [(ngModel)]="codeErreur.solution" rows="2" class="form-textarea" placeholder="Décrivez..."></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       <div class="field-wrapper full-width" style="margin-bottom:24px">
         <label>Nom du responsable client présent <span class="required">*</span></label>
@@ -264,7 +238,6 @@ export class FseClotureComponent implements OnInit {
   get buttonText(): string { return this.isSaving ? 'Envoi...' : "Terminer l'intervention"; }
   successMsg = '';
   errorMsg = '';
-  showCodeErreur = false;
   showChecklist = true;
 
   form = {
@@ -274,7 +247,6 @@ export class FseClotureComponent implements OnInit {
     responsableClient: ''
   };
 
-  codeErreur = { code: '', symptomes: '', solution: '' };
 
   checklistInfos = { versionLogiciel: '', numeroOrdreService: '' };
 
