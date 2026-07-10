@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { CacheService } from '../../services/cache.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
@@ -155,19 +156,23 @@ export class FseAnalysePredictiveComponent implements OnInit {
   today = new Date();
   private userId = 0;
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private cache: CacheService) {}
 
   ngOnInit(): void {
     this.userId = Number(localStorage.getItem('userId')) || 0;
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.detailMode = true;
+      const cachedDetail = this.cache.get('fse_analyse_equip_' + id);
+      if (cachedDetail) { this.detail = cachedDetail; this.isLoading = false; }
       this.http.get<any>(`${environment.apiUrl}/analyse-predictive/equipement/${id}`).subscribe({
-        next: (data) => { this.detail = data; this.isLoading = false; }
+        next: (data) => { this.cache.set('fse_analyse_equip_' + id, data); this.detail = data; this.isLoading = false; }
       });
     } else {
+      const cachedList = this.cache.get('fse_analyse_' + this.userId);
+      if (cachedList) { this.equipements = cachedList; this.isLoading = false; }
       this.http.get<any[]>(`${environment.apiUrl}/analyse-predictive/fse/${this.userId}`).subscribe({
-        next: (data) => { this.equipements = data; this.isLoading = false; }
+        next: (data) => { this.cache.set('fse_analyse_' + this.userId, data); this.equipements = data; this.isLoading = false; }
       });
     }
   }
