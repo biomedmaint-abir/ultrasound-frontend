@@ -41,7 +41,7 @@ import { environment } from '../../../environments/environment';
       <h2>Interventions urgentes</h2>
       <span class="urgent-count">{{ interventionsUrgentes.length }}</span>
     </div>
-    <div *ngFor="let inv of interventionsUrgentes" class="urgent-row" (click)="router.navigate(['/fse/interventions'])">
+    <div *ngFor="let inv of interventionsUrgentes" class="urgent-row" (click)="router.navigate(['/fse/cloture', inv.id])">
       <div class="urgent-left">
         <span class="type-badge type-correctif">{{ inv.type }}</span>
         <div>
@@ -67,7 +67,7 @@ import { environment } from '../../../environments/environment';
       <div *ngIf="interventionsAujourdhui.length === 0" class="empty-state">
         <p>✅ Aucune intervention prévue aujourd'hui</p>
       </div>
-      <div *ngFor="let inv of interventionsAujourdhui" class="inv-item" (click)="router.navigate(['/fse/interventions'])">
+      <div *ngFor="let inv of interventionsAujourdhui" class="inv-item" (click)="router.navigate(['/fse/cloture', inv.id])">
         <div class="inv-left">
           <span class="type-badge" [ngClass]="getTypeClass(inv.type)">{{ inv.type }}</span>
           <div>
