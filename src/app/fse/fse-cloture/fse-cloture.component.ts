@@ -345,16 +345,7 @@ export class FseClotureComponent implements OnInit {
           this.http.post(`${environment.apiUrl}/checklist/intervention/${this.intervention.id}/bulk`, checklistPayload).subscribe();
         }
 
-        if (this.codeErreur.code && this.codeErreur.symptomes) {
-          const codePayload = {
-            code: this.codeErreur.code,
-            symptomes: this.codeErreur.symptomes,
-            actionsCorrectives: this.codeErreur.solution,
-            causesProbables: 'Signalé par FSE — à vérifier',
-            interventionId: this.intervention.id
-          };
-          this.http.post(`${environment.apiUrl}/codes-erreur/signalement`, codePayload).subscribe({ error: () => {} });
-        }
+
 
         // Générer PDF Fiche 34
         this.genererFiche34();
